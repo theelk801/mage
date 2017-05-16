@@ -42,6 +42,10 @@ import org.mage.test.serverside.base.CardTestPlayerBase;
  */
 public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
 
+    private String urborgtoy = "Urborg, Tomb of Yawgmoth";
+    private String bloodmoon = "Blood Moon";
+    private String canopyvista = "Canopy Vista";
+
     /**
      *
      * Playing a commander game. Opponent had a Magus of the Moon, and I later
@@ -130,10 +134,6 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
         assertType("Forbidding Watchtower", CardType.LAND, "Island");
         assertPowerToughness(playerB, "Forbidding Watchtower", 1, 5);
     }
-    
-    String urborgtoy = "Urborg, Tomb of Yawgmoth";
-    String bloodmoon = "Blood Moon";
-    String canopyvista = "Canopy Vista";
 
     /*
     NOTE: this test is currently failing due to bug in code. See issue #3072

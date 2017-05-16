@@ -27,12 +27,11 @@
  */
 package mage.abilities.effects;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.Map.Entry;
 import mage.MageObject;
 import mage.abilities.*;
+import mage.abilities.effects.common.continuous.BecomesFaceDownCreatureEffect;
 import mage.abilities.keyword.SpliceOntoArcaneAbility;
+import mage.cards.Card;
 import mage.cards.Cards;
 import mage.cards.CardsImpl;
 import mage.constants.*;
@@ -51,6 +50,10 @@ import mage.players.ManaPoolItem;
 import mage.players.Player;
 import mage.target.common.TargetCardInHand;
 import org.apache.log4j.Logger;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * @author BetaSteward_at_googlemail.com
@@ -554,9 +557,9 @@ public class ContinuousEffects implements Serializable {
     /**
      * Filters out asThough effects that are not active.
      *
-     * @param AsThoughEffectType type
-     * @param game
-     * @return
+     * @param type Effect type (see {@link AsThoughEffectType})
+     * @param game Game to get effect from
+     * @return list of effects
      */
     private List<AsThoughEffect> getApplicableAsThoughEffects(AsThoughEffectType type, Game game) {
         List<AsThoughEffect> asThoughEffectsList = new ArrayList<>();
@@ -1041,8 +1044,22 @@ public class ContinuousEffects implements Serializable {
     private void applyContinuousEffect(ContinuousEffect effect, Layer currentLayer, Game game) {
         HashSet<Ability> abilities = layeredEffects.getAbility(effect.getId());
         for (Ability ability : abilities) {
-            effect.apply(currentLayer, SubLayer.NA, ability, game);
+            if (isAbilityStillExists(game, ability, effect)) {
+                effect.apply(currentLayer, SubLayer.NA, ability, game);
+            }
         }
+    }
+
+    private boolean isAbilityStillExists(final Game game, final Ability ability, ContinuousEffect effect) {
+        final Card card = game.getPermanentOrLKIBattlefield(ability.getSourceId());
+        if (!(effect instanceof BecomesFaceDownCreatureEffect)) {
+            if (card != null) {
+                if (!card.getAbilities(game).contains(ability)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public HashSet<Ability> getLayeredEffectAbilities(ContinuousEffect effect) {
@@ -1052,14 +1069,14 @@ public class ContinuousEffects implements Serializable {
     /**
      * Adds a continuous ability with a reference to a sourceId. It's used for
      * effects that cease to exist again So this effects were removed again
-     * before each applyEffecs
+     * before each applyEffects
      *
      * @param effect
      * @param sourceId
      * @param source
      */
     public void addEffect(ContinuousEffect effect, UUID sourceId, Ability source) {
-        if (!(source instanceof MageSingleton)) { // because MageSingletons may never be removed by removing the temporary effecs they are not added to the temporaryEffects to prevent this
+        if (!(source instanceof MageSingleton)) { // because MageSingletons may never be removed by removing the temporary effects they are not added to the temporaryEffects to prevent this
             effect.setTemporary(true);
             Set<Ability> abilities = temporaryEffects.get(effect);
             if (abilities == null) {

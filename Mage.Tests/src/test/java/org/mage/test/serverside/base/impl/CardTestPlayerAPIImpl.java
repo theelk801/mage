@@ -1,11 +1,5 @@
 package org.mage.test.serverside.base.impl;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import mage.abilities.Ability;
 import mage.cards.Card;
 import mage.cards.decks.Deck;
@@ -21,9 +15,11 @@ import mage.counters.CounterType;
 import mage.filter.Filter;
 import mage.filter.FilterCard;
 import mage.filter.predicate.mageobject.NamePredicate;
-import mage.game.*;
+import mage.game.ExileZone;
+import mage.game.Game;
+import mage.game.GameException;
+import mage.game.GameOptions;
 import mage.game.command.CommandObject;
-import mage.game.match.MatchType;
 import mage.game.permanent.Permanent;
 import mage.game.permanent.PermanentCard;
 import mage.players.Player;
@@ -32,6 +28,12 @@ import org.junit.Before;
 import org.mage.test.player.TestPlayer;
 import org.mage.test.serverside.base.CardTestAPI;
 import org.mage.test.serverside.base.MageTestPlayerBase;
+
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * API for test initialization and asserting the test results.
@@ -727,7 +729,7 @@ public abstract class CardTestPlayerAPIImpl extends MageTestPlayerBase implement
     public void assertNotSubtype(String cardName, String subType) throws AssertionError {
         Permanent found = getPermanent(cardName);
         if (subType != null) {
-            Assert.assertFalse("(Battlefield) card sub-type equal (" + cardName + ':' + subType + ')', found.getSubtype(currentGame).contains(subType));
+            Assert.assertFalse("(Battlefield) card sub-types shouldn't contain (" + cardName + ':' + subType + ')', found.getSubtype(currentGame).contains(subType));
         }
     }
 
