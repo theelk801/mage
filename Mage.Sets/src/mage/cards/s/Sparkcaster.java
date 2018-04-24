@@ -41,12 +41,12 @@ import mage.constants.SubType;
 import mage.filter.common.FilterControlledCreaturePermanent;
 import mage.filter.predicate.Predicates;
 import mage.filter.predicate.mageobject.ColorPredicate;
-import mage.target.TargetPlayer;
+import mage.target.common.TargetPlayerOrPlaneswalker;
 
 /**
  *
  * @author LoneFox
-
+ *
  */
 public class Sparkcaster extends CardImpl {
 
@@ -57,7 +57,7 @@ public class Sparkcaster extends CardImpl {
     }
 
     public Sparkcaster(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.CREATURE},"{2}{R}{G}");
+        super(ownerId, setInfo, new CardType[]{CardType.CREATURE}, "{2}{R}{G}");
         this.subtype.add(SubType.KAVU);
         this.power = new MageInt(5);
         this.toughness = new MageInt(3);
@@ -65,8 +65,8 @@ public class Sparkcaster extends CardImpl {
         // When Sparkcaster enters the battlefield, return a red or green creature you control to its owner's hand.
         this.addAbility(new EntersBattlefieldTriggeredAbility(new ReturnToHandChosenControlledPermanentEffect(filter), false));
         // When Sparkcaster enters the battlefield, it deals 1 damage to target player.
-        Ability ability = new EntersBattlefieldTriggeredAbility(new DamageTargetEffect(1), false);
-        ability.addTarget(new TargetPlayer());
+        Ability ability = new EntersBattlefieldTriggeredAbility(new DamageTargetEffect(1, "it"), false);
+        ability.addTarget(new TargetPlayerOrPlaneswalker());
         this.addAbility(ability);
     }
 

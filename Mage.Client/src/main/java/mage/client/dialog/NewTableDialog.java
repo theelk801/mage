@@ -27,6 +27,12 @@
  */
 package mage.client.dialog;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import javax.swing.*;
 import mage.cards.decks.importer.DeckImporterUtil;
 import mage.client.MageFrame;
 import mage.client.SessionHandler;
@@ -44,13 +50,6 @@ import mage.players.PlayerType;
 import mage.view.GameTypeView;
 import mage.view.TableView;
 import org.apache.log4j.Logger;
-
-import javax.swing.*;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * @author BetaSteward_at_googlemail.com
@@ -102,6 +101,8 @@ public class NewTableDialog extends MageDialog {
         lblGameType = new javax.swing.JLabel();
         cbGameType = new javax.swing.JComboBox();
         chkRollbackTurnsAllowed = new javax.swing.JCheckBox();
+        chkSpectatorsAllowed = new javax.swing.JCheckBox();
+        chkPlaneChase = new javax.swing.JCheckBox();
         chkRated = new javax.swing.JCheckBox();
         lblFreeMulligans = new javax.swing.JLabel();
         spnFreeMulligans = new javax.swing.JSpinner();
@@ -142,7 +143,7 @@ public class NewTableDialog extends MageDialog {
         lbDeckType.setText("Deck Type:");
 
         lbTimeLimit.setText("Time Limit:");
-        lbTimeLimit.setToolTipText("The active time a player may use to finish the match. If his or her time runs out, the player looses the current game.");
+        lbTimeLimit.setToolTipText("The active time a player may use to finish the match. If their time runs out, the player looses the current game.");
 
         lblGameType.setText("Game Type:");
 
@@ -150,6 +151,12 @@ public class NewTableDialog extends MageDialog {
 
         chkRollbackTurnsAllowed.setText("Allow rollbacks");
         chkRollbackTurnsAllowed.setToolTipText("<HTML>Allow to rollback to the start of previous turns<br>\nif all players agree.\n");
+
+        chkSpectatorsAllowed.setText("Allow Spectators");
+        chkSpectatorsAllowed.setToolTipText("<HTML>Allow spectators to watch.\n");
+
+        chkPlaneChase.setText("Use PlaneChase");
+        chkPlaneChase.setToolTipText("<HTML>Use planechase variant (suitable for all game types).\n");
 
         chkRated.setText("Rated");
         chkRated.setToolTipText("Indicates if matches will be rated.");
@@ -231,7 +238,11 @@ public class NewTableDialog extends MageDialog {
                                                                 .addGap(13, 13, 13)
                                                                 .addComponent(lblFreeMulligans)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(spnFreeMulligans, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addComponent(spnFreeMulligans, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(13, 13, 13)
+                                                                .addComponent(chkSpectatorsAllowed)
+                                                                .addGap(13, 13, 13)
+                                                                .addComponent(chkPlaneChase))
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -325,7 +336,9 @@ public class NewTableDialog extends MageDialog {
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                 .addComponent(spnFreeMulligans, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(lblFreeMulligans)
-                                                .addComponent(chkRollbackTurnsAllowed))
+                                                .addComponent(chkRollbackTurnsAllowed)
+                                                .addComponent(chkSpectatorsAllowed)
+                                                .addComponent(chkPlaneChase))
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                 .addComponent(cbGameType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(lblGameType)))
@@ -401,6 +414,8 @@ public class NewTableDialog extends MageDialog {
         options.setRange((RangeOfInfluence) this.cbRange.getSelectedItem());
         options.setWinsNeeded((Integer) this.spnNumWins.getValue());
         options.setRollbackTurnsAllowed(chkRollbackTurnsAllowed.isSelected());
+        options.setSpectatorsAllowed(chkSpectatorsAllowed.isSelected());
+        options.setPlaneChase(chkPlaneChase.isSelected());
         options.setRated(chkRated.isSelected());
         options.setFreeMulligans((Integer) this.spnFreeMulligans.getValue());
         options.setPassword(this.txtPassword.getText());
@@ -615,17 +630,22 @@ public class NewTableDialog extends MageDialog {
      * set the table settings from java prefs
      */
     int currentSettingVersion = 0;
+
     private void setGameSettingsFromPrefs(int version) {
         currentSettingVersion = version;
         String versionStr = "";
-        if (currentSettingVersion == 1) {
-            versionStr = "1";
-            btnPreviousConfiguration1.requestFocus();
-        } else if (currentSettingVersion == 2) {
-            versionStr = "2";
-            btnPreviousConfiguration2.requestFocus();
-        } else {
-            btnPreviousConfiguration2.getParent().requestFocus();
+        switch (currentSettingVersion) {
+            case 1:
+                versionStr = "1";
+                btnPreviousConfiguration1.requestFocus();
+                break;
+            case 2:
+                versionStr = "2";
+                btnPreviousConfiguration2.requestFocus();
+                break;
+            default:
+                btnPreviousConfiguration2.getParent().requestFocus();
+                break;
         }
         txtName.setText(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_NAME + versionStr, "Game"));
         txtPassword.setText(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_PASSWORD + versionStr, ""));
@@ -658,6 +678,8 @@ public class NewTableDialog extends MageDialog {
         }
         this.spnNumWins.setValue(Integer.parseInt(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_NUMBER_OF_WINS + versionStr, "2")));
         this.chkRollbackTurnsAllowed.setSelected(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_ROLLBACK_TURNS_ALLOWED + versionStr, "Yes").equals("Yes"));
+        this.chkSpectatorsAllowed.setSelected(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_SPECTATORS_ALLOWED + versionStr, "Yes").equals("Yes"));
+        this.chkPlaneChase.setSelected(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_PLANECHASE + versionStr, "No").equals("Yes"));
         this.chkRated.setSelected(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_RATED + versionStr, "No").equals("Yes"));
         this.spnFreeMulligans.setValue(Integer.parseInt(PreferencesDialog.getCachedValue(PreferencesDialog.KEY_NEW_TABLE_NUMBER_OF_FREE_MULLIGANS + versionStr, "0")));
 
@@ -715,6 +737,8 @@ public class NewTableDialog extends MageDialog {
         PreferencesDialog.saveValue(PreferencesDialog.KEY_NEW_TABLE_RANGE + versionStr, Integer.toString(options.getRange().getRange()));
         PreferencesDialog.saveValue(PreferencesDialog.KEY_NEW_TABLE_ATTACK_OPTION + versionStr, options.getAttackOption().toString());
         PreferencesDialog.saveValue(PreferencesDialog.KEY_NEW_TABLE_SKILL_LEVEL + versionStr, options.getSkillLevel().toString());
+        PreferencesDialog.saveValue(PreferencesDialog.KEY_NEW_TABLE_SPECTATORS_ALLOWED + versionStr, options.isSpectatorsAllowed() ? "Yes" : "No");
+        PreferencesDialog.saveValue(PreferencesDialog.KEY_NEW_TABLE_PLANECHASE + versionStr, options.isPlaneChase() ? "Yes" : "No");
         PreferencesDialog.saveValue(PreferencesDialog.KEY_NEW_TABLE_QUIT_RATIO + versionStr, Integer.toString(options.getQuitRatio()));
         StringBuilder playerTypesString = new StringBuilder();
         for (Object player : players) {
@@ -739,6 +763,8 @@ public class NewTableDialog extends MageDialog {
     private javax.swing.JComboBox cbSkillLevel;
     private javax.swing.JComboBox cbTimeLimit;
     private javax.swing.JCheckBox chkRollbackTurnsAllowed;
+    private javax.swing.JCheckBox chkSpectatorsAllowed;
+    private javax.swing.JCheckBox chkPlaneChase;
     private javax.swing.JCheckBox chkRated;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

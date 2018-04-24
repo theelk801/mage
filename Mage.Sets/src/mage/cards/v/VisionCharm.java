@@ -64,7 +64,7 @@ public class VisionCharm extends CardImpl {
     public VisionCharm(UUID ownerId, CardSetInfo setInfo) {
         super(ownerId, setInfo, new CardType[]{CardType.INSTANT}, "{U}");
 
-        // Choose one - Target player puts the top four cards of his or her library into his or her graveyard;
+        // Choose one - Target player puts the top four cards of their library into their graveyard;
         this.getSpellAbility().addEffect(new PutLibraryIntoGraveTargetEffect(4));
         this.getSpellAbility().addTarget(new TargetPlayer());
 
@@ -117,10 +117,16 @@ class VisionCharmEffect extends ContinuousEffectImpl {
         Player controller = game.getPlayer(source.getControllerId());
         if (controller != null) {
             Choice choice = new ChoiceLandType();
-            controller.choose(outcome, choice, game);
+            if (!controller.choose(outcome, choice, game)) {
+                discard();
+                return;
+            }
             targetLandType = choice.getChoice();
             choice = new ChoiceBasicLandType();
-            controller.choose(outcome, choice, game);
+            if (!controller.choose(outcome, choice, game)) {
+                discard();
+                return;
+            }
             targetBasicLandType = SubType.byDescription(choice.getChoice());
             if (targetLandType == null || targetBasicLandType == null) {
                 this.discard();

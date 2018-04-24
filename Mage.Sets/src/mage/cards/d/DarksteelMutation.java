@@ -42,6 +42,7 @@ import mage.constants.SubType;
 import mage.constants.Duration;
 import mage.constants.Outcome;
 import mage.constants.Zone;
+import mage.game.permanent.token.TokenImpl;
 import mage.game.permanent.token.Token;
 import mage.target.TargetPermanent;
 import mage.target.common.TargetCreaturePermanent;
@@ -53,7 +54,7 @@ import mage.target.common.TargetCreaturePermanent;
 public class DarksteelMutation extends CardImpl {
 
     public DarksteelMutation(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.ENCHANTMENT},"{1}{W}");
+        super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{1}{W}");
         this.subtype.add(SubType.AURA);
 
         // Enchant creature
@@ -67,7 +68,7 @@ public class DarksteelMutation extends CardImpl {
         this.addAbility(new SimpleStaticAbility(Zone.BATTLEFIELD,
                 new BecomesCreatureAttachedEffect(new DarksteelMutationInsectToken(),
                         "Enchanted creature is an Insect artifact creature with base power and toughness 0/1 and has indestructible, and it loses all other abilities, card types, and creature types.",
-                        Duration.WhileOnBattlefield, BecomesCreatureAttachedEffect.LoseType.ALL)));
+                        Duration.WhileOnBattlefield, BecomesCreatureAttachedEffect.LoseType.ALL_BUT_COLOR)));
 
     }
 
@@ -81,7 +82,7 @@ public class DarksteelMutation extends CardImpl {
     }
 }
 
-class DarksteelMutationInsectToken extends Token {
+class DarksteelMutationInsectToken extends TokenImpl {
 
     public DarksteelMutationInsectToken() {
         super("Insect", "Insect artifact creature with base power and toughness 0/1");
@@ -92,6 +93,13 @@ class DarksteelMutationInsectToken extends Token {
         toughness = new MageInt(1);
 
         this.addAbility(IndestructibleAbility.getInstance());
+    }
+    public DarksteelMutationInsectToken(final DarksteelMutationInsectToken token) {
+        super(token);
+    }
+
+    public DarksteelMutationInsectToken copy() {
+        return new DarksteelMutationInsectToken(this);
     }
 
 }

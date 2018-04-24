@@ -33,8 +33,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import mage.MageObject;
 import mage.abilities.*;
+import mage.abilities.effects.common.continuous.BecomesFaceDownCreatureEffect;
 import mage.abilities.effects.common.continuous.CommanderReplacementEffect;
 import mage.abilities.keyword.SpliceOntoArcaneAbility;
+import mage.cards.Card;
 import mage.cards.Cards;
 import mage.cards.CardsImpl;
 import mage.constants.*;
@@ -77,7 +79,7 @@ public class ContinuousEffects implements Serializable {
     private final Map<AsThoughEffectType, ContinuousEffectsList<AsThoughEffect>> asThoughEffectsMap = new EnumMap<>(AsThoughEffectType.class);
     public final List<ContinuousEffectsList<?>> allEffectsLists = new ArrayList<>();
     private final ApplyCountersEffect applyCounters;
-    private final PlaneswalkerRedirectionEffect planeswalkerRedirectionEffect;
+//    private final PlaneswalkerRedirectionEffect planeswalkerRedirectionEffect;
     private final AuraReplacementEffect auraReplacementEffect;
 
     private final List<ContinuousEffect> previous = new ArrayList<>();
@@ -87,14 +89,14 @@ public class ContinuousEffects implements Serializable {
 
     public ContinuousEffects() {
         applyCounters = new ApplyCountersEffect();
-        planeswalkerRedirectionEffect = new PlaneswalkerRedirectionEffect();
+//        planeswalkerRedirectionEffect = new PlaneswalkerRedirectionEffect();
         auraReplacementEffect = new AuraReplacementEffect();
         collectAllEffects();
     }
 
     public ContinuousEffects(final ContinuousEffects effect) {
         this.applyCounters = effect.applyCounters.copy();
-        this.planeswalkerRedirectionEffect = effect.planeswalkerRedirectionEffect.copy();
+//        this.planeswalkerRedirectionEffect = effect.planeswalkerRedirectionEffect.copy();
         this.auraReplacementEffect = effect.auraReplacementEffect.copy();
         layeredEffects = effect.layeredEffects.copy();
         continuousRuleModifyingEffects = effect.continuousRuleModifyingEffects.copy();
@@ -109,12 +111,14 @@ public class ContinuousEffects implements Serializable {
 
         costModificationEffects = effect.costModificationEffects.copy();
         spliceCardEffects = effect.spliceCardEffects.copy();
-        temporaryEffects.putAll(effect.temporaryEffects);
+        for (Map.Entry<ContinuousEffect, Set<Ability>> entry : effect.temporaryEffects.entrySet()) {
+            temporaryEffects.put(entry.getKey().copy(), entry.getValue());
+        }
         collectAllEffects();
         order = effect.order;
     }
 
-    private void collectAllEffects() {
+    private synchronized void collectAllEffects() {
         allEffectsLists.add(layeredEffects);
         allEffectsLists.add(continuousRuleModifyingEffects);
         allEffectsLists.add(replacementEffects);
@@ -141,7 +145,7 @@ public class ContinuousEffects implements Serializable {
         return restrictionEffects;
     }
 
-    public void removeEndOfCombatEffects() {
+    public synchronized void removeEndOfCombatEffects() {
         layeredEffects.removeEndOfCombatEffects();
         continuousRuleModifyingEffects.removeEndOfCombatEffects();
         replacementEffects.removeEndOfCombatEffects();
@@ -155,7 +159,7 @@ public class ContinuousEffects implements Serializable {
         spliceCardEffects.removeEndOfCombatEffects();
     }
 
-    public void removeEndOfTurnEffects() {
+    public synchronized void removeEndOfTurnEffects() {
         layeredEffects.removeEndOfTurnEffects();
         continuousRuleModifyingEffects.removeEndOfTurnEffects();
         replacementEffects.removeEndOfTurnEffects();
@@ -169,7 +173,7 @@ public class ContinuousEffects implements Serializable {
         spliceCardEffects.removeEndOfTurnEffects();
     }
 
-    public void removeInactiveEffects(Game game) {
+    public synchronized void removeInactiveEffects(Game game) {
         layeredEffects.removeInactiveEffects(game);
         continuousRuleModifyingEffects.removeInactiveEffects(game);
         replacementEffects.removeInactiveEffects(game);
@@ -184,7 +188,7 @@ public class ContinuousEffects implements Serializable {
         spliceCardEffects.removeInactiveEffects(game);
     }
 
-    public List<ContinuousEffect> getLayeredEffects(Game game) {
+    public synchronized List<ContinuousEffect> getLayeredEffects(Game game) {
         List<ContinuousEffect> layerEffects = new ArrayList<>();
         for (ContinuousEffect effect : layeredEffects) {
             switch (effect.getDuration()) {
@@ -224,7 +228,7 @@ public class ContinuousEffects implements Serializable {
      *
      * @param layerEffects
      */
-    private void updateTimestamps(List<ContinuousEffect> layerEffects) {
+    private synchronized void updateTimestamps(List<ContinuousEffect> layerEffects) {
         for (ContinuousEffect continuousEffect : layerEffects) {
             // check if it's new, then set order
             if (!previous.contains(continuousEffect)) {
@@ -335,9 +339,9 @@ public class ContinuousEffects implements Serializable {
      */
     private Map<ReplacementEffect, Set<Ability>> getApplicableReplacementEffects(GameEvent event, Game game) {
         Map<ReplacementEffect, Set<Ability>> replaceEffects = new HashMap<>();
-        if (planeswalkerRedirectionEffect.checksEventType(event, game) && planeswalkerRedirectionEffect.applies(event, null, game)) {
-            replaceEffects.put(planeswalkerRedirectionEffect, null);
-        }
+//        if (planeswalkerRedirectionEffect.checksEventType(event, game) && planeswalkerRedirectionEffect.applies(event, null, game)) {
+//            replaceEffects.put(planeswalkerRedirectionEffect, null);
+//        }
         if (auraReplacementEffect.checksEventType(event, game) && auraReplacementEffect.applies(event, null, game)) {
             replaceEffects.put(auraReplacementEffect, null);
         }
@@ -348,9 +352,11 @@ public class ContinuousEffects implements Serializable {
                 continue;
             }
             if (event.getAppliedEffects() != null && event.getAppliedEffects().contains(effect.getId())) {
-                // Effect already applied to this event, ignore it
-                // TODO: Handle also gained effect that are connected to different abilities.
-                continue;
+                if (!(effect instanceof CommanderReplacementEffect)) { // 903.9.
+                    // Effect already applied to this event, ignore it
+                    // TODO: Handle also gained effect that are connected to different abilities.
+                    continue;
+                }
             }
             Set<Ability> abilities = replacementEffects.getAbility(effect.getId());
             Set<Ability> applicableAbilities = new HashSet<>();
@@ -494,25 +500,44 @@ public class ContinuousEffects implements Serializable {
         return spliceEffects;
     }
 
-    public boolean asThough(UUID objectId, AsThoughEffectType type, UUID controllerId, Game game) {
+    /**
+     *
+     * @param objectId
+     * @param type
+     * @param controllerId
+     * @param game
+     * @return sourceId of the permitting effect if any exists otherwise returns
+     * null
+     */
+    public UUID asThough(UUID objectId, AsThoughEffectType type, UUID controllerId, Game game) {
         return asThough(objectId, type, null, controllerId, game);
     }
 
-    public boolean asThough(UUID objectId, AsThoughEffectType type, Ability affectedAbility, UUID controllerId, Game game) {
+    /**
+     *
+     * @param objectId
+     * @param type
+     * @param affectedAbility
+     * @param controllerId
+     * @param game
+     * @return sourceId of the permitting effect if any exists otherwise returns
+     * null
+     */
+    public UUID asThough(UUID objectId, AsThoughEffectType type, Ability affectedAbility, UUID controllerId, Game game) {
         List<AsThoughEffect> asThoughEffectsList = getApplicableAsThoughEffects(type, game);
         for (AsThoughEffect effect : asThoughEffectsList) {
             Set<Ability> abilities = asThoughEffectsMap.get(type).getAbility(effect.getId());
             for (Ability ability : abilities) {
                 if (affectedAbility == null) {
                     if (effect.applies(objectId, ability, controllerId, game)) {
-                        return true;
+                        return ability.getSourceId();
                     }
                 } else if (effect.applies(objectId, affectedAbility, ability, game)) {
-                    return true;
+                    return ability.getSourceId();
                 }
             }
         }
-        return false;
+        return null;
 
     }
 
@@ -748,7 +773,7 @@ public class ContinuousEffects implements Serializable {
             // Remove all consumed effects (ability dependant)
             for (Iterator<ReplacementEffect> it1 = rEffects.keySet().iterator(); it1.hasNext();) {
                 ReplacementEffect entry = it1.next();
-                if (consumed.containsKey(entry.getId())) {
+                if (consumed.containsKey(entry.getId()) /*&& !(entry instanceof CommanderReplacementEffect) */) { // 903.9.
                     Set<UUID> consumedAbilitiesIds = consumed.get(entry.getId());
                     if (rEffects.get(entry) == null || consumedAbilitiesIds.size() == rEffects.get(entry).size()) {
                         it1.remove();
@@ -855,7 +880,7 @@ public class ContinuousEffects implements Serializable {
     }
 
     //20091005 - 613
-    public void apply(Game game) {
+    public synchronized void apply(Game game) {
         removeInactiveEffects(game);
         List<ContinuousEffect> activeLayerEffects = getLayeredEffects(game);
 
@@ -1037,8 +1062,23 @@ public class ContinuousEffects implements Serializable {
     private void applyContinuousEffect(ContinuousEffect effect, Layer currentLayer, Game game) {
         Set<Ability> abilities = layeredEffects.getAbility(effect.getId());
         for (Ability ability : abilities) {
-            effect.apply(currentLayer, SubLayer.NA, ability, game);
+            //effect.apply(currentLayer, SubLayer.NA, ability, game);
+            if (isAbilityStillExists(game, ability, effect)) {
+                effect.apply(currentLayer, SubLayer.NA, ability, game);
+            }
         }
+    }
+
+    private boolean isAbilityStillExists(final Game game, final Ability ability, ContinuousEffect effect) {
+        final Card card = game.getPermanentOrLKIBattlefield(ability.getSourceId());
+        if (!(effect instanceof BecomesFaceDownCreatureEffect)) {
+            if (card != null) {
+                if (!card.getAbilities(game).contains(ability)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public Set<Ability> getLayeredEffectAbilities(ContinuousEffect effect) {
@@ -1054,7 +1094,7 @@ public class ContinuousEffects implements Serializable {
      * @param sourceId
      * @param source
      */
-    public void addEffect(ContinuousEffect effect, UUID sourceId, Ability source) {
+    public synchronized void addEffect(ContinuousEffect effect, UUID sourceId, Ability source) {
         if (!(source instanceof MageSingleton)) { // because MageSingletons may never be removed by removing the temporary effecs they are not added to the temporaryEffects to prevent this
             effect.setTemporary(true);
             Set<Ability> abilities = temporaryEffects.get(effect);
@@ -1072,7 +1112,7 @@ public class ContinuousEffects implements Serializable {
         addEffect(effect, source);
     }
 
-    public void addEffect(ContinuousEffect effect, Ability source) {
+    public synchronized void addEffect(ContinuousEffect effect, Ability source) {
         if (effect == null) {
             logger.error("Effect is null: " + source.toString());
             return;
@@ -1150,14 +1190,14 @@ public class ContinuousEffects implements Serializable {
         }
     }
 
-    public void clear() {
+    public synchronized void clear() {
         for (ContinuousEffectsList effectsList : allEffectsLists) {
             effectsList.clear();
         }
         temporaryEffects.clear();
     }
 
-    public void removeAllTemporaryEffects() {
+    public synchronized void removeAllTemporaryEffects() {
         for (Map.Entry<ContinuousEffect, Set<Ability>> entry : temporaryEffects.entrySet()) {
             switch (entry.getKey().getEffectType()) {
                 case REPLACEMENT:
@@ -1214,8 +1254,8 @@ public class ContinuousEffects implements Serializable {
                     }
                 }
             } else {
-                if (!(entry.getKey() instanceof AuraReplacementEffect)
-                        && !(entry.getKey() instanceof PlaneswalkerRedirectionEffect)) {
+                if (!(entry.getKey() instanceof AuraReplacementEffect)) {
+//                        && !(entry.getKey() instanceof PlaneswalkerRedirectionEffect)) {
                     logger.error("Replacement effect without ability: " + entry.getKey().toString());
                 }
             }

@@ -28,18 +28,16 @@
 package mage.cards.k;
 
 import java.util.UUID;
-
-import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.effects.OneShotEffect;
 import mage.abilities.effects.common.DestroyAllEffect;
 import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
-import mage.abilities.effects.common.ChooseCreatureTypeEffect;
+import mage.choices.Choice;
+import mage.choices.ChoiceCreatureType;
 import mage.constants.CardType;
 import mage.constants.Outcome;
 import mage.constants.SubType;
-import mage.filter.FilterPermanent;
 import mage.filter.common.FilterCreaturePermanent;
 import mage.filter.predicate.Predicates;
 import mage.filter.predicate.mageobject.SubtypePredicate;
@@ -56,7 +54,6 @@ public class KindredDominance extends CardImpl {
         super(ownerId, setInfo, new CardType[]{CardType.SORCERY}, "{5}{B}{B}");
 
         // Choose a creature type. Destroy all creatures that are not the chosen type.
-        this.getSpellAbility().addEffect(new ChooseCreatureTypeEffect(Outcome.DestroyPermanent));
         this.getSpellAbility().addEffect(new KindredDominanceEffect());
     }
 
@@ -74,7 +71,7 @@ class KindredDominanceEffect extends OneShotEffect {
 
     public KindredDominanceEffect() {
         super(Outcome.DestroyPermanent);
-        this.staticText = "Destroy all creatures that are not the chosen type.";
+        this.staticText = "Choose a creature type. Destroy all creatures that are not the chosen type.";
     }
 
     public KindredDominanceEffect(final KindredDominanceEffect effect) {
@@ -89,11 +86,11 @@ class KindredDominanceEffect extends OneShotEffect {
     @Override
     public boolean apply(Game game, Ability source) {
         Player controller = game.getPlayer(source.getControllerId());
-        MageObject mageObject = game.getObject(source.getSourceId());
-        if (controller != null & mageObject != null) {
-            String creatureType = game.getState().getValue(mageObject.getId() + "_type").toString();
-            FilterPermanent filter = new FilterCreaturePermanent("creatures");
-            filter.add(Predicates.not(new SubtypePredicate(SubType.byDescription(creatureType))));
+        Choice typeChoice = new ChoiceCreatureType(game.getObject(source.getSourceId()));
+        if (controller != null && controller.choose(outcome, typeChoice, game)) {
+            game.informPlayers(controller.getLogName() + " has chosen " + typeChoice.getChoice());
+            FilterCreaturePermanent filter = new FilterCreaturePermanent("All creatures not of the chosen type");
+            filter.add(Predicates.not(new SubtypePredicate(SubType.byDescription(typeChoice.getChoice()))));
             return new DestroyAllEffect(filter).apply(game, source);
         }
         return false;

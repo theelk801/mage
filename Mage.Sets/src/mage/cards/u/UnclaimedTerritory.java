@@ -60,10 +60,10 @@ public class UnclaimedTerritory extends CardImpl {
         // As Unclaimed Territory enters the battlefield, choose a creature type.
         this.addAbility(new AsEntersBattlefieldAbility(new ChooseCreatureTypeEffect(Outcome.Benefit)));
 
-        // {T}: Add {C} to your mana pool.
+        // {T}: Add {C}.
         this.addAbility(new ColorlessManaAbility());
 
-        // {T}: Add one mana of any color to your mana pool. Spend this mana only to cast a creature spell of the chosen type.
+        // {T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type.
         this.addAbility(new ConditionalAnyColorManaAbility(new TapSourceCost(), 1, new UnclaimedTerritoryManaBuilder(), true));
     }
 
@@ -83,9 +83,9 @@ class UnclaimedTerritoryManaBuilder extends ConditionalManaBuilder {
 
     @Override
     public ConditionalManaBuilder setMana(Mana mana, Ability source, Game game) {
-        SubType value = (SubType) game.getState().getValue(source.getSourceId() + "_type");
-        if (value != null) {
-            creatureType = value;
+        SubType subType = ChooseCreatureTypeEffect.getChoosenCreatureType(source.getSourceId(), game);
+        if (subType != null) {
+            creatureType = subType;
         }
         Player controller = game.getPlayer(source.getControllerId());
         MageObject sourceObject = game.getObject(source.getSourceId());

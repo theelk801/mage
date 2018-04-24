@@ -38,6 +38,7 @@ import mage.cards.Card;
 import mage.cards.SplitCard;
 import mage.constants.AbilityType;
 import mage.constants.AsThoughEffectType;
+import mage.constants.SpellAbilityCastMode;
 import mage.constants.SpellAbilityType;
 import mage.constants.TimingRule;
 import mage.constants.Zone;
@@ -51,6 +52,7 @@ import mage.players.Player;
 public class SpellAbility extends ActivatedAbilityImpl {
 
     protected SpellAbilityType spellAbilityType;
+    protected SpellAbilityCastMode spellAbilityCastMode;
     protected String cardName;
 
     public SpellAbility(ManaCost cost, String cardName) {
@@ -62,23 +64,22 @@ public class SpellAbility extends ActivatedAbilityImpl {
     }
 
     public SpellAbility(ManaCost cost, String cardName, Zone zone, SpellAbilityType spellAbilityType) {
+        this(cost, cardName, zone, spellAbilityType, SpellAbilityCastMode.NORMAL);
+    }
+
+    public SpellAbility(ManaCost cost, String cardName, Zone zone, SpellAbilityType spellAbilityType, SpellAbilityCastMode spellAbilityCastMode) {
         super(AbilityType.SPELL, zone);
         this.cardName = cardName;
         this.spellAbilityType = spellAbilityType;
+        this.spellAbilityCastMode = spellAbilityCastMode;
         this.addManaCost(cost);
-        switch (spellAbilityType) {
-            case SPLIT_FUSED:
-                this.name = "Cast fused " + cardName;
-                break;
-            default:
-                this.name = "Cast " + cardName;
-        }
-
+        setSpellName();
     }
 
     public SpellAbility(final SpellAbility ability) {
         super(ability);
         this.spellAbilityType = ability.spellAbilityType;
+        this.spellAbilityCastMode = ability.spellAbilityCastMode;
         this.cardName = ability.cardName;
     }
 
@@ -91,15 +92,17 @@ public class SpellAbility extends ActivatedAbilityImpl {
 
     @Override
     public boolean canActivate(UUID playerId, Game game) {
-        if (game.getContinuousEffects().asThough(sourceId, AsThoughEffectType.CAST_AS_INSTANT, this, playerId, game) // check this first to allow Offering in main phase
+        if (null != game.getContinuousEffects().asThough(sourceId, AsThoughEffectType.CAST_AS_INSTANT, this, playerId, game) // check this first to allow Offering in main phase
                 || this.spellCanBeActivatedRegularlyNow(playerId, game)) {
             if (spellAbilityType == SpellAbilityType.SPLIT || spellAbilityType == SpellAbilityType.SPLIT_AFTERMATH) {
                 return false;
             }
             // fix for Gitaxian Probe and casting opponent's spells
-            if (!game.getContinuousEffects().asThough(getSourceId(), AsThoughEffectType.PLAY_FROM_NOT_OWN_HAND_ZONE, playerId, game)
-                    && !controllerId.equals(playerId) && getZone() != Zone.HAND) {
-                return false;
+            if (null == game.getContinuousEffects().asThough(getSourceId(), AsThoughEffectType.PLAY_FROM_NOT_OWN_HAND_ZONE, playerId, game)) {
+                Card card = game.getCard(sourceId);
+                if (!(card != null && card.getOwnerId().equals(playerId))) {
+                    return false;
+                }
             }
             // Check if rule modifying events prevent to cast the spell in check playable mode
             if (this.isCheckPlayableMode()) {
@@ -206,5 +209,32 @@ public class SpellAbility extends ActivatedAbilityImpl {
             amount = getManaCostsToPay().getX();
         }
         return amount * xMultiplier;
+    }
+
+    private void setSpellName() {
+        switch (spellAbilityType) {
+            case SPLIT_FUSED:
+                this.name = "Cast fused " + cardName;
+                break;
+            default:
+                this.name = "Cast " + cardName + (this.spellAbilityCastMode != SpellAbilityCastMode.NORMAL ? " using " + spellAbilityCastMode.toString() : "");
+        }
+    }
+
+    public SpellAbilityCastMode getSpellAbilityCastMode() {
+        return spellAbilityCastMode;
+    }
+
+    public void setSpellAbilityCastMode(SpellAbilityCastMode spellAbilityCastMode) {
+        this.spellAbilityCastMode = spellAbilityCastMode;
+        setSpellName();
+    }
+
+    public SpellAbility getSpellAbilityToResolve(Game game) {
+        return this;
+    }
+
+    public void setId(UUID idToUse) {
+        this.id = idToUse;
     }
 }

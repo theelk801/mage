@@ -58,8 +58,7 @@ import mage.target.targetpointer.FixedTarget;
 public class OrderOfSuccession extends CardImpl {
 
     public OrderOfSuccession(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.SORCERY},"{3}{U}");
-
+        super(ownerId, setInfo, new CardType[]{CardType.SORCERY}, "{3}{U}");
 
         // Choose left or right. Starting with you and proceeding in the chosen direction, each player chooses a creature controlled by the next player in that direction. Each player gains control of the creature he or she chose.
         this.getSpellAbility().addEffect(new OrderOfSuccessionEffect());
@@ -97,7 +96,9 @@ class OrderOfSuccessionEffect extends OneShotEffect {
         if (controller != null) {
             Map<UUID, UUID> playerCreature = new HashMap<>(2);
             Choice choice = new ChoiceLeftOrRight();
-            controller.choose(Outcome.Neutral, choice, game);
+            if (controller.choose(Outcome.Neutral, choice, game)) {
+                return false;
+            }
             boolean left = choice.getChoice().equals("Left");
             PlayerList playerList = game.getState().getPlayerList().copy();
             // set playerlist to controller
@@ -108,7 +109,7 @@ class OrderOfSuccessionEffect extends OneShotEffect {
             Player nextPlayer;
             UUID firstNextPlayer = null;
 
-            while (!getNextPlayerInDirection(left, playerList, game).equals(firstNextPlayer) && controller.canRespond()){
+            while (!getNextPlayerInDirection(left, playerList, game).equals(firstNextPlayer) && controller.canRespond()) {
                 nextPlayer = game.getPlayer(playerList.get());
                 if (nextPlayer == null) {
                     return false;

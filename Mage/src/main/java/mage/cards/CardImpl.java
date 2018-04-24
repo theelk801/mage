@@ -28,15 +28,16 @@
 package mage.cards;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import mage.MageObject;
 import mage.MageObjectImpl;
 import mage.Mana;
 import mage.ObjectColor;
 import mage.abilities.*;
+import mage.abilities.costs.Cost;
+import mage.abilities.costs.VariableCost;
+import mage.abilities.costs.common.RemoveVariableCountersTargetCost;
 import mage.abilities.effects.common.NameACardEffect;
 import mage.abilities.mana.ActivatedManaAbilityImpl;
 import mage.cards.repository.PluginClassloaderRegistery;
@@ -45,6 +46,7 @@ import mage.counters.Counter;
 import mage.counters.CounterType;
 import mage.counters.Counters;
 import mage.filter.FilterCard;
+import mage.filter.FilterMana;
 import mage.filter.FilterPermanent;
 import mage.filter.FilterSpell;
 import mage.filter.common.FilterCreaturePermanent;
@@ -74,6 +76,12 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
 
     private static final Logger logger = Logger.getLogger(CardImpl.class);
 
+    private static final String regexBlack = ".*\\x7b.{0,2}B.{0,2}\\x7d.*";
+    private static final String regexBlue = ".*\\x7b.{0,2}U.{0,2}\\x7d.*";
+    private static final String regexRed = ".*\\x7b.{0,2}R.{0,2}\\x7d.*";
+    private static final String regexGreen = ".*\\x7b.{0,2}G.{0,2}\\x7d.*";
+    private static final String regexWhite = ".*\\x7b.{0,2}W.{0,2}\\x7d.*";
+
     protected UUID ownerId;
     protected String cardNumber;
     public String expansionSetCode;
@@ -90,7 +98,8 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
     protected boolean usesVariousArt = false;
     protected boolean splitCard;
     protected boolean morphCard;
-    protected boolean allCreatureTypes;
+
+    protected List<UUID> attachments = new ArrayList<>();
 
     public CardImpl(UUID ownerId, CardSetInfo setInfo, CardType[] cardTypes, String costs) {
         this(ownerId, setInfo, cardTypes, costs, SpellAbilityType.BASE);
@@ -163,10 +172,17 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
             secondSideCardClazz = card.secondSideCardClazz;
             nightCard = card.nightCard;
         }
+        if (card.spellAbility != null) {
+            spellAbility = card.getSpellAbility().copy();
+        } else {
+            spellAbility = null;
+        }
+
         flipCard = card.flipCard;
         flipCardName = card.flipCardName;
         splitCard = card.splitCard;
         usesVariousArt = card.usesVariousArt;
+        this.attachments.addAll(card.attachments);
     }
 
     @Override
@@ -174,6 +190,9 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
         this.objectId = UUID.randomUUID();
         this.abilities.newOriginalId();
         this.abilities.setSourceId(objectId);
+        if (this.spellAbility != null) {
+            this.spellAbility.setSourceId(objectId);
+        }
     }
 
     public static Card createCard(String name, CardSetInfo setInfo) {
@@ -191,18 +210,34 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
     }
 
     public static Card createCard(Class<?> clazz, CardSetInfo setInfo) {
+        return createCard(clazz, setInfo, null);
+    }
+
+    public static Card createCard(Class<?> clazz, CardSetInfo setInfo, List<String> errorList) {
+        String setCode = null;
         try {
             Card card;
             if (setInfo == null) {
                 Constructor<?> con = clazz.getConstructor(UUID.class);
                 card = (Card) con.newInstance(new Object[]{null});
             } else {
+                setCode = setInfo.getExpansionSetCode();
                 Constructor<?> con = clazz.getConstructor(UUID.class, CardSetInfo.class);
                 card = (Card) con.newInstance(null, setInfo);
             }
             return card;
         } catch (Exception e) {
-            logger.fatal("Error loading card: " + clazz.getCanonicalName(), e);
+            String err = "Error loading card: " + clazz.getCanonicalName() + " (" + setCode + ")";
+            if (errorList != null) {
+                errorList.add(err);
+            }
+
+            if (e instanceof InvocationTargetException) {
+                logger.fatal(err, ((InvocationTargetException) e).getTargetException());
+            } else {
+                logger.fatal(err, e);
+            }
+
             return null;
         }
     }
@@ -417,6 +452,29 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
                     ability.getTargets().add(new TargetCreaturePermanent(filter2));
                 }
                 break;
+            case SIMIC_MANIPULATOR: //Simic Manipulator only
+                xValue = 0;
+                for (Cost cost : ability.getCosts()) {
+                    if (cost instanceof RemoveVariableCountersTargetCost) {
+                        xValue = ((RemoveVariableCountersTargetCost) cost).getAmount();
+                        break;
+                    }
+                }
+                ability.getTargets().clear();
+                FilterCreaturePermanent newFilter = new FilterCreaturePermanent("creature with power less than or equal to " + xValue);
+                newFilter.add(new PowerPredicate(ComparisonType.FEWER_THAN, xValue + 1));
+                ability.addTarget(new TargetCreaturePermanent(newFilter));
+                break;
+            case CREATURE_POWER_X_OR_LESS: // Aryel, Knight of Windgrace
+                int value = 0;
+                for (VariableCost cost : ability.getCosts().getVariableCosts()) {
+                    value = cost.getAmount();
+                }
+                FilterCreaturePermanent filterCreaturePermanent = new FilterCreaturePermanent("creature with power " + value + " or less");
+                filterCreaturePermanent.add(new PowerPredicate(ComparisonType.FEWER_THAN, value + 1));
+                ability.getTargets().clear();
+                ability.addTarget(new TargetCreaturePermanent(filterCreaturePermanent));
+                break;
         }
     }
 
@@ -484,7 +542,7 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
         Card mainCard = getMainCard();
         ZoneChangeEvent event = new ZoneChangeEvent(mainCard.getId(), ability.getId(), controllerId, fromZone, Zone.STACK);
         ZoneChangeInfo.Stack info
-                = new ZoneChangeInfo.Stack(event, new Spell(this, ability.copy(), controllerId, event.getFromZone()));
+                = new ZoneChangeInfo.Stack(event, new Spell(this, ability.getSpellAbilityToResolve(game), controllerId, event.getFromZone()));
         return ZonesHandler.cast(info, game);
     }
 
@@ -578,6 +636,9 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
                     removed = true;
                 } else if (game.getPhase() == null) {
                     // E.g. Commander of commander game
+                    removed = true;
+                } else {
+                    // Unstable - Summon the Pack
                     removed = true;
                 }
                 break;
@@ -791,6 +852,64 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
     }
 
     @Override
+    public FilterMana getColorIdentity() {
+        FilterMana mana = new FilterMana();
+        mana.setBlack(getManaCost().getText().matches(regexBlack));
+        mana.setBlue(getManaCost().getText().matches(regexBlue));
+        mana.setGreen(getManaCost().getText().matches(regexGreen));
+        mana.setRed(getManaCost().getText().matches(regexRed));
+        mana.setWhite(getManaCost().getText().matches(regexWhite));
+
+        for (String rule : getRules()) {
+            rule = rule.replaceAll("(?i)<i.*?</i>", ""); // Ignoring reminder text in italic
+            if (!mana.isBlack() && (rule.matches(regexBlack) || this.color.isBlack())) {
+                mana.setBlack(true);
+            }
+            if (!mana.isBlue() && (rule.matches(regexBlue) || this.color.isBlue())) {
+                mana.setBlue(true);
+            }
+            if (!mana.isGreen() && (rule.matches(regexGreen) || this.color.isGreen())) {
+                mana.setGreen(true);
+            }
+            if (!mana.isRed() && (rule.matches(regexRed) || this.color.isRed())) {
+                mana.setRed(true);
+            }
+            if (!mana.isWhite() && (rule.matches(regexWhite) || this.color.isWhite())) {
+                mana.setWhite(true);
+            }
+        }
+        if (isTransformable()) {
+            Card secondCard = getSecondCardFace();
+            ObjectColor color = secondCard.getColor(null);
+            mana.setBlack(mana.isBlack() || color.isBlack());
+            mana.setGreen(mana.isGreen() || color.isGreen());
+            mana.setRed(mana.isRed() || color.isRed());
+            mana.setBlue(mana.isBlue() || color.isBlue());
+            mana.setWhite(mana.isWhite() || color.isWhite());
+            for (String rule : secondCard.getRules()) {
+                rule = rule.replaceAll("(?i)<i.*?</i>", ""); // Ignoring reminder text in italic
+                if (!mana.isBlack() && rule.matches(regexBlack)) {
+                    mana.setBlack(true);
+                }
+                if (!mana.isBlue() && rule.matches(regexBlue)) {
+                    mana.setBlue(true);
+                }
+                if (!mana.isGreen() && rule.matches(regexGreen)) {
+                    mana.setGreen(true);
+                }
+                if (!mana.isRed() && rule.matches(regexRed)) {
+                    mana.setRed(true);
+                }
+                if (!mana.isWhite() && rule.matches(regexWhite)) {
+                    mana.setWhite(true);
+                }
+            }
+        }
+
+        return mana;
+    }
+
+    @Override
     public void setZone(Zone zone, Game game) {
         game.setZone(getId(), zone);
     }
@@ -822,11 +941,43 @@ public abstract class CardImpl extends MageObjectImpl implements Card {
         return super.getSubtype(game);
     }
 
-    public boolean isAllCreatureTypes() {
-        return allCreatureTypes;
+    @Override
+    public List<UUID> getAttachments() {
+        return attachments;
     }
 
-    public void setIsAllCreatureTypes(boolean value) {
-        allCreatureTypes = value;
+    @Override
+    public boolean addAttachment(UUID permanentId, Game game) {
+        if (!this.attachments.contains(permanentId)) {
+            Permanent attachment = game.getPermanent(permanentId);
+            if (attachment == null) {
+                attachment = game.getPermanentEntering(permanentId);
+            }
+            if (attachment != null) {
+                if (!game.replaceEvent(new GameEvent(GameEvent.EventType.ATTACH, objectId, permanentId, attachment.getControllerId()))) {
+                    this.attachments.add(permanentId);
+                    attachment.attachTo(objectId, game);
+                    game.fireEvent(new GameEvent(GameEvent.EventType.ATTACHED, objectId, permanentId, attachment.getControllerId()));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeAttachment(UUID permanentId, Game game) {
+        if (this.attachments.contains(permanentId)) {
+            Permanent attachment = game.getPermanent(permanentId);
+            if (attachment != null) {
+                attachment.unattach(game);
+            }
+            if (!game.replaceEvent(new GameEvent(GameEvent.EventType.UNATTACH, objectId, permanentId, attachment != null ? attachment.getControllerId() : null))) {
+                this.attachments.remove(permanentId);
+                game.fireEvent(new GameEvent(GameEvent.EventType.UNATTACHED, objectId, permanentId, attachment != null ? attachment.getControllerId() : null));
+                return true;
+            }
+        }
+        return false;
     }
 }

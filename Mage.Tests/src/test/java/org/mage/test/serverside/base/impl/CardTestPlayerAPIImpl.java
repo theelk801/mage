@@ -29,10 +29,12 @@ import org.mage.test.serverside.base.CardTestAPI;
 import org.mage.test.serverside.base.MageTestPlayerBase;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * API for test initialization and asserting the test results.
@@ -61,9 +63,14 @@ public abstract class CardTestPlayerAPIImpl extends MageTestPlayerBase implement
         UNKNOWN
     }
 
-    static {
-//        CardScanner.scanned = true;
-        CardScanner.scan();
+    public CardTestPlayerAPIImpl(){
+        // load all cards to db from class list
+        ArrayList<String> errorsList = new ArrayList<>();
+        CardScanner.scan(errorsList);
+
+        if (errorsList.size() > 0) {
+            Assert.fail("Found errors on card loading: " + '\n' + errorsList.stream().collect(Collectors.joining("\n")));
+        }
     }
 
     /**
@@ -116,7 +123,6 @@ public abstract class CardTestPlayerAPIImpl extends MageTestPlayerBase implement
         if (currentGame != null) {
             logger.debug("Resetting previous game and creating new one!");
             currentGame = null;
-            System.gc();
         }
 
         currentGame = createNewGameAndPlayers();
@@ -837,22 +843,22 @@ public abstract class CardTestPlayerAPIImpl extends MageTestPlayerBase implement
         ManaPool manaPool = currentGame.getPlayer(player.getId()).getManaPool();
         switch (color){
             case COLORLESS:
-                Assert.assertEquals(manaPool.getColorless() + manaPool.getConditionalMana().stream().mapToInt(Mana::getColorless).sum(), amount);
+                Assert.assertEquals(amount,manaPool.getColorless() + manaPool.getConditionalMana().stream().mapToInt(Mana::getColorless).sum());
                 break;
             case RED:
-                Assert.assertEquals(manaPool.getRed() + manaPool.getConditionalMana().stream().mapToInt(Mana::getRed).sum(), amount);
+                Assert.assertEquals(amount,manaPool.getRed() + manaPool.getConditionalMana().stream().mapToInt(Mana::getRed).sum());
                 break;
             case BLUE:
-                Assert.assertEquals(manaPool.getBlue() + manaPool.getConditionalMana().stream().mapToInt(Mana::getBlue).sum(), amount);
+                Assert.assertEquals(amount,manaPool.getBlue() + manaPool.getConditionalMana().stream().mapToInt(Mana::getBlue).sum());
                 break;
             case WHITE:
-                Assert.assertEquals(manaPool.getWhite() + manaPool.getConditionalMana().stream().mapToInt(Mana::getWhite).sum(), amount);
+                Assert.assertEquals(amount,manaPool.getWhite() + manaPool.getConditionalMana().stream().mapToInt(Mana::getWhite).sum());
                 break;
             case GREEN:
-                Assert.assertEquals(manaPool.getGreen() + manaPool.getConditionalMana().stream().mapToInt(Mana::getGreen).sum(), amount);
+                Assert.assertEquals(amount,manaPool.getGreen() + manaPool.getConditionalMana().stream().mapToInt(Mana::getGreen).sum());
                 break;
             case BLACK:
-                Assert.assertEquals(manaPool.getBlack() + manaPool.getConditionalMana().stream().mapToInt(Mana::getBlack).sum(), amount);
+                Assert.assertEquals(amount,manaPool.getBlack() + manaPool.getConditionalMana().stream().mapToInt(Mana::getBlack).sum());
                 break;
         }
     }
@@ -1242,6 +1248,7 @@ public abstract class CardTestPlayerAPIImpl extends MageTestPlayerBase implement
      *               are copies. For modal spells use a prefix with the mode number:
      *               mode=1Lightning Bolt^mode=2Silvercoat Lion
      */
+    // TODO: mode options doesn't work here (see BrutalExpulsionTest)
     public void addTarget(TestPlayer player, String target) {
         player.addTarget(target);
     }
@@ -1293,10 +1300,10 @@ public abstract class CardTestPlayerAPIImpl extends MageTestPlayerBase implement
         }
     }
 
-    public void assertDamageReceived(Player player, String cardName, int amount) {
+    public void assertDamageReceived(Player player, String cardName, int expected) {
         Permanent p = getPermanent(cardName, player.getId());
         if (p != null) {
-            Assert.assertEquals(p.getDamage(), amount);
+            Assert.assertEquals("Wrong damage received: ", expected, p.getDamage());
         }
     }
 }

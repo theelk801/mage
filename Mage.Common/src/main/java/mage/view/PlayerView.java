@@ -34,15 +34,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import mage.cards.Card;
 import mage.counters.Counters;
+import mage.designations.Designation;
 import mage.game.ExileZone;
 import mage.game.Game;
 import mage.game.GameState;
 import mage.game.command.CommandObject;
 import mage.game.command.Commander;
 import mage.game.command.Emblem;
+import mage.game.command.Plane;
 import mage.game.permanent.Permanent;
 import mage.players.Player;
 import mage.players.net.UserData;
@@ -84,6 +85,7 @@ public class PlayerView implements Serializable {
     private final boolean passedAllTurns; // F9
     private final boolean passedUntilEndStepBeforeMyTurn; // F11
     private final boolean monarch;
+    private final List<String> designationNames = new ArrayList<>();
 
     public PlayerView(Player player, GameState state, Game game, UUID createdForPlayerId, UUID watcherUserId) {
         this.playerId = player.getId();
@@ -140,6 +142,10 @@ public class PlayerView implements Serializable {
                 if (emblem.getControllerId().equals(this.playerId)) {
                     commandList.add(new EmblemView(emblem));
                 }
+            } else if (commandObject instanceof Plane) {
+                Plane plane = (Plane) commandObject;
+                // Planes are universal and all players can see them.
+                commandList.add(new PlaneView(plane));
             } else if (commandObject instanceof Commander) {
                 Commander commander = (Commander) commandObject;
                 if (commander.getControllerId().equals(this.playerId)) {
@@ -164,6 +170,9 @@ public class PlayerView implements Serializable {
         this.passedUntilStackResolved = player.getPassedUntilStackResolved();
         this.passedUntilEndStepBeforeMyTurn = player.getPassedUntilEndStepBeforeMyTurn();
         this.monarch = player.getId().equals(game.getMonarchId());
+        for (Designation designation : player.getDesignations()) {
+            this.designationNames.add(designation.getName());
+        }
     }
 
     private boolean showInBattlefield(Permanent permanent, GameState state) {
@@ -303,6 +312,10 @@ public class PlayerView implements Serializable {
 
     public boolean isMonarch() {
         return monarch;
+    }
+
+    public List<String> getDesignationNames() {
+        return designationNames;
     }
 
 }

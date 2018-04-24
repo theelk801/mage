@@ -27,6 +27,7 @@
  */
 package mage.cards.c;
 
+import java.util.UUID;
 import mage.abilities.Ability;
 import mage.abilities.TriggeredAbilityImpl;
 import mage.abilities.effects.Effect;
@@ -49,8 +50,6 @@ import mage.game.stack.Spell;
 import mage.players.Player;
 import mage.target.TargetPlayer;
 import mage.target.targetpointer.FixedTarget;
-
-import java.util.UUID;
 
 /**
  * @author spjspj
@@ -152,7 +151,8 @@ class CurseOfVengeancePlayerLosesTriggeredAbility extends TriggeredAbilityImpl {
 
     @Override
     public boolean checkTrigger(GameEvent event, Game game) {
-        return game.getPermanent(this.getSourceId()).getAttachedTo().equals(event.getPlayerId());
+        Permanent sourceObject = game.getPermanentOrLKIBattlefield(this.getSourceId());
+        return sourceObject != null && sourceObject.getAttachedTo().equals(event.getPlayerId());
     }
 
     @Override
@@ -184,7 +184,7 @@ class CurseOfVengeanceDrawLifeEffect extends OneShotEffect {
         if (sourceObject != null && controller != null) {
             if (sourceObject.getCounters(game).containsKey(CounterType.SPITE)) {
                 controller.drawCards(sourceObject.getCounters(game).getCount(CounterType.SPITE), game);
-                controller.gainLife(sourceObject.getCounters(game).getCount(CounterType.SPITE), game);
+                controller.gainLife(sourceObject.getCounters(game).getCount(CounterType.SPITE), game, source);
             }
             return true;
         }

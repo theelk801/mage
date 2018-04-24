@@ -67,11 +67,11 @@ public class FreyaliseLlanowarsFury extends CardImpl {
 
         this.addAbility(new PlanswalkerEntersWithLoyalityCountersAbility(3));
 
-        // +2: Create a 1/1 green Elf Druid creature token with "{T}: Add {G} to your mana pool."
+        // +2: Create a 1/1 green Elf Druid creature token with "{T}: Add {G}."
         this.addAbility(new LoyaltyAbility(new CreateTokenEffect(new FreyaliseLlanowarsFuryToken()), 2));
         // -2: Destroy target artifact or enchantment.
         LoyaltyAbility loyaltyAbility = new LoyaltyAbility(new DestroyTargetEffect(), -2);
-        loyaltyAbility.addTarget(new TargetPermanent(StaticFilters.ARTIFACT_OR_ENCHANTMENT_PERMANENT));
+        loyaltyAbility.addTarget(new TargetPermanent(StaticFilters.FILTER_PERMANENT_ARTIFACT_OR_ENCHANTMENT));
         this.addAbility(loyaltyAbility);
         // -6: Draw a card for each green creature you control.
         this.addAbility(new LoyaltyAbility(new DrawCardSourceControllerEffect(new PermanentsOnBattlefieldCount(filterGreen)), -6));

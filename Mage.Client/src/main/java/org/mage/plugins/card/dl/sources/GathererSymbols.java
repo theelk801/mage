@@ -9,9 +9,11 @@ import com.google.common.collect.AbstractIterator;
 import java.io.File;
 import static java.lang.String.format;
 import java.util.Iterator;
+import mage.client.constants.Constants;
 import org.mage.plugins.card.dl.DownloadJob;
 import static org.mage.plugins.card.dl.DownloadJob.fromURL;
 import static org.mage.plugins.card.dl.DownloadJob.toFile;
+import static org.mage.plugins.card.utils.CardImageUtils.getImagesDir;
 
 /**
  * The class GathererSymbols.
@@ -23,9 +25,7 @@ public class GathererSymbols implements Iterable<DownloadJob> {
     //TODO chaos and planeswalker symbol
     //chaos: http://gatherer.wizards.com/Images/Symbols/chaos.gif
 
-    private static final String SYMBOLS_PATH = File.separator + "symbols";
-    private static final File DEFAULT_OUT_DIR = new File("plugins" + File.separator + "images" + SYMBOLS_PATH);
-    private static File outDir = DEFAULT_OUT_DIR;
+    private static File outDir;
 
     private static final String urlFmt = "http://gatherer.wizards.com/handlers/image.ashx?size=%1$s&name=%2$s&type=symbol";
 
@@ -38,11 +38,11 @@ public class GathererSymbols implements Iterable<DownloadJob> {
         "X", "S", "T", "Q", "C", "E"};
     private static final int minNumeric = 0, maxNumeric = 16;
 
-    public GathererSymbols(String path) {
-        if (path == null) {
-            useDefaultDir();
-        } else {
-            changeOutDir(path);
+    public GathererSymbols() {
+        outDir = new File(getImagesDir() + Constants.RESOURCE_PATH_SYMBOLS);
+
+        if (!outDir.exists()) {
+            outDir.mkdirs();
         }
     }
 
@@ -75,8 +75,9 @@ public class GathererSymbols implements Iterable<DownloadJob> {
                     File dst = new File(dir, symbol + ".gif");
 
                     /**
-                     * Handle a bug on Gatherer where a few symbols are missing at the large size.
-                     * Fall back to using the medium symbol for those cases.
+                     * Handle a bug on Gatherer where a few symbols are missing
+                     * at the large size. Fall back to using the medium symbol
+                     * for those cases.
                      */
                     int modSizeIndex = sizeIndex;
                     if (sizeIndex == 2) {
@@ -92,7 +93,7 @@ public class GathererSymbols implements Iterable<DownloadJob> {
                                 break;
 
                             default:
-                                // Nothing to do, symbol is available in the large size
+                            // Nothing to do, symbol is available in the large size
                         }
                     }
 
@@ -114,21 +115,5 @@ public class GathererSymbols implements Iterable<DownloadJob> {
                 }
             }
         };
-    }
-
-    private void changeOutDir(String path) {
-        File file = new File(path + SYMBOLS_PATH);
-        if (file.exists()) {
-            outDir = file;
-        } else {
-            file.mkdirs();
-            if (file.exists()) {
-                outDir = file;
-            }
-        }
-    }
-
-    private void useDefaultDir() {
-        outDir = DEFAULT_OUT_DIR;
     }
 }

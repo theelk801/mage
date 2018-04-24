@@ -27,8 +27,10 @@
  */
 package org.mage.test.cards.abilities.keywords;
 
+import mage.abilities.keyword.TrampleAbility;
 import mage.constants.PhaseStep;
 import mage.constants.Zone;
+import mage.counters.CounterType;
 import org.junit.Test;
 import org.mage.test.serverside.base.CardTestPlayerBase;
 
@@ -37,6 +39,27 @@ import org.mage.test.serverside.base.CardTestPlayerBase;
  * @author LevelX2
  */
 public class FlashbackTest extends CardTestPlayerBase {
+
+    @Test
+    public void testNormalWildHunger() {
+
+        addCard(Zone.BATTLEFIELD, playerA, "Mountain", 4);
+
+        // Target creature gets +3/+1 and gains trample until end of turn.
+        // Flashback {3}{R}
+        addCard(Zone.GRAVEYARD, playerA, "Wild Hunger");
+
+        addCard(Zone.BATTLEFIELD, playerA, "Silvercoat Lion", 1);
+
+        activateAbility(1, PhaseStep.PRECOMBAT_MAIN, playerA, "Flashback", "Silvercoat Lion");
+
+        setStopAt(1, PhaseStep.BEGIN_COMBAT);
+        execute();
+
+        assertPowerToughness(playerA, "Silvercoat Lion", 5, 3);
+        assertAbility(playerA, "Silvercoat Lion", TrampleAbility.getInstance(), true);
+        assertExileCount("Wild Hunger", 1);
+    }
 
     /**
      * Fracturing Gust is bugged. In a match against Affinity, it worked
@@ -218,7 +241,7 @@ public class FlashbackTest extends CardTestPlayerBase {
 
         // Conflagrate deals X damage divided as you choose among any number of target creatures and/or players.
         // Flashback-{R}{R}, Discard X cards.
-        addCard(Zone.HAND, playerA, "Conflagrate", 1);
+        addCard(Zone.HAND, playerA, "Conflagrate", 1); // Sorcery {X}{X}{R}
 
         addCard(Zone.HAND, playerA, "Forest", 4);
 
@@ -306,20 +329,26 @@ public class FlashbackTest extends CardTestPlayerBase {
     public void testAltarsReap() {
 
         addCard(Zone.LIBRARY, playerA, "Island", 2);
-        addCard(Zone.GRAVEYARD, playerA, "Altar's Reap", 1);
+        // As an additional cost to cast Altar's Reap, sacrifice a creature.
+        // Draw two cards.
+        addCard(Zone.GRAVEYARD, playerA, "Altar's Reap", 1); // Instant {1}{B}
         addCard(Zone.BATTLEFIELD, playerA, "Underground Sea", 4);
         addCard(Zone.HAND, playerA, "Snapcaster Mage", 1);
 
+        // Flash
+        // When Snapcaster Mage enters the battlefield, target instant or sorcery card in your graveyard gains flashback until end of turn.
+        // The flashback cost is equal to its mana cost.
         castSpell(1, PhaseStep.PRECOMBAT_MAIN, playerA, "Snapcaster Mage");
         setChoice(playerA, "Altar's Reap");
 
-        activateAbility(1, PhaseStep.POSTCOMBAT_MAIN, playerA, "Flashback {1}{B}");
+        activateAbility(1, PhaseStep.POSTCOMBAT_MAIN, playerA, "Flashback");
         setChoice(playerA, "Snapcaster Mage");
 
         setStopAt(1, PhaseStep.END_TURN);
         execute();
 
         assertGraveyardCount(playerA, "Snapcaster Mage", 1);
+        assertExileCount(playerA, "Altar's Reap", 1);
     }
 
     /**
@@ -511,5 +540,76 @@ public class FlashbackTest extends CardTestPlayerBase {
         assertGraveyardCount(playerA, memnite, 1);
         assertExileCount(playerA, dReturn, 1);
         assertPermanentCount(playerA, bSable, 1);
+    }
+
+    /**
+     * I can play Force of Will with flashback paying his alternative mana cost.
+     * The ruling say no to it, because we only can choose one alternative cost
+     * to a spell, and the flashback cost is already an alternative cost.
+     */
+    @Test
+    public void testSnapcasterMageSpellWithAlternateCost() {
+        addCard(Zone.BATTLEFIELD, playerA, "Island", 1);
+        addCard(Zone.BATTLEFIELD, playerA, "Forest", 1);
+        // When Snapcaster Mage enters the battlefield, target instant or sorcery card in your graveyard gains flashback until end of turn.
+        // The flashback cost is equal to its mana cost.
+        addCard(Zone.HAND, playerA, "Snapcaster Mage", 2); // Creature{1}{U}
+
+        // You may pay 1 life and exile a blue card from your hand rather than pay Force of Will's mana cost.
+        // Counter target spell.
+        addCard(Zone.GRAVEYARD, playerA, "Force of Will");
+
+        addCard(Zone.HAND, playerB, "Lightning Bolt", 1);
+        addCard(Zone.BATTLEFIELD, playerB, "Mountain", 1);
+
+        castSpell(1, PhaseStep.PRECOMBAT_MAIN, playerA, "Snapcaster Mage");
+        setChoice(playerA, "Force of Will");
+
+        castSpell(1, PhaseStep.POSTCOMBAT_MAIN, playerB, "Lightning Bolt", "Snapcaster Mage");
+        activateAbility(1, PhaseStep.POSTCOMBAT_MAIN, playerA, "Flashback", null, "Lightning Bolt");
+        addTarget(playerA, "Lightning Bolt");
+
+        setStopAt(1, PhaseStep.END_TURN);
+        execute();
+
+        assertPermanentCount(playerA, "Snapcaster Mage", 0);
+        assertGraveyardCount(playerA, "Snapcaster Mage", 1);
+
+        assertGraveyardCount(playerA, "Force of Will", 1);
+        assertGraveyardCount(playerB, "Lightning Bolt", 1);
+
+        assertLife(playerA, 20);
+
+    }
+
+    /**
+     * Test cost reduction with mixed flashback costs
+     */
+    @Test
+    public void testReduceMixedFlashbackCosts() {
+        addCard(Zone.BATTLEFIELD, playerA, "Island", 5);
+
+        // Whenever you cast an instant or sorcery spell with converted mana cost greater than the number of experience counters you have, you get an experience counter.
+        // Instant and sorcery spells you cast cost {1} less to cast for each experience counter you have.
+        addCard(Zone.BATTLEFIELD, playerA, "Mizzix of the Izmagnus");// 2/2
+
+        // Target player draws two cards.
+        // Flashback-{1}{U}, Pay 3 life.
+        addCard(Zone.HAND, playerA, "Deep Analysis"); // {3}{U}
+
+        castSpell(1, PhaseStep.PRECOMBAT_MAIN, playerA, "Deep Analysis");
+        activateAbility(1, PhaseStep.PRECOMBAT_MAIN, playerA, "Flashback");
+
+        setStopAt(1, PhaseStep.BEGIN_COMBAT);
+        execute();
+
+        assertGraveyardCount(playerA, "Deep Analysis", 0);
+        assertExileCount(playerA, "Deep Analysis", 1);
+        assertHandCount(playerA, 4);
+
+        assertCounterCount(playerA, CounterType.EXPERIENCE, 2);
+
+        assertLife(playerA, 17);
+
     }
 }

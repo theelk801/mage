@@ -27,6 +27,8 @@
  */
 package mage.view;
 
+import java.util.*;
+import java.util.stream.Collectors;
 import mage.MageObject;
 import mage.ObjectColor;
 import mage.abilities.Abilities;
@@ -51,8 +53,8 @@ import mage.target.Target;
 import mage.target.Targets;
 import mage.util.SubTypeList;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.gson.annotations.Expose;
+import mage.game.command.Plane;
 
 /**
  * @author BetaSteward_at_googlemail.com
@@ -62,11 +64,17 @@ public class CardView extends SimpleCardView {
     private static final long serialVersionUID = 1L;
 
     protected UUID parentId;
+    @Expose
     protected String name;
+    @Expose
     protected String displayName;
+    @Expose
     protected List<String> rules;
+    @Expose
     protected String power;
+    @Expose
     protected String toughness;
+    @Expose
     protected String loyalty = "";
     protected String startingLoyalty;
     protected EnumSet<CardType> cardTypes;
@@ -111,8 +119,8 @@ public class CardView extends SimpleCardView {
     protected ArtRect artRect = ArtRect.NORMAL;
 
     protected List<UUID> targets;
-
     protected UUID pairedCard;
+    protected List<UUID> bandedCards;
     protected boolean paid;
     protected List<CounterView> counters;
 
@@ -202,6 +210,7 @@ public class CardView extends SimpleCardView {
         this.targets = null;
 
         this.pairedCard = cardView.pairedCard;
+        this.bandedCards = null;
         this.paid = cardView.paid;
         this.counters = null;
 
@@ -352,11 +361,15 @@ public class CardView extends SimpleCardView {
             if (game != null) {
                 if (permanent.getCounters(game) != null && !permanent.getCounters(game).isEmpty()) {
                     this.loyalty = Integer.toString(permanent.getCounters(game).getCount(CounterType.LOYALTY));
-                    this.pairedCard = permanent.getPairedCard() != null ? permanent.getPairedCard().getSourceId() : null;
                     counters = new ArrayList<>();
                     for (Counter counter : permanent.getCounters(game).values()) {
                         counters.add(new CounterView(counter));
                     }
+                }
+                this.pairedCard = permanent.getPairedCard() != null ? permanent.getPairedCard().getSourceId() : null;
+                this.bandedCards = new ArrayList<>();
+                for (UUID bandedCard : permanent.getBandedCards()) {
+                    bandedCards.add(bandedCard);
                 }
                 if (!permanent.getControllerId().equals(permanent.getOwnerId())) {
                     controlledByOwner = false;
@@ -508,6 +521,14 @@ public class CardView extends SimpleCardView {
             Emblem emblem = (Emblem) object;
             this.rarity = Rarity.SPECIAL;
             this.rules = emblem.getAbilities().getRules(emblem.getName());
+        } else if (object instanceof Plane) {
+            this.mageObjectType = MageObjectType.PLANE;
+            Plane plane = (Plane) object;
+            this.rarity = Rarity.SPECIAL;
+            this.frameStyle = FrameStyle.M15_NORMAL;
+            // Display in landscape/rotated/on its side
+            this.rotate = true;
+            this.rules = plane.getAbilities().getRules(plane.getName());
         }
         if (this.rarity == null && object instanceof StackAbility) {
             StackAbility stackAbility = (StackAbility) object;
@@ -541,6 +562,21 @@ public class CardView extends SimpleCardView {
         // emblem images are always with common (black) symbol
         this.frameStyle = FrameStyle.M15_NORMAL;
         this.expansionSetCode = emblem.getExpansionSetCode();
+        this.rarity = Rarity.COMMON;
+    }
+
+    public CardView(PlaneView plane) {
+        this(true);
+        this.gameObject = true;
+        this.id = plane.getId();
+        this.mageObjectType = MageObjectType.PLANE;
+        this.name = plane.getName();
+        this.displayName = name;
+        this.rules = plane.getRules();
+        // Display the plane in landscape (similar to Fused cards)
+        this.rotate = true;
+        this.frameStyle = FrameStyle.M15_NORMAL;
+        this.expansionSetCode = plane.getExpansionSetCode();
         this.rarity = Rarity.COMMON;
     }
 
@@ -733,6 +769,9 @@ public class CardView extends SimpleCardView {
 
     @Override
     public String getExpansionSetCode() {
+        if (expansionSetCode == null) { 
+            expansionSetCode = "";
+        }
         return expansionSetCode;
     }
 
@@ -885,6 +924,10 @@ public class CardView extends SimpleCardView {
         return pairedCard;
     }
 
+    public List<UUID> getBandedCards() {
+        return bandedCards;
+    }
+
     public int getType() {
         return type;
     }
@@ -972,7 +1015,7 @@ public class CardView extends SimpleCardView {
     public String getColorText() {
 
         String color = getColor().getDescription();
-        return color.substring(0, 1).toUpperCase() + color.substring(1);
+        return color.substring(0, 1).toUpperCase(Locale.ENGLISH) + color.substring(1);
     }
 
     public String getTypeText() {

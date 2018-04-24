@@ -79,6 +79,7 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Boomerang", 56, Rarity.COMMON, mage.cards.b.Boomerang.class));
         cards.add(new SetCardInfo("Breathstealer", 7, Rarity.COMMON, mage.cards.b.Breathstealer.class));
         cards.add(new SetCardInfo("Brushwagg", 106, Rarity.RARE, mage.cards.b.Brushwagg.class));
+        cards.add(new SetCardInfo("Builder's Bane", 160, Rarity.COMMON, mage.cards.b.BuildersBane.class));
         cards.add(new SetCardInfo("Burning Palm Efreet", 161, Rarity.UNCOMMON, mage.cards.b.BurningPalmEfreet.class));
         cards.add(new SetCardInfo("Burning Shield Askari", 162, Rarity.COMMON, mage.cards.b.BurningShieldAskari.class));
         cards.add(new SetCardInfo("Cadaverous Bloom", 318, Rarity.RARE, mage.cards.c.CadaverousBloom.class));
@@ -105,6 +106,7 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Daring Apprentice", 60, Rarity.RARE, mage.cards.d.DaringApprentice.class));
         cards.add(new SetCardInfo("Dark Banishing", 13, Rarity.COMMON, mage.cards.d.DarkBanishing.class));
         cards.add(new SetCardInfo("Dark Ritual", 14, Rarity.COMMON, mage.cards.d.DarkRitual.class));
+        cards.add(new SetCardInfo("Dazzling Beauty", 212, Rarity.COMMON, mage.cards.d.DazzlingBeauty.class));
         cards.add(new SetCardInfo("Dirtwater Wraith", 15, Rarity.COMMON, mage.cards.d.DirtwaterWraith.class));
         cards.add(new SetCardInfo("Disempower", 213, Rarity.COMMON, mage.cards.d.Disempower.class));
         cards.add(new SetCardInfo("Disenchant", 214, Rarity.COMMON, mage.cards.d.Disenchant.class));
@@ -188,6 +190,7 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Jungle Troll", 329, Rarity.UNCOMMON, mage.cards.j.JungleTroll.class));
         cards.add(new SetCardInfo("Jungle Wurm", 122, Rarity.COMMON, mage.cards.j.JungleWurm.class));
         cards.add(new SetCardInfo("Kaervek's Hex", 28, Rarity.UNCOMMON, mage.cards.k.KaerveksHex.class));
+        cards.add(new SetCardInfo("Kaervek's Purge", 330, Rarity.UNCOMMON, mage.cards.k.KaerveksPurge.class));
         cards.add(new SetCardInfo("Kaervek's Torch", 185, Rarity.COMMON, mage.cards.k.KaerveksTorch.class));
         cards.add(new SetCardInfo("Karoo Meerkat", 123, Rarity.UNCOMMON, mage.cards.k.KarooMeerkat.class));
         cards.add(new SetCardInfo("Kukemssa Pirates", 71, Rarity.RARE, mage.cards.k.KukemssaPirates.class));
@@ -219,6 +222,7 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Mystical Tutor", 80, Rarity.UNCOMMON, mage.cards.m.MysticalTutor.class));
         cards.add(new SetCardInfo("Natural Balance", 129, Rarity.RARE, mage.cards.n.NaturalBalance.class));
         cards.add(new SetCardInfo("Nettletooth Djinn", 130, Rarity.UNCOMMON, mage.cards.n.NettletoothDjinn.class));
+        cards.add(new SetCardInfo("Noble Elephant", 234, Rarity.COMMON, mage.cards.n.NobleElephant.class));
         cards.add(new SetCardInfo("Nocturnal Raid", 30, Rarity.UNCOMMON, mage.cards.n.NocturnalRaid.class));
         cards.add(new SetCardInfo("Pacifism", 236, Rarity.COMMON, mage.cards.p.Pacifism.class));
         cards.add(new SetCardInfo("Painful Memories", 31, Rarity.UNCOMMON, mage.cards.p.PainfulMemories.class));
@@ -239,6 +243,7 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Prismatic Circle", 238, Rarity.COMMON, mage.cards.p.PrismaticCircle.class));
         cards.add(new SetCardInfo("Prismatic Lace", 84, Rarity.RARE, mage.cards.p.PrismaticLace.class));
         cards.add(new SetCardInfo("Psychic Transfer", 85, Rarity.RARE, mage.cards.p.PsychicTransfer.class));
+        cards.add(new SetCardInfo("Purgatory", 335, Rarity.RARE, mage.cards.p.Purgatory.class));
         cards.add(new SetCardInfo("Purraj of Urborg", 33, Rarity.RARE, mage.cards.p.PurrajOfUrborg.class));
         cards.add(new SetCardInfo("Quirion Elves", 132, Rarity.COMMON, mage.cards.q.QuirionElves.class));
         cards.add(new SetCardInfo("Radiant Essence", 336, Rarity.UNCOMMON, mage.cards.r.RadiantEssence.class));
@@ -278,6 +283,7 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Skulking Ghost", 41, Rarity.COMMON, mage.cards.s.SkulkingGhost.class));
         cards.add(new SetCardInfo("Sky Diamond", 284, Rarity.UNCOMMON, mage.cards.s.SkyDiamond.class));
         cards.add(new SetCardInfo("Soar", 93, Rarity.COMMON, mage.cards.s.Soar.class));
+        cards.add(new SetCardInfo("Soul Echo", 244, Rarity.RARE, mage.cards.s.SoulEcho.class));
         cards.add(new SetCardInfo("Soul Rend", 42, Rarity.UNCOMMON, mage.cards.s.SoulRend.class));
         cards.add(new SetCardInfo("Spectral Guardian", 245, Rarity.RARE, mage.cards.s.SpectralGuardian.class));
         cards.add(new SetCardInfo("Spirit of the Night", 44, Rarity.RARE, mage.cards.s.SpiritOfTheNight.class));
@@ -301,8 +307,10 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Telim'Tor", 197, Rarity.RARE, mage.cards.t.TelimTor.class));
         cards.add(new SetCardInfo("Telim'Tor's Darts", 286, Rarity.UNCOMMON, mage.cards.t.TelimTorsDarts.class));
         cards.add(new SetCardInfo("Telim'Tor's Edict", 198, Rarity.RARE, mage.cards.t.TelimTorsEdict.class));
+        cards.add(new SetCardInfo("Teremko Griffin", 247, Rarity.COMMON, mage.cards.t.TeremkoGriffin.class));
         cards.add(new SetCardInfo("Thirst", 99, Rarity.COMMON, mage.cards.t.Thirst.class));
         cards.add(new SetCardInfo("Tidal Wave", 100, Rarity.UNCOMMON, mage.cards.t.TidalWave.class));
+        cards.add(new SetCardInfo("Tombstone Stairwell", 47, Rarity.RARE, mage.cards.t.TombstoneStairwell.class));
         cards.add(new SetCardInfo("Tranquil Domain", 143, Rarity.COMMON, mage.cards.t.TranquilDomain.class));
         cards.add(new SetCardInfo("Tropical Storm", 144, Rarity.UNCOMMON, mage.cards.t.TropicalStorm.class));
         cards.add(new SetCardInfo("Uktabi Faerie", 145, Rarity.COMMON, mage.cards.u.UktabiFaerie.class));
@@ -332,6 +340,7 @@ public class Mirage extends ExpansionSet {
         cards.add(new SetCardInfo("Zhalfirin Commander", 253, Rarity.UNCOMMON, mage.cards.z.ZhalfirinCommander.class));
         cards.add(new SetCardInfo("Zhalfirin Knight", 254, Rarity.COMMON, mage.cards.z.ZhalfirinKnight.class));
         cards.add(new SetCardInfo("Zirilan of the Claw", 204, Rarity.RARE, mage.cards.z.ZirilanOfTheClaw.class));
+        cards.add(new SetCardInfo("Zombie Mob", 51, Rarity.UNCOMMON, mage.cards.z.ZombieMob.class));
         cards.add(new SetCardInfo("Zuberi, Golden Feather", 255, Rarity.RARE, mage.cards.z.ZuberiGoldenFeather.class));
     }
 }

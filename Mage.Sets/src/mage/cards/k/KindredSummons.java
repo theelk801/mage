@@ -34,20 +34,21 @@ import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.effects.OneShotEffect;
 import mage.abilities.effects.common.ChooseCreatureTypeEffect;
+import mage.cards.Card;
 import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
-import mage.cards.Card;
 import mage.cards.Cards;
 import mage.cards.CardsImpl;
 import mage.constants.CardType;
 import mage.constants.Outcome;
 import mage.constants.SubType;
 import mage.constants.Zone;
-import mage.filter.common.FilterControlledCreaturePermanent;
 import mage.filter.common.FilterCreatureCard;
+import mage.filter.common.FilterCreaturePermanent;
 import mage.filter.predicate.mageobject.SubtypePredicate;
 import mage.game.Game;
 import mage.players.Player;
+
 /**
  *
  * @author Saga
@@ -55,10 +56,10 @@ import mage.players.Player;
 public class KindredSummons extends CardImpl {
 
     public KindredSummons(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.INSTANT},"{5}{G}{G}");
+        super(ownerId, setInfo, new CardType[]{CardType.INSTANT}, "{5}{G}{G}");
 
-        // Choose a creature type. Reveal cards from the top of your library until you reveal X creature cards of the chosen type, 
-        // where X is the number of creatures you control of that type. Put those cards onto the battlefield, 
+        // Choose a creature type. Reveal cards from the top of your library until you reveal X creature cards of the chosen type,
+        // where X is the number of creatures you control of that type. Put those cards onto the battlefield,
         // then shuffle the rest of the revealed cards into your library.
         this.getSpellAbility().addEffect(new ChooseCreatureTypeEffect(Outcome.PutCreatureInPlay));
         this.getSpellAbility().addEffect(new KindredSummonsEffect());
@@ -78,8 +79,8 @@ class KindredSummonsEffect extends OneShotEffect {
 
     public KindredSummonsEffect() {
         super(Outcome.PutCreatureInPlay);
-        this.staticText = "Reveal cards from the top of your library until you reveal X creature cards of the chosen type, " +
-                "where X is the number of creatures you control of that type. Put those cards onto the battlefield, "
+        this.staticText = "Reveal cards from the top of your library until you reveal X creature cards of the chosen type, "
+                + "where X is the number of creatures you control of that type. Put those cards onto the battlefield, "
                 + "then shuffle the rest of the revealed cards into your library";
     }
 
@@ -97,15 +98,18 @@ class KindredSummonsEffect extends OneShotEffect {
         Player controller = game.getPlayer(source.getControllerId());
         MageObject sourceObject = source.getSourceObject(game);
         if (controller != null && sourceObject != null) {
-            String creatureType = game.getState().getValue(sourceObject.getId() + "_type").toString();
-            FilterControlledCreaturePermanent filterPermanent = new FilterControlledCreaturePermanent("creature you control of the chosen type");
-            filterPermanent.add(new SubtypePredicate(SubType.byDescription(creatureType)));
+            SubType subType = ChooseCreatureTypeEffect.getChoosenCreatureType(source.getSourceId(), game);
+            if (subType == null) {
+                return false;
+            }
+            FilterCreaturePermanent filterPermanent = new FilterCreaturePermanent("creature you control of the chosen type");
+            filterPermanent.add(new SubtypePredicate(subType));
             int numberOfCards = game.getBattlefield().countAll(filterPermanent, source.getControllerId(), game);
             Cards revealed = new CardsImpl();
             Set<Card> chosenSubtypeCreatureCards = new LinkedHashSet<>();
             Cards otherCards = new CardsImpl();
             FilterCreatureCard filterCard = new FilterCreatureCard("creature card of the chosen type");
-            filterCard.add(new SubtypePredicate(SubType.byDescription(creatureType)));
+            filterCard.add(new SubtypePredicate(subType));
             while (chosenSubtypeCreatureCards.size() < numberOfCards && controller.getLibrary().hasCards()) {
                 Card card = controller.getLibrary().removeFromTop(game);
                 revealed.add(card);
@@ -116,7 +120,7 @@ class KindredSummonsEffect extends OneShotEffect {
                 }
             }
             controller.revealCards(sourceObject.getIdName(), revealed, game);
-            controller.moveCards(chosenSubtypeCreatureCards, Zone.BATTLEFIELD, source, game, false, false, false, null);
+            controller.moveCards(chosenSubtypeCreatureCards, Zone.BATTLEFIELD, source, game);
             controller.putCardsOnTopOfLibrary(otherCards, game, source, false);
             controller.shuffleLibrary(source, game);
             return true;

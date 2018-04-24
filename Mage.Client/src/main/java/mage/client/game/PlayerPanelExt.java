@@ -76,7 +76,7 @@ import static mage.constants.Constants.MIN_AVATAR_ID;
 import mage.constants.ManaType;
 import mage.counters.Counter;
 import mage.counters.CounterType;
-import mage.remote.Session;
+import mage.designations.DesignationType;
 import mage.utils.timer.PriorityTimer;
 import mage.view.CardView;
 import mage.view.ManaPoolView;
@@ -92,12 +92,9 @@ public class PlayerPanelExt extends javax.swing.JPanel {
 
     private UUID playerId;
     private UUID gameId;
-    private Session session;
     private PlayerView player;
 
     private BigCard bigCard;
-
-    private static final int AVATAR_COUNT = 77;
 
     private static final String DEFAULT_AVATAR_PATH = "/avatars/" + DEFAULT_AVATAR_ID + ".jpg";
 
@@ -116,6 +113,7 @@ public class PlayerPanelExt extends javax.swing.JPanel {
     private int avatarId = -1;
     private String flagName;
     private String basicTooltipText;
+    private static final Map<UUID, Integer> playerLives = new HashMap<>();
 
     private PriorityTimer timer;
 
@@ -178,8 +176,32 @@ public class PlayerPanelExt extends javax.swing.JPanel {
 
     public void update(PlayerView player) {
         this.player = player;
-        updateAvatar();
+        int pastLife = player.getLife();
+        if (playerLives != null) {
+            if (playerLives.containsKey(player.getPlayerId())) {
+                pastLife = playerLives.get(player.getPlayerId());
+            }
+            playerLives.put(player.getPlayerId(), player.getLife());
+        }
         int playerLife = player.getLife();
+
+        boolean displayLife = "true".equals(MageFrame.getPreferences().get(PreferencesDialog.KEY_DISPLAY_LIVE_ON_AVATAR, "true"));
+        avatar.setCenterText(displayLife ? String.valueOf(playerLife) : null);
+
+        if (displayLife) {
+            if (playerLife != pastLife) {
+                if (playerLife > pastLife) {
+                    avatar.gainLifeDisplay();
+                } else if (playerLife < pastLife) {
+                    avatar.loseLifeDisplay();
+                }
+            } else if (playerLife == pastLife) {
+                avatar.stopLifeDisplay();
+            }
+        }
+
+        updateAvatar();
+
         if (playerLife > 99) {
             Font font = lifeLabel.getFont();
             font = font.deriveFont(9f);
@@ -333,11 +355,15 @@ public class PlayerPanelExt extends javax.swing.JPanel {
         }
         // Extend tooltip
         StringBuilder tooltipText = new StringBuilder(basicTooltipText);
+        this.avatar.setTopTextImageRight(null);
+        for (String name : player.getDesignationNames()) {
+            tooltipText.append("<br/>").append(name);
+            if (DesignationType.CITYS_BLESSING.toString().equals(name)) {
+                this.avatar.setTopTextImageRight(ImageHelper.getImageFromResources("/info/city_blessing.png"));
+            }
+        }
         if (player.isMonarch()) {
-            tooltipText.append("<br/>Monarch");
             this.avatar.setTopTextImageRight(ImageHelper.getImageFromResources("/info/crown.png"));
-        } else {
-            this.avatar.setTopTextImageRight(null);
         }
         for (Counter counter : player.getCounters().values()) {
             tooltipText.append("<br/>").append(counter.getName()).append(" counters: ").append(counter.getCount());
@@ -696,8 +722,6 @@ public class PlayerPanelExt extends javax.swing.JPanel {
                                         .addComponent(btnPlayer, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(timerLabel, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(avatar, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE))
-                                //                        .addGroup(gl_panelBackground.createSequentialGroup()
-                                //                                .addComponent(avatarFlag, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE))
                                 .addGap(8))
                         .addGroup(gl_panelBackground.createSequentialGroup()
                                 .addGap(6)
@@ -819,16 +843,12 @@ public class PlayerPanelExt extends javax.swing.JPanel {
     protected void sizePlayerPanel(boolean smallMode) {
         if (smallMode) {
             avatar.setVisible(false);
-//            avatarFlag.setVisible(false);
-//            monarchIcon.setVisible(false);
             btnPlayer.setVisible(true);
             timerLabel.setVisible(true);
             panelBackground.setPreferredSize(new Dimension(PANEL_WIDTH - 2, PANEL_HEIGHT_SMALL));
             panelBackground.setBounds(0, 0, PANEL_WIDTH - 2, PANEL_HEIGHT_SMALL);
         } else {
             avatar.setVisible(true);
-//            avatarFlag.setVisible(true);
-//            monarchIcon.setVisible(true);
             btnPlayer.setVisible(false);
             timerLabel.setVisible(false);
             panelBackground.setPreferredSize(new Dimension(PANEL_WIDTH - 2, PANEL_HEIGHT));
@@ -882,8 +902,6 @@ public class PlayerPanelExt extends javax.swing.JPanel {
     }
 
     private HoverButton avatar;
-//    private JLabel avatarFlag;
-//    private JLabel monarchIcon;
     private JButton btnPlayer;
     private ImagePanel life;
     private ImagePanel poison;
@@ -913,7 +931,6 @@ public class PlayerPanelExt extends javax.swing.JPanel {
     private JPanel energyExperiencePanel;
     private HoverButton exileZone;
     private HoverButton commandZone;
-    private HoverButton enchantPlayerViewZone;
 
     private final Map<String, JLabel> manaLabels = new HashMap<>();
 }

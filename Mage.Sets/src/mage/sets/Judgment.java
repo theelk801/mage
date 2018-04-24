@@ -100,6 +100,7 @@ public class Judgment extends ExpansionSet {
         cards.add(new SetCardInfo("Flash of Insight", 40, Rarity.UNCOMMON, mage.cards.f.FlashOfInsight.class));
         cards.add(new SetCardInfo("Fledgling Dragon", 90, Rarity.RARE, mage.cards.f.FledglingDragon.class));
         cards.add(new SetCardInfo("Folk Medicine", 115, Rarity.COMMON, mage.cards.f.FolkMedicine.class));
+        cards.add(new SetCardInfo("Forcemage Advocate", 116, Rarity.UNCOMMON, mage.cards.f.ForcemageAdvocate.class));
         cards.add(new SetCardInfo("Funeral Pyre", 10, Rarity.COMMON, mage.cards.f.FuneralPyre.class));
         cards.add(new SetCardInfo("Genesis", 117, Rarity.RARE, mage.cards.g.Genesis.class));
         cards.add(new SetCardInfo("Giant Warthog", 118, Rarity.COMMON, mage.cards.g.GiantWarthog.class));
@@ -129,6 +130,7 @@ public class Judgment extends ExpansionSet {
         cards.add(new SetCardInfo("Mirari's Wake", 139, Rarity.RARE, mage.cards.m.MirarisWake.class));
         cards.add(new SetCardInfo("Mirror Wall", 47, Rarity.COMMON, mage.cards.m.MirrorWall.class));
         cards.add(new SetCardInfo("Mist of Stagnation", 48, Rarity.RARE, mage.cards.m.MistOfStagnation.class));
+        cards.add(new SetCardInfo("Morality Shift", 70, Rarity.RARE, mage.cards.m.MoralityShift.class));
         cards.add(new SetCardInfo("Nantuko Monastery", 142, Rarity.UNCOMMON, mage.cards.n.NantukoMonastery.class));
         cards.add(new SetCardInfo("Nantuko Tracer", 125, Rarity.COMMON, mage.cards.n.NantukoTracer.class));
         cards.add(new SetCardInfo("Nomad Mythmaker", 15, Rarity.RARE, mage.cards.n.NomadMythmaker.class));
@@ -147,6 +149,7 @@ public class Judgment extends ExpansionSet {
         cards.add(new SetCardInfo("Riftstone Portal", 143, Rarity.UNCOMMON, mage.cards.r.RiftstonePortal.class));
         cards.add(new SetCardInfo("Scalpelexis", 50, Rarity.RARE, mage.cards.s.Scalpelexis.class));
         cards.add(new SetCardInfo("Seedtime", 130, Rarity.RARE, mage.cards.s.Seedtime.class));
+        cards.add(new SetCardInfo("Shieldmage Advocate", 22, Rarity.COMMON, mage.cards.s.ShieldmageAdvocate.class));
         cards.add(new SetCardInfo("Silver Seraph", 23, Rarity.RARE, mage.cards.s.SilverSeraph.class));
         cards.add(new SetCardInfo("Solitary Confinement", 24, Rarity.RARE, mage.cards.s.SolitaryConfinement.class));
         cards.add(new SetCardInfo("Soulcatchers' Aerie", 25, Rarity.UNCOMMON, mage.cards.s.SoulcatchersAerie.class));
@@ -161,9 +164,11 @@ public class Judgment extends ExpansionSet {
         cards.add(new SetCardInfo("Swelter", 101, Rarity.UNCOMMON, mage.cards.s.Swelter.class));
         cards.add(new SetCardInfo("Swirling Sandstorm", 102, Rarity.COMMON, mage.cards.s.SwirlingSandstorm.class));
         cards.add(new SetCardInfo("Sylvan Safekeeper", 133, Rarity.RARE, mage.cards.s.SylvanSafekeeper.class));
+        cards.add(new SetCardInfo("Telekinetic Bonds", 52, Rarity.RARE, mage.cards.t.TelekineticBonds.class));
         cards.add(new SetCardInfo("Test of Endurance", 29, Rarity.RARE, mage.cards.t.TestOfEndurance.class));
         cards.add(new SetCardInfo("Thriss, Nantuko Primus", 134, Rarity.RARE, mage.cards.t.ThrissNantukoPrimus.class));
         cards.add(new SetCardInfo("Toxic Stench", 74, Rarity.COMMON, mage.cards.t.ToxicStench.class));
+        cards.add(new SetCardInfo("Trained Pronghorn", 30, Rarity.COMMON, mage.cards.t.TrainedPronghorn.class));
         cards.add(new SetCardInfo("Treacherous Vampire", 75, Rarity.UNCOMMON, mage.cards.t.TreacherousVampire.class));
         cards.add(new SetCardInfo("Treacherous Werewolf", 76, Rarity.COMMON, mage.cards.t.TreacherousWerewolf.class));
         cards.add(new SetCardInfo("Tunneler Wurm", 135, Rarity.UNCOMMON, mage.cards.t.TunnelerWurm.class));
@@ -176,5 +181,7 @@ public class Judgment extends ExpansionSet {
         cards.add(new SetCardInfo("Worldgorger Dragon", 103, Rarity.RARE, mage.cards.w.WorldgorgerDragon.class));
         cards.add(new SetCardInfo("Wormfang Drake", 57, Rarity.COMMON, mage.cards.w.WormfangDrake.class));
         cards.add(new SetCardInfo("Wormfang Manta", 58, Rarity.RARE, mage.cards.w.WormfangManta.class));
+        cards.add(new SetCardInfo("Wormfang Newt", 59, Rarity.COMMON, mage.cards.w.WormfangNewt.class));
+        cards.add(new SetCardInfo("Wormfang Turtle", 60, Rarity.UNCOMMON, mage.cards.w.WormfangTurtle.class));
     }
 }

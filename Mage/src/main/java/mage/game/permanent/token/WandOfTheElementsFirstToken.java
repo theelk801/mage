@@ -25,26 +25,35 @@
 * authors and should not be interpreted as representing official policies, either expressed
 * or implied, of BetaSteward_at_googlemail.com.
  */
-
 package mage.game.permanent.token;
-import mage.constants.CardType;
-import mage.constants.SubType;
+
 import mage.MageInt;
 import mage.abilities.keyword.FlyingAbility;
+import mage.constants.CardType;
+import mage.constants.SubType;
 
 /**
  *
  * @author spjspj
  */
-public class WandOfTheElementsFirstToken extends Token {
+public class WandOfTheElementsFirstToken extends TokenImpl {
 
     public WandOfTheElementsFirstToken() {
         super("Elemental", "2/2 blue Elemental creature token with flying");
+        setTokenType(1);
         cardType.add(CardType.CREATURE);
         this.subtype.add(SubType.ELEMENTAL);
         this.color.setBlue(true);
         power = new MageInt(2);
         toughness = new MageInt(2);
         this.addAbility(FlyingAbility.getInstance());
+    }
+
+    public WandOfTheElementsFirstToken(final WandOfTheElementsFirstToken token) {
+        super(token);
+    }
+
+    public WandOfTheElementsFirstToken copy() {
+        return new WandOfTheElementsFirstToken(this);
     }
 }

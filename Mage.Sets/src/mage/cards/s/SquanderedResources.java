@@ -65,7 +65,7 @@ public class SquanderedResources extends CardImpl {
     public SquanderedResources(UUID ownerId, CardSetInfo setInfo) {
         super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{B}{G}");
 
-        // Sacrifice a land: Add to your mana pool one mana of any type the sacrificed land could produce.
+        // Sacrifice a land: Add one mana of any type the sacrificed land could produce.
         this.addAbility(new SimpleManaAbility(Zone.BATTLEFIELD, new SquanderedResourcesEffect(), new SacrificeTargetCost(new TargetControlledPermanent(filter))));
     }
 
@@ -89,7 +89,7 @@ class SquanderedResourcesEffect extends ManaEffect {
 
     public SquanderedResourcesEffect() {
         super();
-        staticText = "Add to your mana pool one mana of any type the sacrificed land could produce";
+        staticText = "Add one mana of any type the sacrificed land could produce";
     }
 
     public SquanderedResourcesEffect(final SquanderedResourcesEffect effect) {
@@ -134,35 +134,34 @@ class SquanderedResourcesEffect extends ManaEffect {
             if (choice.getChoices().size() == 1) {
                 choice.setChoice(choice.getChoices().iterator().next());
             } else {
-                player.choose(outcome, choice, game);
-            }
-            if (choice.getChoice() != null) {
-                Mana mana = new Mana();
-                switch (choice.getChoice()) {
-                    case "Black":
-                        mana.setBlack(1);
-                        break;
-                    case "Blue":
-                        mana.setBlue(1);
-                        break;
-                    case "Red":
-                        mana.setRed(1);
-                        break;
-                    case "Green":
-                        mana.setGreen(1);
-                        break;
-                    case "White":
-                        mana.setWhite(1);
-                        break;
-                    case "Colorless":
-                        mana.setColorless(1);
-                        break;
+                if (!player.choose(outcome, choice, game)) {
+                    return false;
                 }
-                checkToFirePossibleEvents(mana, game, source);
-                player.getManaPool().addMana(mana, game, source);
-                return true;
             }
-            return false;
+            Mana mana = new Mana();
+            switch (choice.getChoice()) {
+                case "Black":
+                    mana.setBlack(1);
+                    break;
+                case "Blue":
+                    mana.setBlue(1);
+                    break;
+                case "Red":
+                    mana.setRed(1);
+                    break;
+                case "Green":
+                    mana.setGreen(1);
+                    break;
+                case "White":
+                    mana.setWhite(1);
+                    break;
+                case "Colorless":
+                    mana.setColorless(1);
+                    break;
+            }
+            checkToFirePossibleEvents(mana, game, source);
+            player.getManaPool().addMana(mana, game, source);
+
         }
         return true;
     }

@@ -41,8 +41,8 @@ import mage.cards.CardSetInfo;
 import mage.choices.Choice;
 import mage.choices.ChoiceImpl;
 import mage.constants.CardType;
-import mage.constants.SubType;
 import mage.constants.Outcome;
+import mage.constants.SubType;
 import mage.constants.Zone;
 import mage.game.Game;
 import mage.game.permanent.Permanent;
@@ -56,14 +56,14 @@ import mage.target.common.TargetCardInLibrary;
 public class SphinxAmbassador extends CardImpl {
 
     public SphinxAmbassador(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.CREATURE},"{5}{U}{U}");
+        super(ownerId, setInfo, new CardType[]{CardType.CREATURE}, "{5}{U}{U}");
         this.subtype.add(SubType.SPHINX);
 
         this.power = new MageInt(5);
         this.toughness = new MageInt(5);
 
         this.addAbility(FlyingAbility.getInstance());
-        // Whenever Sphinx Ambassador deals combat damage to a player, search that player's library for a card, then that player names a card. If you searched for a creature card that isn't the named card, you may put it onto the battlefield under your control. Then that player shuffles his or her library.
+        // Whenever Sphinx Ambassador deals combat damage to a player, search that player's library for a card, then that player names a card. If you searched for a creature card that isn't the named card, you may put it onto the battlefield under your control. Then that player shuffles their library.
         this.addAbility(new DealsCombatDamageToAPlayerTriggeredAbility(new SphinxAmbassadorEffect(), false, true));
     }
 
@@ -81,7 +81,7 @@ class SphinxAmbassadorEffect extends OneShotEffect {
 
     public SphinxAmbassadorEffect() {
         super(Outcome.PutCreatureInPlay);
-        this.staticText = "search that player's library for a card, then that player names a card. If you searched for a creature card that isn't the named card, you may put it onto the battlefield under your control. Then that player shuffles his or her library";
+        this.staticText = "search that player's library for a card, then that player names a card. If you searched for a creature card that isn't the named card, you may put it onto the battlefield under your control. Then that player shuffles their library";
     }
 
     public SphinxAmbassadorEffect(final SphinxAmbassadorEffect effect) {
@@ -115,16 +115,14 @@ class SphinxAmbassadorEffect extends OneShotEffect {
                 Choice cardChoice = new ChoiceImpl();
                 cardChoice.setChoices(choices);
                 cardChoice.clearChoice();
-                while (!targetPlayer.choose(Outcome.Benefit, cardChoice, game)) {
-                    if (!targetPlayer.canRespond()) {
-                        return false;
-                    }
+                if (!targetPlayer.choose(Outcome.Benefit, cardChoice, game)) {
+                    return false;
                 }
                 String cardName = cardChoice.getChoice();
 
-                game.informPlayers(new StringBuilder(sourcePermanent.getName()).append(", named card: [").append(cardName).append(']').toString());
+                game.informPlayers(sourcePermanent.getName() + ", named card: [" + cardName + ']');
                 if (!card.getName().equals(cardName) && card.isCreature()) {
-                    if (controller.chooseUse(outcome, new StringBuilder("Put ").append(card.getName()).append(" onto the battlefield?").toString(), source, game)) {
+                    if (controller.chooseUse(outcome, "Put " + card.getName() + " onto the battlefield?", source, game)) {
                         controller.moveCards(card, Zone.BATTLEFIELD, source, game);
                     }
                 }

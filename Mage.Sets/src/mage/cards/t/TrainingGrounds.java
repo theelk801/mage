@@ -57,8 +57,9 @@ import mage.util.CardUtil;
 public class TrainingGrounds extends CardImpl {
 
     public TrainingGrounds(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.ENCHANTMENT},"{U}");
+        super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{U}");
 
+        // Activated abilities of creatures you control cost up to {2} less to activate. This effect can't reduce the amount of mana an ability costs to activate to less than one mana.
         this.addAbility(new SimpleStaticAbility(Zone.BATTLEFIELD, new TrainingGroundsEffect()));
     }
 
@@ -107,13 +108,15 @@ class TrainingGroundsEffect extends CostModificationEffectImpl {
                 }
                 choice.setChoices(set);
                 choice.setMessage("Reduce ability cost");
-                if (controller.choose(Outcome.Benefit, choice, game)) {
-                    int reduce = Integer.parseInt(choice.getChoice());
-                    CardUtil.reduceCost(abilityToModify, reduce);
+                if (!controller.choose(Outcome.Benefit, choice, game)) {
+                    return false;
                 }
+                int reduce = Integer.parseInt(choice.getChoice());
+                CardUtil.reduceCost(abilityToModify, reduce);
             }
             return true;
         }
+
         return false;
     }
 

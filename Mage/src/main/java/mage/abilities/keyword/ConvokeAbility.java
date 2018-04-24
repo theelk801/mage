@@ -29,6 +29,7 @@ package mage.abilities.keyword;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import mage.Mana;
 import mage.ObjectColor;
@@ -212,11 +213,8 @@ class ConvokeEffect extends OneShotEffect {
                         if (chooseManaType.getChoices().size() > 1) {
                             chooseManaType.getChoices().add("Colorless");
                             chooseManaType.setMessage("Choose mana color to reduce from " + perm.getName());
-                            while (!chooseManaType.isChosen()) {
-                                controller.choose(Outcome.Benefit, chooseManaType, game);
-                                if (!controller.canRespond()) {
-                                    return false;
-                                }
+                            if (!controller.choose(Outcome.Benefit, chooseManaType, game)) {
+                                return false;
                             }
                         } else {
                             chooseManaType.setChoice(chooseManaType.getChoices().iterator().next());
@@ -245,15 +243,13 @@ class ConvokeEffect extends OneShotEffect {
                             manaPool.addMana(Mana.ColorlessMana(1), game, source);
                             manaPool.unlockManaType(ManaType.COLORLESS);
                         }
-                        manaName = chooseManaType.getChoice().toLowerCase();
+                        manaName = chooseManaType.getChoice().toLowerCase(Locale.ENGLISH);
                     } else {
                         manaPool.addMana(Mana.ColorlessMana(1), game, source);
                         manaPool.unlockManaType(ManaType.COLORLESS);
                         manaName = "colorless";
                     }
-                    if (!game.isSimulation()) {
-                        game.informPlayers("Convoke: " + controller.getLogName() + " taps " + perm.getLogName() + " to pay one " + manaName + " mana");
-                    }
+                    game.informPlayers("Convoke: " + controller.getLogName() + " taps " + perm.getLogName() + " to pay one " + manaName + " mana");
                 }
 
             }

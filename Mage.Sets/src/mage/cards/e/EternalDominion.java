@@ -53,14 +53,15 @@ import mage.target.common.TargetOpponent;
 public class EternalDominion extends CardImpl {
 
     public EternalDominion(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.SORCERY},"{7}{U}{U}{U}");
+        super(ownerId, setInfo, new CardType[]{CardType.SORCERY}, "{7}{U}{U}{U}");
 
         // Search target opponent's library for an artifact, creature, enchantment, or land card.
-        // Put that card onto the battlefield under your control. Then that player shuffles his or her library.
+        // Put that card onto the battlefield under your control. Then that player shuffles their library.
         this.getSpellAbility().addEffect(new EternalDominionEffect());
         this.getSpellAbility().addTarget(new TargetOpponent());
 
-        // Epic
+        // Epic (For the rest of the game, you can't cast spells. At the beginning of each of your upkeeps
+        // for the rest of the game, copy this spell except for its epic ability. If the spell has targets, you may choose new targets for the copy)
         this.getSpellAbility().addEffect(new EpicEffect());
 
     }
@@ -88,7 +89,7 @@ class EternalDominionEffect extends OneShotEffect {
 
     public EternalDominionEffect() {
         super(Outcome.Benefit);
-        staticText = "Search target opponent's library for an artifact, creature, enchantment, or land card. Put that card onto the battlefield under your control. Then that player shuffles his or her library";
+        staticText = "Search target opponent's library for an artifact, creature, enchantment, or land card. Put that card onto the battlefield under your control. Then that player shuffles their library";
     }
 
     public EternalDominionEffect(final EternalDominionEffect effect) {

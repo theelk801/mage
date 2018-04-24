@@ -37,7 +37,7 @@ import mage.cards.CardSetInfo;
 import mage.constants.CardType;
 import mage.constants.SubType;
 import mage.constants.Zone;
-import mage.filter.common.FilterCreatureCard;
+import mage.filter.StaticFilters;
 import mage.filter.common.FilterLandPermanent;
 import mage.filter.predicate.mageobject.SubtypePredicate;
 import mage.game.Game;
@@ -48,18 +48,18 @@ import mage.target.common.TargetCardInYourGraveyard;
 /**
  *
  * @author North
- * @author LevelX - changed to checkInterveningIfClause 
+ * @author LevelX - changed to checkInterveningIfClause
  */
 public class EmeriaTheSkyRuin extends CardImpl {
 
     public EmeriaTheSkyRuin(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.LAND},"");
+        super(ownerId, setInfo, new CardType[]{CardType.LAND}, "");
 
         // Emeria, the Sky Ruin enters the battlefield tapped.
         this.addAbility(new EntersBattlefieldTappedAbility());
         // At the beginning of your upkeep, if you control seven or more Plains, you may return target creature card from your graveyard to the battlefield.
         this.addAbility(new EmeriaTheSkyRuinTriggeredAbility());
-        // {tap}: Add {W} to your mana pool.
+        // {tap}: Add {W}.
         this.addAbility(new WhiteManaAbility());
     }
 
@@ -83,7 +83,7 @@ class EmeriaTheSkyRuinTriggeredAbility extends TriggeredAbilityImpl {
 
     public EmeriaTheSkyRuinTriggeredAbility() {
         super(Zone.BATTLEFIELD, new ReturnFromGraveyardToBattlefieldTargetEffect(), true);
-        this.addTarget(new TargetCardInYourGraveyard(new FilterCreatureCard("creature card from your graveyard")));
+        this.addTarget(new TargetCardInYourGraveyard(StaticFilters.FILTER_CARD_CREATURE_YOUR_GRAVEYARD));
     }
 
     public EmeriaTheSkyRuinTriggeredAbility(final EmeriaTheSkyRuinTriggeredAbility ability) {
@@ -107,7 +107,7 @@ class EmeriaTheSkyRuinTriggeredAbility extends TriggeredAbilityImpl {
 
     @Override
     public boolean checkInterveningIfClause(Game game) {
-    return game.getBattlefield().countAll(filter, this.controllerId, game) >= 7;
+        return game.getBattlefield().countAll(filter, this.controllerId, game) >= 7;
     }
 
     @Override

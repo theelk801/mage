@@ -27,8 +27,6 @@
  */
 package mage.cards.m;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import mage.abilities.Ability;
 import mage.abilities.common.BeginningOfUpkeepTriggeredAbility;
@@ -60,7 +58,7 @@ public class MistOfStagnation extends CardImpl {
         // Permanents don't untap during their controllers' untap steps.
         this.addAbility(new SimpleStaticAbility(Zone.BATTLEFIELD, new DontUntapInControllersUntapStepAllEffect(Duration.WhileOnBattlefield, TargetController.ANY, new FilterPermanent("permanents"))));
 
-        // At the beginning of each player's upkeep, that player chooses a permanent for each card in his or her graveyard, then untaps those permanents.
+        // At the beginning of each player's upkeep, that player chooses a permanent for each card in their graveyard, then untaps those permanents.
         this.addAbility(new BeginningOfUpkeepTriggeredAbility(new MistOfStagnationEffect(), TargetController.ANY, false));
     }
 
@@ -78,7 +76,7 @@ class MistOfStagnationEffect extends OneShotEffect {
 
     MistOfStagnationEffect() {
         super(Outcome.Benefit);
-        this.staticText = "that player chooses a permanent for each card in his or her graveyard, then untaps those permanents";
+        this.staticText = "that player chooses a permanent for each card in their graveyard, then untaps those permanents";
     }
 
     MistOfStagnationEffect(final MistOfStagnationEffect effect) {
@@ -96,23 +94,16 @@ class MistOfStagnationEffect extends OneShotEffect {
         if (activePlayer != null) {
             int cardsInGrave = activePlayer.getGraveyard().size();
             if (cardsInGrave > 0) {
-                Set<TargetPermanent> targets = new HashSet<>();
-                for (int i = 1; 1 <= cardsInGrave; i++) {
-                    TargetPermanent target = new TargetPermanent(1, 1, new FilterPermanent(), true);
-                    target.setTargetController(activePlayer.getId());
-                    target.setTargetController(activePlayer.getId());
-                    if (target.canChoose(source.getSourceId(), activePlayer.getId(), game) && activePlayer.chooseTarget(Outcome.Untap, target, source, game)) {
-                        targets.add(target);
-                    }
-                }
-                for (TargetPermanent target : targets) {
-                    Permanent p = game.getPermanent(target.getFirstTarget());
+                TargetPermanent target = new TargetPermanent(cardsInGrave, cardsInGrave, new FilterPermanent("permanents to untap"), true);
+                activePlayer.chooseTarget(outcome, target, source, game);
+                for (UUID oneTarget : target.getTargets()) {
+                    Permanent p = game.getPermanent(oneTarget);
                     if (p != null) {
                         p.untap(game);
                     }
                 }
-                return true;
             }
+            return true;
         }
         return false;
     }

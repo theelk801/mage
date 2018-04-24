@@ -65,13 +65,13 @@ public class SarkhanUnbroken extends CardImpl {
     }
 
     public SarkhanUnbroken(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.PLANESWALKER},"{2}{G}{U}{R}");
+        super(ownerId, setInfo, new CardType[]{CardType.PLANESWALKER}, "{2}{G}{U}{R}");
         this.addSuperType(SuperType.LEGENDARY);
         this.subtype.add(SubType.SARKHAN);
 
         this.addAbility(new PlanswalkerEntersWithLoyalityCountersAbility(4));
 
-        // +1: Draw a card, then add one mana of any color to your mana pool.
+        // +1: Draw a card, then add one mana of any color.
         this.addAbility(new LoyaltyAbility(new SarkhanUnbrokenAbility1(), 1));
         // -2: Create a 4/4 red Dragon creature token with flying.
         this.addAbility(new LoyaltyAbility(new CreateTokenEffect(new DragonToken(), 1), -2));
@@ -93,7 +93,7 @@ class SarkhanUnbrokenAbility1 extends OneShotEffect {
 
     public SarkhanUnbrokenAbility1() {
         super(Outcome.Benefit);
-        this.staticText = "Draw a card, then add one mana of any color to your mana pool.";
+        this.staticText = "Draw a card, then add one mana of any color.";
     }
 
     public SarkhanUnbrokenAbility1(final SarkhanUnbrokenAbility1 effect) {
@@ -125,13 +125,9 @@ class SarkhanUnbrokenAbility1 extends OneShotEffect {
             manaChoice.setMessage("Select color of mana to add");
 
             Mana mana = new Mana();
-
-            controller.choose(Outcome.Benefit, manaChoice, game);
-
-            if (manaChoice.getChoice() == null) {
+            if (!controller.choose(Outcome.Benefit, manaChoice, game)) {
                 return false;
             }
-
             switch (manaChoice.getChoice()) {
                 case "White":
                     mana.increaseWhite();

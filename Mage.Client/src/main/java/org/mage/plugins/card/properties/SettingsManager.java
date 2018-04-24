@@ -6,19 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
-import org.mage.plugins.card.constants.Constants;
+import mage.client.constants.Constants;
 
 public class SettingsManager {
 
     private static SettingsManager settingsManager = null;
 
-    public static SettingsManager getIntance() {
+    public static synchronized SettingsManager getIntance() {
         if (settingsManager == null) {
-            synchronized (SettingsManager.class) {
-                if (settingsManager == null) {
-                    settingsManager = new SettingsManager();
-                }
-            }
+            settingsManager = new SettingsManager();
         }
         return settingsManager;
     }

@@ -27,6 +27,7 @@
  */
 package mage.cards.c;
 
+import java.util.UUID;
 import mage.Mana;
 import mage.abilities.Ability;
 import mage.abilities.TriggeredAbilityImpl;
@@ -47,8 +48,6 @@ import mage.game.events.GameEvent.EventType;
 import mage.players.Player;
 import mage.target.common.TargetOpponent;
 
-import java.util.UUID;
-
 /**
  *
  * @author Plopman
@@ -58,7 +57,7 @@ public class CarpetOfFlowers extends CardImpl {
     public CarpetOfFlowers(UUID ownerId, CardSetInfo setInfo) {
         super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{G}");
 
-        // At the beginning of each of your main phases, if you haven't added mana to your mana pool with this ability this turn, you may add up to X mana of any one color to your mana pool, where X is the number of Islands target opponent controls.
+        // At the beginning of each of your main phases, if you haven't added mana with this ability this turn, you may add up to X mana of any one color, where X is the number of Islands target opponent controls.
         this.addAbility(new CarpetOfFlowersTriggeredAbility());
     }
 
@@ -125,7 +124,7 @@ class CarpetOfFlowersTriggeredAbility extends TriggeredAbilityImpl {
 
     @Override
     public String getRule() {
-        StringBuilder sb = new StringBuilder("At the beginning of each of your main phases, if you haven't added mana to your mana pool with this ability this turn");
+        StringBuilder sb = new StringBuilder("At the beginning of each of your main phases, if you haven't added mana with this ability this turn");
         return sb.append(super.getRule()).toString();
     }
 
@@ -142,7 +141,7 @@ class CarpetOfFlowersEffect extends ManaEffect {
 
     CarpetOfFlowersEffect() {
         super();
-        staticText = "add X mana of any one color to your mana pool, where X is the number of Islands target opponent controls";
+        staticText = "add X mana of any one color, where X is the number of Islands target opponent controls";
     }
 
     CarpetOfFlowersEffect(final CarpetOfFlowersEffect effect) {
@@ -152,14 +151,8 @@ class CarpetOfFlowersEffect extends ManaEffect {
     @Override
     public boolean apply(Game game, Ability source) {
         Player controller = game.getPlayer(source.getControllerId());
-        if (controller != null) {
-            ChoiceColor choice = new ChoiceColor();
-            while (!choice.isChosen()) {
-                controller.choose(Outcome.Benefit, choice, game);
-                if (!controller.canRespond()) {
-                    return false;
-                }
-            }
+        ChoiceColor choice = new ChoiceColor();
+        if (controller != null && controller.choose(Outcome.Benefit, choice, game)) {
             int count = game.getBattlefield().count(filter, source.getSourceId(), source.getTargets().getFirstTarget(), game);
             if (count > 0) {
                 Mana mana = new Mana();

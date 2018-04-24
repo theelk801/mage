@@ -27,9 +27,15 @@
  */
 package mage.cards.t;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import mage.abilities.Ability;
 import mage.abilities.common.BeginningOfUpkeepTriggeredAbility;
 import mage.abilities.effects.OneShotEffect;
+import mage.abilities.effects.common.PhaseOutAllEffect;
 import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
 import mage.choices.Choice;
@@ -44,10 +50,6 @@ import mage.game.Game;
 import mage.game.permanent.Permanent;
 import mage.players.Player;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 /**
  *
  * @author LevelX2
@@ -55,7 +57,7 @@ import java.util.UUID;
 public class TeferisRealm extends CardImpl {
 
     public TeferisRealm(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.ENCHANTMENT},"{1}{U}{U}");
+        super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{1}{U}{U}");
         addSuperType(SuperType.WORLD);
 
         // At the beginning of each player's upkeep, that player chooses artifact, creature, land, or non-Aura enchantment. All nontoken permanents of that type phase out.
@@ -109,10 +111,8 @@ class TeferisRealmEffect extends OneShotEffect {
             Choice choiceImpl = new ChoiceImpl(true);
             choiceImpl.setMessage("Phase out which kind of permanents?");
             choiceImpl.setChoices(choices);
-            while (!player.choose(outcome, choiceImpl, game)) {
-                if (!player.canRespond()) {
-                    return false;
-                }
+            if (!player.choose(outcome, choiceImpl, game)) {
+                return false;
             }
             String choosenType = choiceImpl.getChoice();
             FilterPermanent filter = new FilterPermanent();
@@ -135,10 +135,11 @@ class TeferisRealmEffect extends OneShotEffect {
                     return false;
             }
             game.informPlayers(player.getLogName() + " chooses " + choosenType + "s to phase out");
+            List<UUID> permIds = new ArrayList<>();
             for (Permanent permanent : game.getBattlefield().getActivePermanents(filter, controller.getId(), game)) {
-                permanent.phaseOut(game);
+                permIds.add(permanent.getId());
             }
-            return true;
+            return new PhaseOutAllEffect(permIds).apply(game, source);
         }
         return false;
     }

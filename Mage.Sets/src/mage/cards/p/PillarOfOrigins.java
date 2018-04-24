@@ -59,7 +59,7 @@ public class PillarOfOrigins extends CardImpl {
         // As Pillar of Origins enters the battlefield, choose a creature type.
         this.addAbility(new AsEntersBattlefieldAbility(new ChooseCreatureTypeEffect(Outcome.Benefit)));
 
-        // {T}: Add one mana of any color to your mana pool. Spend this mana only to cast a creature spell if the chosen type.
+        // {T}: Add one mana of any color. Spend this mana only to cast a creature spell if the chosen type.
         this.addAbility(new ConditionalAnyColorManaAbility(new TapSourceCost(), 1, new PillarOfOriginsManaBuilder(), true));
     }
 
@@ -79,10 +79,7 @@ class PillarOfOriginsManaBuilder extends ConditionalManaBuilder {
 
     @Override
     public ConditionalManaBuilder setMana(Mana mana, Ability source, Game game) {
-        SubType value = (SubType) game.getState().getValue(source.getSourceId() + "_type");
-        if (value != null) {
-            creatureType = value;
-        }
+        creatureType = ChooseCreatureTypeEffect.getChoosenCreatureType(source.getSourceId(), game);
         Player controller = game.getPlayer(source.getControllerId());
         MageObject sourceObject = game.getObject(source.getSourceId());
         if (controller != null && sourceObject != null) {

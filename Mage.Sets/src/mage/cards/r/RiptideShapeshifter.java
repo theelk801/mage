@@ -27,6 +27,7 @@
  */
 package mage.cards.r;
 
+import java.util.UUID;
 import mage.MageInt;
 import mage.MageObject;
 import mage.abilities.Ability;
@@ -38,13 +39,11 @@ import mage.cards.*;
 import mage.choices.Choice;
 import mage.choices.ChoiceCreatureType;
 import mage.constants.CardType;
-import mage.constants.SubType;
 import mage.constants.Outcome;
+import mage.constants.SubType;
 import mage.constants.Zone;
 import mage.game.Game;
 import mage.players.Player;
-
-import java.util.UUID;
 
 /**
  *
@@ -96,11 +95,9 @@ class RiptideShapeshifterEffect extends OneShotEffect {
         Player controller = game.getPlayer(source.getControllerId());
         MageObject sourceObject = source.getSourceObject(game);
         if (controller != null && sourceObject != null) {
-            Choice choice = new ChoiceCreatureType();
-            while (!controller.choose(Outcome.BoostCreature, choice, game)) {
-                if (!controller.canRespond()) {
-                    return false;
-                }
+            Choice choice = new ChoiceCreatureType(sourceObject);
+            if (!controller.choose(Outcome.BoostCreature, choice, game)) {
+                return false;
             }
             Cards revealedCards = new CardsImpl();
             while (controller.getLibrary().hasCards()) {

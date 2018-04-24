@@ -41,7 +41,7 @@ import mage.constants.CardType;
 import mage.constants.SubType;
 import mage.constants.Duration;
 import mage.constants.Zone;
-import mage.target.common.TargetCreatureOrPlayerAmount;
+import mage.target.common.TargetAnyTargetAmount;
 
 /**
  *
@@ -60,8 +60,8 @@ public class InfernoTitan extends CardImpl {
         this.addAbility(new SimpleActivatedAbility(Zone.BATTLEFIELD, new BoostSourceEffect(1, 0, Duration.EndOfTurn), new ManaCostsImpl("{R}")));
 
         // Whenever Inferno Titan enters the battlefield or attacks, it deals 3 damage divided as you choose among one, two, or three target creatures and/or players.
-        Ability ability = new EntersBattlefieldOrAttacksSourceTriggeredAbility(new DamageMultiEffect(3));
-        ability.addTarget(new TargetCreatureOrPlayerAmount(3));
+        Ability ability = new EntersBattlefieldOrAttacksSourceTriggeredAbility(new DamageMultiEffect(3, "it"));
+        ability.addTarget(new TargetAnyTargetAmount(3));
         this.addAbility(ability);
     }
 

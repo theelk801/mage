@@ -30,26 +30,23 @@ package mage.cards.s;
 import java.util.UUID;
 import mage.MageInt;
 import mage.abilities.Ability;
-import mage.abilities.Mode;
 import mage.abilities.common.SimpleActivatedAbility;
 import mage.abilities.costs.Cost;
 import mage.abilities.costs.common.RemoveVariableCountersSourceCost;
 import mage.abilities.costs.common.TapSourceCost;
-import mage.abilities.effects.ContinuousEffectImpl;
+import mage.abilities.effects.common.continuous.GainControlTargetEffect;
 import mage.abilities.keyword.EvolveAbility;
 import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
 import mage.constants.CardType;
+import mage.constants.ComparisonType;
 import mage.constants.SubType;
 import mage.constants.Duration;
-import mage.constants.Layer;
-import mage.constants.Outcome;
-import mage.constants.SubLayer;
 import mage.constants.Zone;
 import mage.counters.CounterType;
 import mage.filter.common.FilterCreaturePermanent;
+import mage.filter.predicate.mageobject.PowerPredicate;
 import mage.game.Game;
-import mage.game.permanent.Permanent;
 import mage.target.common.TargetCreaturePermanent;
 
 /**
@@ -66,10 +63,11 @@ import mage.target.common.TargetCreaturePermanent;
  */
 public class SimicManipulator extends CardImpl {
 
-    private static final FilterCreaturePermanent filter = new FilterCreaturePermanent("creature with power less than or equal to the number of +1/+1 counters removed this way");
+    private final UUID originalId;
+    private static final FilterCreaturePermanent filter = new FilterCreaturePermanent("with power less than or equal to the number of +1/+1 counters removed this way");
 
     public SimicManipulator(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.CREATURE},"{1}{U}{U}");
+        super(ownerId, setInfo, new CardType[]{CardType.CREATURE}, "{1}{U}{U}");
         this.subtype.add(SubType.MUTANT);
         this.subtype.add(SubType.WIZARD);
 
@@ -80,70 +78,39 @@ public class SimicManipulator extends CardImpl {
         this.addAbility(new EvolveAbility());
 
         // {T}, Remove one or more +1/+1 counters from Simic Manipulator: Gain control of target creature with power less than or equal to the number of +1/+1 counters removed this way.
-        // TODO: Improve targeting, that only valid targets (power <= removed counters) can be choosen
-        //       Disadvantage now is, that a creature can be targeted that couldn't be targeted by rules.
-        Ability ability = new SimpleActivatedAbility(Zone.BATTLEFIELD, new SimicManipulatorGainControlTargetEffect(Duration.Custom), new TapSourceCost());
+        Ability ability = new SimpleActivatedAbility(Zone.BATTLEFIELD, new GainControlTargetEffect(Duration.Custom, true), new TapSourceCost());
         ability.addTarget(new TargetCreaturePermanent(filter));
         ability.addCost(new RemoveVariableCountersSourceCost(CounterType.P1P1.createInstance(), 1, "Remove one or more +1/+1 counters from {this}"));
         this.addAbility(ability);
+        this.originalId = ability.getOriginalId();
+
     }
 
     public SimicManipulator(final SimicManipulator card) {
         super(card);
+        this.originalId = card.originalId;
     }
 
     @Override
     public SimicManipulator copy() {
         return new SimicManipulator(this);
     }
-}
-
-class SimicManipulatorGainControlTargetEffect extends ContinuousEffectImpl {
-
-    private boolean valid;
-
-    public SimicManipulatorGainControlTargetEffect(Duration duration) {
-        super(duration, Layer.ControlChangingEffects_2, SubLayer.NA, Outcome.GainControl);
-    }
-
-    public SimicManipulatorGainControlTargetEffect(final SimicManipulatorGainControlTargetEffect effect) {
-        super(effect);
-        this.valid = effect.valid;
-    }
 
     @Override
-    public void init(Ability source, Game game) {
-        Permanent permanent = game.getPermanent(source.getFirstTarget());
-        if (permanent != null) {
+    public void adjustTargets(Ability ability, Game game) {
+        if (ability.getOriginalId().equals(originalId)) {
+            ability.getTargets().clear();
             int maxPower = 0;
-            for (Cost cost : source.getCosts()) {
+            FilterCreaturePermanent filter = new FilterCreaturePermanent("creature with power less than or equal to the number of +1/+1 counters removed this way");
+            for (Cost cost : ability.getCosts()) {
                 if (cost instanceof RemoveVariableCountersSourceCost) {
                     maxPower = ((RemoveVariableCountersSourceCost) cost).getAmount();
                     break;
                 }
             }
-            if (permanent.getPower().getValue() <= maxPower) {
-                valid = true;
-            }
+            filter.add(new PowerPredicate(ComparisonType.FEWER_THAN, maxPower + 1));
+            TargetCreaturePermanent target = new TargetCreaturePermanent(1, 1, filter, false);
+            ability.addTarget(target);
         }
-    }
-
-    @Override
-    public SimicManipulatorGainControlTargetEffect copy() {
-        return new SimicManipulatorGainControlTargetEffect(this);
-    }
-
-    @Override
-    public boolean apply(Game game, Ability source) {
-        Permanent permanent = game.getPermanent(source.getFirstTarget());
-        if (permanent != null && valid) {
-            return permanent.changeControllerId(source.getControllerId(), game);
-        }
-        return false;
-    }
-
-    @Override
-    public String getText(Mode mode) {
-        return "Gain control of target " + mode.getTargets().get(0).getTargetName() + ' ' + duration.toString();
     }
 }

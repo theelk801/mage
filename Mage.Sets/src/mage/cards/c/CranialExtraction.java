@@ -27,6 +27,7 @@
  */
 package mage.cards.c;
 
+import java.util.UUID;
 import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.Mode;
@@ -43,8 +44,6 @@ import mage.game.Game;
 import mage.players.Player;
 import mage.target.TargetPlayer;
 
-import java.util.UUID;
-
 /**
  *
  * @author BetaSteward_at_googlemail.com
@@ -52,11 +51,11 @@ import java.util.UUID;
 public class CranialExtraction extends CardImpl {
 
     public CranialExtraction(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.SORCERY},"{3}{B}");
+        super(ownerId, setInfo, new CardType[]{CardType.SORCERY}, "{3}{B}");
         this.subtype.add(SubType.ARCANE);
 
         /* Name a nonland card. Search target player's graveyard, hand, and library for
-        * all cards with that name and exile them. Then that player shuffles his or her library. */
+        * all cards with that name and exile them. Then that player shuffles their library. */
         this.getSpellAbility().addTarget(new TargetPlayer());
         this.getSpellAbility().addEffect(new CranialExtractionEffect());
     }
@@ -92,10 +91,8 @@ class CranialExtractionEffect extends SearchTargetGraveyardHandLibraryForCardNam
             cardChoice.clearChoice();
             cardChoice.setMessage("Name a nonland card");
 
-            while (!controller.choose(Outcome.Exile, cardChoice, game)) {
-                if (!controller.canRespond()) {
-                    return false;
-                }
+            if (!controller.choose(Outcome.Exile, cardChoice, game)) {
+                return false;
             }
             String cardName = cardChoice.getChoice();
             MageObject sourceObject = game.getObject(source.getSourceId());

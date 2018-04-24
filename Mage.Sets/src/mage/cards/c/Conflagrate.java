@@ -30,7 +30,6 @@ package mage.cards.c;
 import java.util.UUID;
 import mage.abilities.Ability;
 import mage.abilities.costs.Cost;
-import mage.abilities.costs.common.DiscardTargetCost;
 import mage.abilities.costs.common.DiscardXTargetCost;
 import mage.abilities.costs.mana.ManaCostsImpl;
 import mage.abilities.dynamicvalue.DynamicValue;
@@ -43,7 +42,7 @@ import mage.constants.CardType;
 import mage.constants.TimingRule;
 import mage.filter.FilterCard;
 import mage.game.Game;
-import mage.target.common.TargetCreatureOrPlayerAmount;
+import mage.target.common.TargetAnyTargetAmount;
 
 /**
  *
@@ -57,7 +56,7 @@ public class Conflagrate extends CardImpl {
         // Conflagrate deals X damage divided as you choose among any number of target creatures and/or players.
         DynamicValue xValue = new ConflagrateVariableValue();
         this.getSpellAbility().addEffect(new DamageMultiEffect(xValue));
-        this.getSpellAbility().addTarget(new TargetCreatureOrPlayerAmount(xValue));
+        this.getSpellAbility().addTarget(new TargetAnyTargetAmount(xValue));
 
         // Flashback-{R}{R}, Discard X cards.
         Ability ability = new FlashbackAbility(new ManaCostsImpl("{R}{R}"), TimingRule.SORCERY);
@@ -82,8 +81,8 @@ class ConflagrateVariableValue implements DynamicValue {
     public int calculate(Game game, Ability sourceAbility, Effect effect) {
         int xValue = sourceAbility.getManaCostsToPay().getX();
         for (Cost cost : sourceAbility.getCosts()) {
-            if (cost instanceof DiscardTargetCost) {
-                xValue = ((DiscardTargetCost) cost).getCards().size();
+            if (cost instanceof DiscardXTargetCost) {
+                xValue = ((DiscardXTargetCost) cost).getAmount();
             }
         }
         return xValue;

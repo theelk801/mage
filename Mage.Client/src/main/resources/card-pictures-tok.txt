@@ -45,10 +45,10 @@
 #|Generate|TOK:PTC|Wolf||
 #|Generate|TOK:PTC|Wurm||
 #|Generate|TOK:WMCQ|Angel||
-|Generate|EMBLEM!:AKH|Emblem Gideon|||GideonOfTheTrialsEmblem|
 |Generate|EMBLEM!:BFZ|Emblem Gideon|||GideonAllyOfZendikarEmblem|
 |Generate|EMBLEM!:BFZ|Emblem Kiora|||KioraMasterOfTheDepthsEmblem|
 |Generate|EMBLEM!:BFZ|Emblem Nixilis|||ObNixilisReignitedEmblem|
+|Generate|EMBLEM!:AKH|Emblem Gideon|||GideonOfTheTrialsEmblem|
 |Generate|EMBLEM!:C14|Emblem Daretti|||DarettiScrapSavantEmblem|
 |Generate|EMBLEM!:C14|Emblem Daretti||Emblem Daretti|DarettiScrapSavantEmblem|
 |Generate|EMBLEM!:C14|Emblem Nixilis|||ObNixilisOfTheBlackOathEmblem|
@@ -73,7 +73,7 @@
 |Generate|EMBLEM!:ORI|Emblem Liliana|||LilianaDefiantNecromancerEmblem|
 |Generate|EMBLEM!:SOI|Emblem Arlinn|||ArlinnEmbracedByTheMoonEmblem|
 |Generate|EMBLEM!:SOI|Emblem Jace|||JaceUnravelerOfSecretsEmblem|
-|Generate|EMBLEM-:THS|Elspeth, Suns Champion||Emblem Elspeth|ElspethSunsChampionEmblem|
+|Generate|EMBLEM:THS|Elspeth, Suns Champion||Emblem Elspeth|ElspethSunsChampionEmblem|
 |Generate|EMBLEM:AVR|Tamiyo, the Moon Sage||Emblem Tamiyo|TamiyoTheMoonSageEmblem|
 |Generate|EMBLEM:BNG|Kiora, the Crashing Wave||Emblem Kiora|KioraEmblem|
 |Generate|EMBLEM:DDI|Koth of the Hammer||Emblem Koth|KothOfTheHammerEmblem|
@@ -84,6 +84,26 @@
 |Generate|EMBLEM:M14|Garruk, Caller of Beasts||Emblem Garruk|GarrukCallerOfBeastsEmblem|
 |Generate|EMBLEM:M14|Liliana of the Dark Realms||Emblem Liliana|LilianaOfTheDarkRealmsEmblem|
 |Generate|EMBLEM:MMA|Elspeth, Knight Errant||Emblem Elspeth|ElspethKnightErrantEmblem|
+|Generate|EMBLEM:RIX|Huatli, Radiant Champion||Emblem Huatli|HuatliRadiantChampionEmblem|
+|Generate|PLANE:PCA|Plane - Academy At Tolaria West|||AcademyAtTolariaWestPlane|
+|Generate|PLANE:PCA|Plane - Agyrem|||AgyremPlane|
+|Generate|PLANE:PCA|Plane - Akoum|||AkoumPlane|
+|Generate|PLANE:PCA|Plane - Astral Arena|||AstralArenaPlane|
+|Generate|PLANE:PCA|Plane - Bant|||BantPlane|
+|Generate|PLANE:PCA|Plane - Edge Of Malacol|||EdgeOfMalacolPlane|
+|Generate|PLANE:PCA|Plane - Feeding Grounds|||FeedingGroundsPlane|
+|Generate|PLANE:PCA|Plane - Fields of Summer|||FieldsOfSummerPlane|
+|Generate|PLANE:PCA|Plane - Hedron Fields of Agadeem|||HedronFieldsOfAgadeemPlane|
+|Generate|PLANE:PCA|Plane - Lethe Lake|||LetheLakePlane|
+|Generate|PLANE:PCA|Plane - Naya|||NayaPlane|
+|Generate|PLANE:PCA|Plane - Tazeem|||TazeemPlane|
+|Generate|PLANE:PCA|Plane - The Dark Barony|||TheDarkBaronyPlane|
+|Generate|PLANE:PCA|Plane - The Eon Fog|||TheEonFogPlane|
+|Generate|PLANE:PCA|Plane - The Great Forest|||TheGreatForestPlane|
+|Generate|PLANE:PCA|Plane - Truga Jungle|||TrugaJunglePlane|
+|Generate|PLANE:PCA|Plane - Turri Island|||TurriIslandPlane|
+|Generate|PLANE:PCA|Plane - Undercity Reaches|||UndercityReachesPlane|
+|Generate|TOK:PCA|Eldrazi|||EldraziAnnihilatorToken|
 |Generate|TOK:10E|Ape|||PongifyApeToken|
 |Generate|TOK:10E|Dragon|||DragonToken2|
 |Generate|TOK:10E|Goblin|||GoblinToken|
@@ -483,8 +503,8 @@
 |Generate|TOK:DKA|Zombie|||ZombieToken|
 |Generate|TOK:DRB|Saproling|||SaprolingToken|
 |Generate|TOK:DST|Beast|||BeastToken|
-|Generate|TOK:DST|Elemental|||WandOfTheElementsFirstToken|
-|Generate|TOK:DST|Elemental|||WandOfTheElementsSecondToken|
+|Generate|TOK:DST|Elemental|1||WandOfTheElementsFirstToken|
+|Generate|TOK:DST|Elemental|2||WandOfTheElementsSecondToken|
 |Generate|TOK:DST|InsectWirefly|||WireflyToken|
 |Generate|TOK:DST|Insect|||InsectToken|
 |Generate|TOK:DST|Myr|||MyrToken|
@@ -501,6 +521,7 @@
 |Generate|TOK:E01|Soldier|||SoldierToken|
 |Generate|TOK:E01|Spirit|||SpiritWhiteToken|
 |Generate|TOK:E01|Zombie|||ZombieToken|
+|Generate|TOK:E02|Saproling|||SaprolingToken|
 |Generate|TOK:EMA|Assembly-Worker|||AssemblyWorkerToken|
 |Generate|TOK:EMA|Beast|||CarnivoreToken|
 |Generate|TOK:EMA|Carnivore||
@@ -729,7 +750,7 @@
 |Generate|TOK:M15|Beast|2||GarrukApexPredatorBeastToken|
 |Generate|TOK:M15|Dragon|||BroodKeeperDragonToken|
 |Generate|TOK:M15|Goblin|1||GoblinTokenWithHaste|
-|Generate|TOK:M15|Goblin|2||GoblinToken|
+# |Generate|TOK:M15|Goblin|2||GoblinToken|  #does not exist
 |Generate|TOK:M15|Insect|||InsectToken|
 |Generate|TOK:M15|Land Mine|||LandMineToken|
 |Generate|TOK:M15|Sliver|||SliverToken|
@@ -929,6 +950,10 @@
 |Generate|TOK:RAV|Spirit|||SpiritWhiteToken|
 |Generate|TOK:RAV|Wolf|||VojaToken|
 |Generate|TOK:RAV|Faerie|||FaerieToken|
+|Generate|TOK:RIX|Elemental|1||RekindlingPhoenixToken|
+|Generate|TOK:RIX|Elemental|2||TilonallisSummonerElementalToken|
+|Generate|TOK:RIX|Golem|||GoldForgeGarrisonGolemToken|
+|Generate|TOK:RIX|Saproling|||SaprolingToken|
 |Generate|TOK:ROE|Dragon|||DragonToken2|
 |Generate|TOK:ROE|Eldrazi Spawn|1||EldraziSpawnToken|
 |Generate|TOK:ROE|Eldrazi Spawn|2||EldraziSpawnToken|
@@ -994,8 +1019,7 @@
 |Generate|TOK:SOM|Cat|||CatToken|
 |Generate|TOK:SOM|Goblin|||GoblinToken|
 |Generate|TOK:SOM|Golem|||GolemToken|
-|Generate|TOK:SOM|Insect|1||InsectToken|
-|Generate|TOK:SOM|Insect|2||InsectInfectToken|
+|Generate|TOK:SOM|Insect|||InsectInfectToken|
 |Generate|TOK:SOM|Myr|||MyrToken|
 |Generate|TOK:SOM|Soldier|||SoldierToken|
 |Generate|TOK:SOM|Wolf|||WolfToken|
@@ -1062,6 +1086,7 @@
 |Generate|TOK:USG|Minion|||MinionToken|
 |Generate|TOK:USG|Saproling|||SaprolingToken|
 |Generate|TOK:UST|Dragon|||DragonTokenGold|
+|Generate|TOK:UST|Storm Crow|||StormCrowToken|
 |Generate|TOK:V10|Wolf|||WolfToken|
 |Generate|TOK:V11|Faerie Rogue|||OonaQueenFaerieToken|
 |Generate|TOK:V12|Spirit|||SpiritToken|

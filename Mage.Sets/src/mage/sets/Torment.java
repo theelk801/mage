@@ -58,6 +58,7 @@ public class Torment extends ExpansionSet {
         cards.add(new SetCardInfo("Acorn Harvest", 118, Rarity.COMMON, mage.cards.a.AcornHarvest.class));
         cards.add(new SetCardInfo("Ambassador Laquatus", 23, Rarity.RARE, mage.cards.a.AmbassadorLaquatus.class));
         cards.add(new SetCardInfo("Angel of Retribution", 1, Rarity.RARE, mage.cards.a.AngelOfRetribution.class));
+        cards.add(new SetCardInfo("Anurid Scavenger", 119, Rarity.COMMON, mage.cards.a.AnuridScavenger.class));
         cards.add(new SetCardInfo("Aquamoeba", 24, Rarity.COMMON, mage.cards.a.Aquamoeba.class));
         cards.add(new SetCardInfo("Arrogant Wurm", 120, Rarity.UNCOMMON, mage.cards.a.ArrogantWurm.class));
         cards.add(new SetCardInfo("Aven Trooper", 2, Rarity.COMMON, mage.cards.a.AvenTrooper.class));
@@ -92,7 +93,9 @@ public class Torment extends ExpansionSet {
         cards.add(new SetCardInfo("Devastating Dreams", 95, Rarity.RARE, mage.cards.d.DevastatingDreams.class));
         cards.add(new SetCardInfo("Dwell on the Past", 124, Rarity.UNCOMMON, mage.cards.d.DwellOnThePast.class));
         cards.add(new SetCardInfo("Enslaved Dwarf", 96, Rarity.COMMON, mage.cards.e.EnslavedDwarf.class));
+        cards.add(new SetCardInfo("Equal Treatment", 4, Rarity.UNCOMMON, mage.cards.e.EqualTreatment.class));
         cards.add(new SetCardInfo("Faceless Butcher", 60, Rarity.COMMON, mage.cards.f.FacelessButcher.class));
+        cards.add(new SetCardInfo("False Memories", 37, Rarity.RARE, mage.cards.f.FalseMemories.class));
         cards.add(new SetCardInfo("Far Wanderings", 125, Rarity.COMMON, mage.cards.f.FarWanderings.class));
         cards.add(new SetCardInfo("Fiery Temper", 97, Rarity.COMMON, mage.cards.f.FieryTemper.class));
         cards.add(new SetCardInfo("Flash of Defiance", 99, Rarity.COMMON, mage.cards.f.FlashOfDefiance.class));
@@ -102,10 +105,12 @@ public class Torment extends ExpansionSet {
         cards.add(new SetCardInfo("Gravegouger", 62, Rarity.COMMON, mage.cards.g.Gravegouger.class));
         cards.add(new SetCardInfo("Grim Lavamancer", 100, Rarity.RARE, mage.cards.g.GrimLavamancer.class));
         cards.add(new SetCardInfo("Grotesque Hybrid", 63, Rarity.UNCOMMON, mage.cards.g.GrotesqueHybrid.class));
+        cards.add(new SetCardInfo("Gurzigost", 126, Rarity.RARE, mage.cards.g.Gurzigost.class));
         cards.add(new SetCardInfo("Hell-Bent Raider", 101, Rarity.RARE, mage.cards.h.HellBentRaider.class));
         cards.add(new SetCardInfo("Hydromorph Guardian", 39, Rarity.COMMON, mage.cards.h.HydromorphGuardian.class));
         cards.add(new SetCardInfo("Hydromorph Gull", 40, Rarity.UNCOMMON, mage.cards.h.HydromorphGull.class));
         cards.add(new SetCardInfo("Hypochondria", 7, Rarity.UNCOMMON, mage.cards.h.Hypochondria.class));
+        cards.add(new SetCardInfo("Hypnox", 64, Rarity.RARE, mage.cards.h.Hypnox.class));
         cards.add(new SetCardInfo("Ichorid", 65, Rarity.RARE, mage.cards.i.Ichorid.class));
         cards.add(new SetCardInfo("Insidious Dreams", 66, Rarity.RARE, mage.cards.i.InsidiousDreams.class));
         cards.add(new SetCardInfo("Insist", 127, Rarity.RARE, mage.cards.i.Insist.class));
@@ -117,6 +122,7 @@ public class Torment extends ExpansionSet {
         cards.add(new SetCardInfo("Last Laugh", 68, Rarity.RARE, mage.cards.l.LastLaugh.class));
         cards.add(new SetCardInfo("Liquify", 41, Rarity.COMMON, mage.cards.l.Liquify.class));
         cards.add(new SetCardInfo("Llawan, Cephalid Empress", 42, Rarity.RARE, mage.cards.l.LlawanCephalidEmpress.class));
+        cards.add(new SetCardInfo("Longhorn Firebeast", 103, Rarity.COMMON, mage.cards.l.LonghornFirebeast.class));
         cards.add(new SetCardInfo("Major Teroh", 8, Rarity.RARE, mage.cards.m.MajorTeroh.class));
         cards.add(new SetCardInfo("Mesmeric Fiend", 69, Rarity.COMMON, mage.cards.m.MesmericFiend.class));
         cards.add(new SetCardInfo("Militant Monk", 9, Rarity.COMMON, mage.cards.m.MilitantMonk.class));
@@ -142,6 +148,7 @@ public class Torment extends ExpansionSet {
         cards.add(new SetCardInfo("Pay No Heed", 12, Rarity.COMMON, mage.cards.p.PayNoHeed.class));
         cards.add(new SetCardInfo("Petradon", 108, Rarity.RARE, mage.cards.p.Petradon.class));
         cards.add(new SetCardInfo("Petravark", 109, Rarity.COMMON, mage.cards.p.Petravark.class));
+        cards.add(new SetCardInfo("Pitchstone Wall", 110, Rarity.UNCOMMON, mage.cards.p.PitchstoneWall.class));
         cards.add(new SetCardInfo("Plagiarize", 44, Rarity.RARE, mage.cards.p.Plagiarize.class));
         cards.add(new SetCardInfo("Possessed Aven", 45, Rarity.RARE, mage.cards.p.PossessedAven.class));
         cards.add(new SetCardInfo("Possessed Barbarian", 111, Rarity.RARE, mage.cards.p.PossessedBarbarian.class));
@@ -159,6 +166,7 @@ public class Torment extends ExpansionSet {
         cards.add(new SetCardInfo("Shade's Form", 81, Rarity.COMMON, mage.cards.s.ShadesForm.class));
         cards.add(new SetCardInfo("Shambling Swarm", 82, Rarity.RARE, mage.cards.s.ShamblingSwarm.class));
         cards.add(new SetCardInfo("Sickening Dreams", 83, Rarity.UNCOMMON, mage.cards.s.SickeningDreams.class));
+        cards.add(new SetCardInfo("Skullscorch", 114, Rarity.RARE, mage.cards.s.Skullscorch.class));
         cards.add(new SetCardInfo("Skywing Aven", 47, Rarity.COMMON, mage.cards.s.SkywingAven.class));
         cards.add(new SetCardInfo("Slithery Stalker", 84, Rarity.UNCOMMON, mage.cards.s.SlitheryStalker.class));
         cards.add(new SetCardInfo("Sonic Seizure", 115, Rarity.COMMON, mage.cards.s.SonicSeizure.class));

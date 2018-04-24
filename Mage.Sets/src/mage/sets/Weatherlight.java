@@ -72,6 +72,7 @@ public class Weatherlight extends ExpansionSet {
         cards.add(new SetCardInfo("Aura of Silence", 123, Rarity.UNCOMMON, mage.cards.a.AuraOfSilence.class));
         cards.add(new SetCardInfo("Avizoa", 35, Rarity.RARE, mage.cards.a.Avizoa.class));
         cards.add(new SetCardInfo("Barrow Ghoul", 3, Rarity.COMMON, mage.cards.b.BarrowGhoul.class));
+        cards.add(new SetCardInfo("Benalish Infantry", 124, Rarity.COMMON, mage.cards.b.BenalishInfantry.class));
         cards.add(new SetCardInfo("Benalish Knight", 125, Rarity.COMMON, mage.cards.b.BenalishKnight.class));
         cards.add(new SetCardInfo("Benalish Missionary", 126, Rarity.COMMON, mage.cards.b.BenalishMissionary.class));
         cards.add(new SetCardInfo("Bloodrock Cyclops", 90, Rarity.COMMON, mage.cards.b.BloodrockCyclops.class));
@@ -90,6 +91,7 @@ public class Weatherlight extends ExpansionSet {
         cards.add(new SetCardInfo("Cone of Flame", 95, Rarity.UNCOMMON, mage.cards.c.ConeOfFlame.class));
         cards.add(new SetCardInfo("Debt of Loyalty", 127, Rarity.RARE, mage.cards.d.DebtOfLoyalty.class));
         cards.add(new SetCardInfo("Dense Foliage", 66, Rarity.RARE, mage.cards.d.DenseFoliage.class));
+        cards.add(new SetCardInfo("Desperate Gambit", 96, Rarity.UNCOMMON, mage.cards.d.DesperateGambit.class));
         cards.add(new SetCardInfo("Dingus Staff", 149, Rarity.UNCOMMON, mage.cards.d.DingusStaff.class));
         cards.add(new SetCardInfo("Disrupt", 37, Rarity.COMMON, mage.cards.d.Disrupt.class));
         cards.add(new SetCardInfo("Doomsday", 8, Rarity.RARE, mage.cards.d.Doomsday.class));
@@ -120,6 +122,7 @@ public class Weatherlight extends ExpansionSet {
         cards.add(new SetCardInfo("Guided Strike", 132, Rarity.COMMON, mage.cards.g.GuidedStrike.class));
         cards.add(new SetCardInfo("Harvest Wurm", 72, Rarity.COMMON, mage.cards.h.HarvestWurm.class));
         cards.add(new SetCardInfo("Haunting Misery", 13, Rarity.COMMON, mage.cards.h.HauntingMisery.class));
+        cards.add(new SetCardInfo("Heart of Bogardan", 106, Rarity.RARE, mage.cards.h.HeartOfBogardan.class));
         cards.add(new SetCardInfo("Heat Stroke", 107, Rarity.RARE, mage.cards.h.HeatStroke.class));
         cards.add(new SetCardInfo("Heavy Ballista", 133, Rarity.COMMON, mage.cards.h.HeavyBallista.class));
         cards.add(new SetCardInfo("Hidden Horror", 14, Rarity.UNCOMMON, mage.cards.h.HiddenHorror.class));
@@ -196,6 +199,7 @@ public class Weatherlight extends ExpansionSet {
         cards.add(new SetCardInfo("Veteran Explorer", 86, Rarity.UNCOMMON, mage.cards.v.VeteranExplorer.class));
         cards.add(new SetCardInfo("Vitalize", 87, Rarity.COMMON, mage.cards.v.Vitalize.class));
         cards.add(new SetCardInfo("Vodalian Illusionist", 58, Rarity.UNCOMMON, mage.cards.v.VodalianIllusionist.class));
+        cards.add(new SetCardInfo("Volunteer Reserves", 145, Rarity.UNCOMMON, mage.cards.v.VolunteerReserves.class));
         cards.add(new SetCardInfo("Wave of Terror", 28, Rarity.RARE, mage.cards.w.WaveOfTerror.class));
         cards.add(new SetCardInfo("Well of Knowledge", 162, Rarity.RARE, mage.cards.w.WellOfKnowledge.class));
         cards.add(new SetCardInfo("Winding Canyons", 167, Rarity.RARE, mage.cards.w.WindingCanyons.class));

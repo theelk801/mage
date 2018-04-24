@@ -3,12 +3,13 @@ package org.mage.plugins.card.dl.sources;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.mage.plugins.card.images.CardDownloadData;
 
 /**
- * @author Quercitron
+ * @author Quercitron, JayDi85
  *
  */
 public enum ScryfallImageSource implements CardImageSource {
@@ -200,24 +201,40 @@ public enum ScryfallImageSource implements CardImageSource {
         supportedSets.add("HOU");
         supportedSets.add("C17");
         supportedSets.add("XLN");
-//        supportedSets.add("DDT");
+        supportedSets.add("DDT");
         supportedSets.add("IMA");
-//        supportedSets.add("E02");
-//        supportedSets.add("V17");
-//        supportedSets.add("UST");
-//        supportedSets.add("RIX");
-//        supportedSets.add("A25");
-//        supportedSets.add("DOM");
+        supportedSets.add("E02");
+        supportedSets.add("V17");
+        supportedSets.add("UST");
+        supportedSets.add("RIX");
+        supportedSets.add("WMCQ");
+        supportedSets.add("PPRO");
+        supportedSets.add("A25");
+        supportedSets.add("DOM");
 //        supportedSets.add("M19");
 
     }
 
     @Override
     public String generateURL(CardDownloadData card) throws Exception {
+
+        // special card number like "103a" already compatible
+        if (card.isCollectorIdWithStr()) {
+            return "https://img.scryfall.com/cards/large/en/" + formatSetName(card.getSet()) + "/"
+                    + card.getCollectorId() + ".jpg";
+        }
+
+        // double faced cards do not supporte by API (need direct link for img)
+        // example: https://img.scryfall.com/cards/large/en/xln/173b.jpg
+        if (card.isTwoFacedCard()) {
+            return "https://img.scryfall.com/cards/large/en/" + formatSetName(card.getSet()) + "/"
+                    + card.getCollectorId() + (card.isSecondSide() ? "b" : "a") + ".jpg";
+        }
+
+        // basic cards by api call (redirect to img link)
+        // example: https://api.scryfall.com/cards/xln/121?format=image
         return "https://api.scryfall.com/cards/" + formatSetName(card.getSet()) + "/"
-                + card.getCollectorId()
-                + (card.isSecondSide() ? "b" : "")
-                + "?format=image";
+                + card.getCollectorId() + "?format=image";
     }
 
     @Override
@@ -264,7 +281,7 @@ public enum ScryfallImageSource implements CardImageSource {
         if (setNameReplacement.containsKey(setName)) {
             setName = setNameReplacement.get(setName);
         }
-        return setName.toLowerCase();
+        return setName.toLowerCase(Locale.ENGLISH);
     }
 
     private static final Map<String, String> setNameReplacement = new HashMap<String, String>() {
@@ -275,6 +292,7 @@ public enum ScryfallImageSource implements CardImageSource {
             put("DD3EVG", "evg");
             put("MPS-AKH", "mp2");
             put("MBP", "pmei");
+            put("WMCQ", "pwcq");
         }
     };
 

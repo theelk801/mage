@@ -3,6 +3,7 @@ package org.mage.plugins.card.dl.sources;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import mage.client.dialog.PreferencesDialog;
@@ -199,12 +200,12 @@ public enum MagicCardsImageSource implements CardImageSource {
             add("E01");
             add("HOU");
             add("C17");
-//        add("XLN");
-//        add("DDT");
-//        add("IMA");
-//        add("E02");
-//        add("V17");
-//        add("UST");
+            add("XLN");
+            add("DDT");
+            add("IMA");
+            add("E02");
+            add("V17");
+            add("UST");
 //        add("RIX");
 //        add("A25");
 //        add("DOM");
@@ -262,6 +263,7 @@ public enum MagicCardsImageSource implements CardImageSource {
             put("DDQ", "duel-decks-blessed-vs-cursed");
             put("DDR", "duel-decks-nissa-vs-ob-nixilis");
             put("DDS", "duel-decks-mind-vs-might");
+            put("DDS", "duel-decks-merfolk-vs-goblin");
             put("DGM", "dragons-maze");
             put("DKA", "dark-ascension");
             put("DRB", "from-the-vault-dragons");
@@ -367,7 +369,7 @@ public enum MagicCardsImageSource implements CardImageSource {
         String preferedLanguage = PreferencesDialog.getCachedValue(PreferencesDialog.KEY_CARD_IMAGES_PREF_LANGUAGE, "en");
 
         StringBuilder url = new StringBuilder("http://magiccards.info/scans/").append(preferedLanguage).append('/');
-        url.append(set.toLowerCase()).append('/').append(collectorId);
+        url.append(set.toLowerCase(Locale.ENGLISH)).append('/').append(collectorId);
 
         if (card.isTwoFacedCard()) {
             url.append(card.isSecondSide() ? "b" : "a");
@@ -394,7 +396,7 @@ public enum MagicCardsImageSource implements CardImageSource {
         if (card.getType() > 0) {
             name = name + ' ' + card.getType();
         }
-        name = name.replaceAll(" ", "-").replace(",", "").toLowerCase();
+        name = name.replaceAll(" ", "-").replace(",", "").toLowerCase(Locale.ENGLISH);
         String set = "not-supported-set";
         if (setNameTokenReplacement.containsKey(card.getSet())) {
             set = setNameTokenReplacement.get(card.getSet());

@@ -2,11 +2,15 @@
 
 [![Join the chat at https://gitter.im/magefree/mage](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/magefree/mage?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/magefree/mage.svg?branch=master)](https://travis-ci.org/magefree/mage)
 
-XMage allows you to play Magic against one or more online players or computer opponents. It includes full rules enforcement for over **14 000** unique cards (over 27 000 counting all cards from different editions). Starting with *Morningtide*, all regular sets have nearly all the cards implemented ([detailed overview](http://ct-magefree.rhcloud.com/stats)).
+XMage allows you to play Magic against one or more online players or computer opponents. It includes full rules enforcement for over **16950** unique cards (over 32800 counting all cards from different editions). Starting with *Morningtide*, all regular sets have nearly all the cards implemented.
 
 There are public servers where you can play XMage against other players. You can also host your own server to play against the AI and/or your friends.
 
-You can visit the XMage forum [here](http://www.slightlymagic.net/forum/viewforum.php?f=70).
+XMage community:
+* [Official XMage forum](http://www.slightlymagic.net/forum/viewforum.php?f=70);
+* [Official XMage support and feature request on github](https://github.com/magefree/mage/issues);
+* [Reddit XMage group](https://www.reddit.com/r/XMage/);
+* [Reddit XMage discord channel](https://discord.gg/Pqf42yn).
 
 ## Features
 
@@ -24,7 +28,7 @@ You can visit the XMage forum [here](http://www.slightlymagic.net/forum/viewforu
 Download and install the [latest XMage release](http://XMage.de).
 You will need to have Version 7 or later of the [Java Runtime Environment](http://java.com/en/).
 
-Look [here](http://www.slightlymagic.net/forum/viewtopic.php?f=70&t=13632) for more detailed instructions.  
+Look [here](http://www.slightlymagic.net/forum/viewtopic.php?f=70&t=13632) for more detailed instructions.
 [Here](http://github.com/magefree/mage/wiki/Release-changes) you can find a log of the latest changes.
 
 ## Developer
@@ -35,5 +39,5 @@ If you are interested in developing XMage, here are some useful resources:
 * [Developer Notes](http://github.com/magefree/mage/wiki/Developer-Notes)
 * [Developer Testing Tools](http://github.com/magefree/mage/wiki/Developer-Testing-Tools)
 * [Double Faced Cards](http://github.com/magefree/mage/wiki/Double-Faced-Cards)
-* [Card Requests](http://www.slightlymagic.net/forum/viewtopic.php?f=70&t=4554)
+* [Card Requests](https://www.slightlymagic.net/forum/viewtopic.php?f=70&t=20685)
 * [Tournament Relevant Card Requests](http://www.slightlymagic.net/forum/viewtopic.php?f=70&t=14062)

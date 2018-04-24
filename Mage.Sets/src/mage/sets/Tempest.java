@@ -51,6 +51,7 @@ public class Tempest extends ExpansionSet {
         cards.add(new SetCardInfo("Canyon Drake", 166, Rarity.RARE, mage.cards.c.CanyonDrake.class));
         cards.add(new SetCardInfo("Canyon Wildcat", 167, Rarity.COMMON, mage.cards.c.CanyonWildcat.class));
         cards.add(new SetCardInfo("Capsize", 55, Rarity.COMMON, mage.cards.c.Capsize.class));
+        cards.add(new SetCardInfo("Carrionette", 5, Rarity.RARE, mage.cards.c.Carrionette.class));
         cards.add(new SetCardInfo("Chaotic Goo", 168, Rarity.RARE, mage.cards.c.ChaoticGoo.class));
         cards.add(new SetCardInfo("Charging Rhino", 112, Rarity.UNCOMMON, mage.cards.c.ChargingRhino.class));
         cards.add(new SetCardInfo("Chill", 56, Rarity.UNCOMMON, mage.cards.c.Chill.class));
@@ -97,6 +98,7 @@ public class Tempest extends ExpansionSet {
         cards.add(new SetCardInfo("Dream Cache", 59, Rarity.COMMON, mage.cards.d.DreamCache.class));
         cards.add(new SetCardInfo("Dregs of Sorrow", 25, Rarity.RARE, mage.cards.d.DregsOfSorrow.class));
         cards.add(new SetCardInfo("Earthcraft", 116, Rarity.RARE, mage.cards.e.Earthcraft.class));
+        cards.add(new SetCardInfo("Echo Chamber", 272, Rarity.RARE, mage.cards.e.EchoChamber.class));
         cards.add(new SetCardInfo("Eladamri, Lord of Leaves", 117, Rarity.RARE, mage.cards.e.EladamriLordOfLeaves.class));
         cards.add(new SetCardInfo("Eladamri's Vineyard", 118, Rarity.RARE, mage.cards.e.EladamrisVineyard.class));
         cards.add(new SetCardInfo("Elite Javelineer", 229, Rarity.COMMON, mage.cards.e.EliteJavelineer.class));
@@ -181,6 +183,7 @@ public class Tempest extends ExpansionSet {
         cards.add(new SetCardInfo("Lobotomy", 342, Rarity.UNCOMMON, mage.cards.l.Lobotomy.class));
         cards.add(new SetCardInfo("Lotus Petal", 284, Rarity.COMMON, mage.cards.l.LotusPetal.class));
         cards.add(new SetCardInfo("Lowland Giant", 187, Rarity.COMMON, mage.cards.l.LowlandGiant.class));
+        cards.add(new SetCardInfo("Maddening Imp", 37, Rarity.RARE, mage.cards.m.MaddeningImp.class));
         cards.add(new SetCardInfo("Magmasaur", 188, Rarity.RARE, mage.cards.m.Magmasaur.class));
         cards.add(new SetCardInfo("Manakin", 286, Rarity.COMMON, mage.cards.m.Manakin.class));
         cards.add(new SetCardInfo("Mana Severance", 73, Rarity.RARE, mage.cards.m.ManaSeverance.class));
@@ -193,6 +196,7 @@ public class Tempest extends ExpansionSet {
         cards.add(new SetCardInfo("Meditate", 76, Rarity.RARE, mage.cards.m.Meditate.class));
         cards.add(new SetCardInfo("Metallic Sliver", 287, Rarity.COMMON, mage.cards.m.MetallicSliver.class));
         cards.add(new SetCardInfo("Mindwhip Sliver", 39, Rarity.UNCOMMON, mage.cards.m.MindwhipSliver.class));
+        cards.add(new SetCardInfo("Minion of the Wastes", 40, Rarity.RARE, mage.cards.m.MinionOfTheWastes.class));
         cards.add(new SetCardInfo("Mirri's Guile", 130, Rarity.RARE, mage.cards.m.MirrisGuile.class));
         cards.add(new SetCardInfo("Mnemonic Sliver", 77, Rarity.UNCOMMON, mage.cards.m.MnemonicSliver.class));
         cards.add(new SetCardInfo("Mogg Cannon", 288, Rarity.UNCOMMON, mage.cards.m.MoggCannon.class));
@@ -215,6 +219,7 @@ public class Tempest extends ExpansionSet {
         cards.add(new SetCardInfo("Opportunist", 194, Rarity.UNCOMMON, mage.cards.o.Opportunist.class));
         cards.add(new SetCardInfo("Oracle en-Vec", 243, Rarity.RARE, mage.cards.o.OracleEnVec.class));
         cards.add(new SetCardInfo("Orim, Samite Healer", 244, Rarity.RARE, mage.cards.o.OrimSamiteHealer.class));
+        cards.add(new SetCardInfo("Orim's Prayer", 245, Rarity.UNCOMMON, mage.cards.o.OrimsPrayer.class));
         cards.add(new SetCardInfo("Overrun", 137, Rarity.UNCOMMON, mage.cards.o.Overrun.class));
         cards.add(new SetCardInfo("Pacifism", 246, Rarity.COMMON, mage.cards.p.Pacifism.class));
         cards.add(new SetCardInfo("Pallimud", 195, Rarity.RARE, mage.cards.p.Pallimud.class));
@@ -243,6 +248,7 @@ public class Tempest extends ExpansionSet {
         cards.add(new SetCardInfo("Rats of Rath", 44, Rarity.COMMON, mage.cards.r.RatsOfRath.class));
         cards.add(new SetCardInfo("Reality Anchor", 140, Rarity.COMMON, mage.cards.r.RealityAnchor.class));
         cards.add(new SetCardInfo("Reanimate", 45, Rarity.UNCOMMON, mage.cards.r.Reanimate.class));
+        cards.add(new SetCardInfo("Reap", 141, Rarity.UNCOMMON, mage.cards.r.Reap.class));
         cards.add(new SetCardInfo("Reckless Spite", 46, Rarity.UNCOMMON, mage.cards.r.RecklessSpite.class));
         cards.add(new SetCardInfo("Recycle", 142, Rarity.RARE, mage.cards.r.Recycle.class));
         cards.add(new SetCardInfo("Reflecting Pool", 328, Rarity.RARE, mage.cards.r.ReflectingPool.class));
@@ -257,6 +263,7 @@ public class Tempest extends ExpansionSet {
         cards.add(new SetCardInfo("Rootwater Diver", 81, Rarity.UNCOMMON, mage.cards.r.RootwaterDiver.class));
         cards.add(new SetCardInfo("Rootwater Hunter", 82, Rarity.COMMON, mage.cards.r.RootwaterHunter.class));
         cards.add(new SetCardInfo("Rootwater Matriarch", 83, Rarity.RARE, mage.cards.r.RootwaterMatriarch.class));
+        cards.add(new SetCardInfo("Rootwater Shaman", 84, Rarity.RARE, mage.cards.r.RootwaterShaman.class));
         cards.add(new SetCardInfo("Ruby Medallion", 295, Rarity.RARE, mage.cards.r.RubyMedallion.class));
         cards.add(new SetCardInfo("Sacred Guide", 250, Rarity.RARE, mage.cards.s.SacredGuide.class));
         cards.add(new SetCardInfo("Sadistic Glee", 47, Rarity.COMMON, mage.cards.s.SadisticGlee.class));

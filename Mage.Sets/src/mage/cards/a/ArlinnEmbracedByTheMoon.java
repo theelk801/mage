@@ -43,17 +43,15 @@ import mage.constants.CardType;
 import mage.constants.Duration;
 import mage.constants.SubType;
 import mage.constants.SuperType;
-import mage.filter.common.FilterCreaturePermanent;
+import mage.filter.StaticFilters;
 import mage.game.command.emblems.ArlinnEmbracedByTheMoonEmblem;
-import mage.target.common.TargetCreatureOrPlayer;
+import mage.target.common.TargetAnyTarget;
 
 /**
  *
  * @author fireshoes
  */
 public class ArlinnEmbracedByTheMoon extends CardImpl {
-
-    private static final FilterCreaturePermanent filter = new FilterCreaturePermanent("Creatures you control");
 
     public ArlinnEmbracedByTheMoon(UUID ownerId, CardSetInfo setInfo) {
         super(ownerId, setInfo, new CardType[]{CardType.PLANESWALKER}, "");
@@ -66,22 +64,22 @@ public class ArlinnEmbracedByTheMoon extends CardImpl {
         this.transformable = true;
 
         // +1: Creatures you control get +1/+1 and gain trample until end of turn.
-        Effect effect = new BoostControlledEffect(1, 1, Duration.EndOfTurn, filter);
+        Effect effect = new BoostControlledEffect(1, 1, Duration.EndOfTurn, StaticFilters.FILTER_PERMANENT_CREATURE);
         effect.setText("Creatures you control get +1/+1");
         LoyaltyAbility ability = new LoyaltyAbility(effect, 1);
-        effect = new GainAbilityControlledEffect(TrampleAbility.getInstance(), Duration.EndOfTurn, filter);
+        effect = new GainAbilityControlledEffect(TrampleAbility.getInstance(), Duration.EndOfTurn, StaticFilters.FILTER_PERMANENT_CREATURE);
         effect.setText("and gain trample until end of turn");
         ability.addEffect(effect);
         this.addAbility(ability);
 
-        // -1: Arlinn, Embraced by the Moon deals 3 damage to target creature or player. Transform Arlinn, Embraced by the Moon.
+        // -1: Arlinn, Embraced by the Moon deals 3 damage to any target. Transform Arlinn, Embraced by the Moon.
         this.addAbility(new TransformAbility());
         ability = new LoyaltyAbility(new DamageTargetEffect(3), -1);
-        ability.addTarget(new TargetCreatureOrPlayer());
+        ability.addTarget(new TargetAnyTarget());
         ability.addEffect(new TransformSourceEffect(false));
         this.addAbility(ability);
 
-        // -6: You get an emblem with "Creatures you control have haste and '{T}: This creature deals damage equal to its power to target creature or player.'"
+        // -6: You get an emblem with "Creatures you control have haste and '{T}: This creature deals damage equal to its power to any target.'"
         this.addAbility(new LoyaltyAbility(new GetEmblemEffect(new ArlinnEmbracedByTheMoonEmblem()), -6));
     }
 

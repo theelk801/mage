@@ -39,6 +39,7 @@ import mage.cards.CardSetInfo;
 import mage.constants.*;
 import mage.game.Game;
 import mage.game.events.GameEvent;
+import mage.util.CardUtil;
 
 /**
  *
@@ -47,7 +48,7 @@ import mage.game.events.GameEvent;
 public class PyromancersSwath extends CardImpl {
 
     public PyromancersSwath(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.ENCHANTMENT},"{2}{R}");
+        super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{2}{R}");
 
         // If an instant or sorcery source you control would deal damage to a creature or player, it deals that much damage plus 2 to that creature or player instead.
         this.addAbility(new SimpleStaticAbility(Zone.BATTLEFIELD, new PyromancersSwathReplacementEffect()));
@@ -71,26 +72,27 @@ class PyromancersSwathReplacementEffect extends ReplacementEffectImpl {
 
     PyromancersSwathReplacementEffect() {
         super(Duration.WhileOnBattlefield, Outcome.Benefit);
-        staticText = "If an instant or sorcery source you control would deal damage to a creature or player, it deals that much damage plus 2 to that creature or player instead";
+        staticText = "If an instant or sorcery source you control would deal damage to a permanent or player, it deals that much damage plus 2 to that permanent or player instead";
     }
 
     PyromancersSwathReplacementEffect(final PyromancersSwathReplacementEffect effect) {
         super(effect);
     }
 
-    @Override    
+    @Override
     public boolean checksEventType(GameEvent event, Game game) {
-        switch(event.getType()) {
+        switch (event.getType()) {
             case DAMAGE_CREATURE:
             case DAMAGE_PLAYER:
+            case DAMAGE_PLANESWALKER:
                 return true;
             default:
                 return false;
         }
     }
-    
+
     @Override
-    public boolean applies(GameEvent event, Ability source, Game game) {        
+    public boolean applies(GameEvent event, Ability source, Game game) {
         if (source.getControllerId().equals(game.getControllerId(event.getSourceId()))) {
             MageObject object = game.getObject(event.getSourceId());
             return object != null && (object.isInstant() || object.isSorcery());
@@ -105,7 +107,7 @@ class PyromancersSwathReplacementEffect extends ReplacementEffectImpl {
 
     @Override
     public boolean replaceEvent(GameEvent event, Ability source, Game game) {
-        event.setAmount(event.getAmount() + 2);
+        event.setAmount(CardUtil.addWithOverflowCheck(event.getAmount(), 2));
         return false;
     }
 

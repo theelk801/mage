@@ -27,6 +27,10 @@
  */
 package mage.game.stack;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
 import mage.MageInt;
 import mage.MageObject;
 import mage.Mana;
@@ -49,6 +53,7 @@ import mage.cards.SplitCard;
 import mage.constants.*;
 import mage.counters.Counter;
 import mage.counters.Counters;
+import mage.filter.FilterMana;
 import mage.game.Game;
 import mage.game.GameState;
 import mage.game.events.GameEvent;
@@ -60,11 +65,6 @@ import mage.players.Player;
 import mage.util.GameLog;
 import mage.util.SubTypeList;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
-
 /**
  *
  * @author BetaSteward_at_googlemail.com
@@ -73,6 +73,12 @@ public class Spell extends StackObjImpl implements Card {
 
     private final List<SpellAbility> spellAbilities = new ArrayList<>();
     private final List<Card> spellCards = new ArrayList<>();
+
+    private static final String regexBlack = ".*\\x7b.{0,2}B.{0,2}\\x7d.*";
+    private static final String regexBlue = ".*\\x7b.{0,2}U.{0,2}\\x7d.*";
+    private static final String regexRed = ".*\\x7b.{0,2}R.{0,2}\\x7d.*";
+    private static final String regexGreen = ".*\\x7b.{0,2}G.{0,2}\\x7d.*";
+    private static final String regexWhite = ".*\\x7b.{0,2}W.{0,2}\\x7d.*";
 
     private final Card card;
     private final ObjectColor color;
@@ -254,7 +260,9 @@ public class Spell extends StackObjImpl implements Card {
                     // Must be removed first time, after that will be removed by continous effect
                     // Otherwise effects like evolve trigger from creature comes into play event
                     card.getCardType().remove(CardType.CREATURE);
-                    card.getSubtype(game).add(SubType.AURA);
+                    if (!card.getSubtype(game).contains(SubType.AURA)) {
+                        card.getSubtype(game).add(SubType.AURA);
+                    }
                 }
                 if (controller.moveCards(card, Zone.BATTLEFIELD, ability, game, false, faceDown, false, null)) {
                     if (bestow) {
@@ -263,7 +271,9 @@ public class Spell extends StackObjImpl implements Card {
                         Permanent permanent = game.getPermanent(card.getId());
                         if (permanent != null && permanent instanceof PermanentCard) {
                             permanent.setSpellAbility(ability); // otherwise spell ability without bestow will be set
-                            card.addCardType(CardType.CREATURE);
+                            if (!card.getCardType().contains(CardType.CREATURE)) {
+                                card.addCardType(CardType.CREATURE);
+                            }
                             card.getSubtype(game).remove(SubType.AURA);
                         }
                     }
@@ -483,7 +493,9 @@ public class Spell extends StackObjImpl implements Card {
     public SubTypeList getSubtype(Game game) {
         if (this.getSpellAbility() instanceof BestowAbility) {
             SubTypeList subtypes = card.getSubtype(game);
-            subtypes.add(SubType.AURA);
+            if (!subtypes.contains(SubType.AURA)) { // do it only once
+                subtypes.add(SubType.AURA);
+            }
             return subtypes;
         }
         return card.getSubtype(game);
@@ -493,7 +505,9 @@ public class Spell extends StackObjImpl implements Card {
     public boolean hasSubtype(SubType subtype, Game game) {
         if (this.getSpellAbility() instanceof BestowAbility) { // workaround for Bestow (don't like it)
             SubTypeList subtypes = card.getSubtype(game);
-            subtypes.add(SubType.AURA);
+            if (!subtypes.contains(SubType.AURA)) { // do it only once
+                subtypes.add(SubType.AURA);
+            }
             if (subtypes.contains(subtype)) {
                 return true;
             }
@@ -756,6 +770,10 @@ public class Spell extends StackObjImpl implements Card {
 
     @Override
     public boolean moveToExile(UUID exileId, String name, UUID sourceId, Game game, List<UUID> appliedEffects) {
+        if (this.isCopiedSpell()) {
+            game.getStack().remove(this);
+            return true;
+        }
         return this.card.moveToExile(exileId, name, sourceId, game, appliedEffects);
     }
 
@@ -896,6 +914,64 @@ public class Spell extends StackObjImpl implements Card {
     }
 
     @Override
+    public FilterMana getColorIdentity() {
+        FilterMana mana = new FilterMana();
+        mana.setBlack(getManaCost().getText().matches(regexBlack));
+        mana.setBlue(getManaCost().getText().matches(regexBlue));
+        mana.setGreen(getManaCost().getText().matches(regexGreen));
+        mana.setRed(getManaCost().getText().matches(regexRed));
+        mana.setWhite(getManaCost().getText().matches(regexWhite));
+
+        for (String rule : getRules()) {
+            rule = rule.replaceAll("(?i)<i.*?</i>", ""); // Ignoring reminder text in italic
+            if (!mana.isBlack() && (rule.matches(regexBlack) || this.color.isBlack())) {
+                mana.setBlack(true);
+            }
+            if (!mana.isBlue() && (rule.matches(regexBlue) || this.color.isBlue())) {
+                mana.setBlue(true);
+            }
+            if (!mana.isGreen() && (rule.matches(regexGreen) || this.color.isGreen())) {
+                mana.setGreen(true);
+            }
+            if (!mana.isRed() && (rule.matches(regexRed) || this.color.isRed())) {
+                mana.setRed(true);
+            }
+            if (!mana.isWhite() && (rule.matches(regexWhite) || this.color.isWhite())) {
+                mana.setWhite(true);
+            }
+        }
+        if (isTransformable()) {
+            Card secondCard = getSecondCardFace();
+            ObjectColor color = secondCard.getColor(null);
+            mana.setBlack(mana.isBlack() || color.isBlack());
+            mana.setGreen(mana.isGreen() || color.isGreen());
+            mana.setRed(mana.isRed() || color.isRed());
+            mana.setBlue(mana.isBlue() || color.isBlue());
+            mana.setWhite(mana.isWhite() || color.isWhite());
+            for (String rule : secondCard.getRules()) {
+                rule = rule.replaceAll("(?i)<i.*?</i>", ""); // Ignoring reminder text in italic
+                if (!mana.isBlack() && rule.matches(regexBlack)) {
+                    mana.setBlack(true);
+                }
+                if (!mana.isBlue() && rule.matches(regexBlue)) {
+                    mana.setBlue(true);
+                }
+                if (!mana.isGreen() && rule.matches(regexGreen)) {
+                    mana.setGreen(true);
+                }
+                if (!mana.isRed() && rule.matches(regexRed)) {
+                    mana.setRed(true);
+                }
+                if (!mana.isWhite() && rule.matches(regexWhite)) {
+                    mana.setWhite(true);
+                }
+            }
+        }
+
+        return mana;
+    }
+
+    @Override
     public void setZone(Zone zone, Game game) {
         card.setZone(zone, game);
     }
@@ -946,6 +1022,21 @@ public class Spell extends StackObjImpl implements Card {
     @Override
     public TextPart addTextPart(TextPart textPart) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<UUID> getAttachments() {
+        throw new UnsupportedOperationException("Not supported."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean addAttachment(UUID permanentId, Game game) {
+        throw new UnsupportedOperationException("Not supported."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean removeAttachment(UUID permanentId, Game game) {
+        throw new UnsupportedOperationException("Not supported."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -75,6 +75,7 @@ public class Invasion extends ExpansionSet {
         cards.add(new SetCardInfo("Aura Mutation", 232, Rarity.RARE, mage.cards.a.AuraMutation.class));
         cards.add(new SetCardInfo("Aura Shards", 233, Rarity.UNCOMMON, mage.cards.a.AuraShards.class));
         cards.add(new SetCardInfo("Backlash", 234, Rarity.UNCOMMON, mage.cards.b.Backlash.class));
+        cards.add(new SetCardInfo("Barrin's Spite", 235, Rarity.RARE, mage.cards.b.BarrinsSpite.class));
         cards.add(new SetCardInfo("Barrin's Unmaking", 46, Rarity.COMMON, mage.cards.b.BarrinsUnmaking.class));
         cards.add(new SetCardInfo("Benalish Emissary", 5, Rarity.UNCOMMON, mage.cards.b.BenalishEmissary.class));
         cards.add(new SetCardInfo("Benalish Heralds", 6, Rarity.UNCOMMON, mage.cards.b.BenalishHeralds.class));
@@ -234,6 +235,8 @@ public class Invasion extends ExpansionSet {
         cards.add(new SetCardInfo("Prison Barricade", 25, Rarity.COMMON, mage.cards.p.PrisonBarricade.class));
         cards.add(new SetCardInfo("Probe", 66, Rarity.COMMON, mage.cards.p.Probe.class));
         cards.add(new SetCardInfo("Prohibit", 67, Rarity.COMMON, mage.cards.p.Prohibit.class));
+        cards.add(new SetCardInfo("Protective Sphere", 26, Rarity.COMMON, mage.cards.p.ProtectiveSphere.class));
+        cards.add(new SetCardInfo("Pure Reflection", 27, Rarity.RARE, mage.cards.p.PureReflection.class));
         cards.add(new SetCardInfo("Pyre Zombie", 261, Rarity.RARE, mage.cards.p.PyreZombie.class));
         cards.add(new SetCardInfo("Quirion Elves", 203, Rarity.COMMON, mage.cards.q.QuirionElves.class));
         cards.add(new SetCardInfo("Quirion Sentinel", 204, Rarity.COMMON, mage.cards.q.QuirionSentinel.class));
@@ -291,7 +294,7 @@ public class Invasion extends ExpansionSet {
         cards.add(new SetCardInfo("Slimy Kavu", 170, Rarity.COMMON, mage.cards.s.SlimyKavu.class));
         cards.add(new SetCardInfo("Slinking Serpent", 274, Rarity.UNCOMMON, mage.cards.s.SlinkingSerpent.class));
         cards.add(new SetCardInfo("Smoldering Tar", 275, Rarity.UNCOMMON, mage.cards.s.SmolderingTar.class));
-        cards.add(new SetCardInfo("Soul Burn", 351, Rarity.COMMON, mage.cards.s.SoulBurn.class));
+        cards.add(new SetCardInfo("Soul Burn", 124, Rarity.COMMON, mage.cards.s.SoulBurn.class));
         cards.add(new SetCardInfo("Sparring Golem", 312, Rarity.UNCOMMON, mage.cards.s.SparringGolem.class));
         cards.add(new SetCardInfo("Spinal Embrace", 276, Rarity.RARE, mage.cards.s.SpinalEmbrace.class));
         cards.add(new SetCardInfo("Spirit of Resistance", 38, Rarity.RARE, mage.cards.s.SpiritOfResistance.class));
@@ -344,7 +347,6 @@ public class Invasion extends ExpansionSet {
         cards.add(new SetCardInfo("Tsabo's Decree", 129, Rarity.RARE, mage.cards.t.TsabosDecree.class));
         cards.add(new SetCardInfo("Tsabo's Web", 317, Rarity.RARE, mage.cards.t.TsabosWeb.class));
         cards.add(new SetCardInfo("Tsabo Tavoc", 281, Rarity.RARE, mage.cards.t.TsaboTavoc.class));
-        cards.add(new SetCardInfo("Tsabo's Assassin", 128, Rarity.RARE, mage.cards.t.TsabosAssassin.class));
         cards.add(new SetCardInfo("Turf Wound", 177, Rarity.COMMON, mage.cards.t.TurfWound.class));
         cards.add(new SetCardInfo("Twilight's Call", 130, Rarity.RARE, mage.cards.t.TwilightsCall.class));
         cards.add(new SetCardInfo("Undermine", 282, Rarity.RARE, mage.cards.u.Undermine.class));

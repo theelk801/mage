@@ -55,7 +55,7 @@ public class SpellsCostReductionAllEffect extends CostModificationEffectImpl {
     private final boolean upTo;
 
     public SpellsCostReductionAllEffect(int amount) {
-        this(new FilterCard("All Spells "), amount);
+        this(new FilterCard("Spells"), amount);
     }
 
     public SpellsCostReductionAllEffect(FilterCard filter, int amount) {
@@ -112,10 +112,11 @@ public class SpellsCostReductionAllEffect extends CostModificationEffectImpl {
                 if (controller.choose(Outcome.Benefit, choice, game)) {
                     int reduce = Integer.parseInt(choice.getChoice());
                     CardUtil.reduceCost(abilityToModify, reduce);
+                } else {
+                    return false;
                 }
             }
         } else {
-
             CardUtil.reduceCost(abilityToModify, this.amount);
         }
         return true;

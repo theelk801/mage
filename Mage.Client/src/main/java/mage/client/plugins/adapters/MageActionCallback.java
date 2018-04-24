@@ -26,10 +26,12 @@ import mage.cards.MageCard;
 import mage.cards.action.ActionCallback;
 import mage.cards.action.TransferData;
 import mage.client.MageFrame;
+import mage.client.MagePane;
 import mage.client.SessionHandler;
 import mage.client.cards.BigCard;
 import mage.client.components.MageComponents;
 import mage.client.dialog.PreferencesDialog;
+import mage.client.game.GamePane;
 import mage.client.plugins.impl.Plugins;
 import mage.client.util.DefaultActionCallback;
 import mage.client.util.gui.ArrowBuilder;
@@ -367,6 +369,16 @@ public class MageActionCallback implements ActionCallback {
     }
 
     private void handleOverNewView(TransferData data) {
+        // Prevent to show tooltips from panes not in front
+        MagePane topPane = MageFrame.getTopMost(null);
+        if (topPane instanceof GamePane) {
+            if (!((GamePane) topPane).getGameId().equals(data.gameId)) {
+                return;
+            }
+        } else if (data.gameId != null) {
+            return;
+        }
+
         hideTooltipPopup();
         cancelTimeout();
         Component parentComponent = SwingUtilities.getRoot(data.component);
@@ -379,6 +391,7 @@ public class MageActionCallback implements ActionCallback {
         ArrowUtil.drawArrowsForTargets(data, parentPoint);
         ArrowUtil.drawArrowsForSource(data, parentPoint);
         ArrowUtil.drawArrowsForPairedCards(data, parentPoint);
+        ArrowUtil.drawArrowsForBandedCards(data, parentPoint);
         ArrowUtil.drawArrowsForEnchantPlayers(data, parentPoint);
         tooltipCard = data.card;
         showTooltipPopup(data, parentComponent, parentPoint);
@@ -441,6 +454,7 @@ public class MageActionCallback implements ActionCallback {
     public void hideGameUpdate(UUID gameId) {
         ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.TARGET);
         ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.PAIRED);
+        ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.BANDED);
         ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.SOURCE);
         ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.ENCHANT_PLAYERS);
     }
@@ -452,6 +466,7 @@ public class MageActionCallback implements ActionCallback {
         if (gameId != null) {
             ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.TARGET);
             ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.PAIRED);
+            ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.BANDED);
             ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.SOURCE);
             ArrowBuilder.getBuilder().removeArrowsByType(gameId, ArrowBuilder.Type.ENCHANT_PLAYERS);
         }

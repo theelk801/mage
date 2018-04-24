@@ -41,7 +41,7 @@ import mage.filter.StaticFilters;
 import mage.game.Game;
 import mage.game.permanent.Permanent;
 import mage.players.Player;
-import mage.target.common.TargetCreatureOrPlayer;
+import mage.target.common.TargetAnyTarget;
 
 /**
  *
@@ -54,9 +54,9 @@ public class Pandemonium extends CardImpl {
     public Pandemonium(UUID ownerId, CardSetInfo setInfo) {
         super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{3}{R}");
 
-        // Whenever a creature enters the battlefield, that creature's controller may have it deal damage equal to its power to target creature or player of his or her choice.
+        // Whenever a creature enters the battlefield, that creature's controller may have it deal damage equal to its power to any target of their choice.
         Ability ability = new EntersBattlefieldAllTriggeredAbility(Zone.BATTLEFIELD, new PandemoniumEffect(), StaticFilters.FILTER_PERMANENT_CREATURE, false, SetTargetPointer.PERMANENT, "");
-        ability.addTarget(new TargetCreatureOrPlayer());
+        ability.addTarget(new TargetAnyTarget());
         originalId = ability.getOriginalId();
         this.addAbility(ability);
     }
@@ -87,7 +87,7 @@ class PandemoniumEffect extends OneShotEffect {
 
     public PandemoniumEffect() {
         super(Outcome.Benefit);
-        this.staticText = "that creature's controller may have it deal damage equal to its power to target creature or player of his or her choice";
+        this.staticText = "that creature's controller may have it deal damage equal to its power to any target of their choice";
     }
 
     public PandemoniumEffect(final PandemoniumEffect effect) {
@@ -107,11 +107,11 @@ class PandemoniumEffect extends OneShotEffect {
             if (enteringCreature != null) {
                 Permanent targetPermanent = game.getPermanent(source.getTargets().getFirstTarget());
                 if (targetPermanent != null) {
-                    targetPermanent.damage(enteringCreature.getPower().getValue(), source.getSourceId(), game, false, true);
+                    targetPermanent.damage(enteringCreature.getPower().getValue(), enteringCreature.getId(), game, false, true);
                 } else {
                     Player targetPlayer = game.getPlayer(source.getTargets().getFirstTarget());
                     if (targetPlayer != null) {
-                        targetPlayer.damage(enteringCreature.getPower().getValue(), source.getSourceId(), game, false, true);
+                        targetPlayer.damage(enteringCreature.getPower().getValue(), enteringCreature.getId(), game, false, true);
                     }
                 }
                 return true;

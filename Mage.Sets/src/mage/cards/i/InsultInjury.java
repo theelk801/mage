@@ -17,8 +17,9 @@ import mage.game.Game;
 import mage.game.events.GameEvent;
 import mage.game.permanent.Permanent;
 import mage.players.Player;
-import mage.target.TargetPlayer;
 import mage.target.common.TargetCreaturePermanent;
+import mage.target.common.TargetPlayerOrPlaneswalker;
+import mage.util.CardUtil;
 
 /**
  * @author Stravant
@@ -39,7 +40,7 @@ public class InsultInjury extends SplitCard {
         // Injury deals 2 damage to target creature and 2 damage to target player.
         ((CardImpl) (getRightHalfCard())).addAbility(new AftermathAbility().setRuleAtTheTop(true));
         getRightHalfCard().getSpellAbility().addTarget(new TargetCreaturePermanent());
-        getRightHalfCard().getSpellAbility().addTarget(new TargetPlayer());
+        getRightHalfCard().getSpellAbility().addTarget(new TargetPlayerOrPlaneswalker());
         getRightHalfCard().getSpellAbility().addEffect(new InjuryEffect());
     }
 
@@ -57,7 +58,7 @@ class InsultDoubleDamageEffect extends ReplacementEffectImpl {
 
     public InsultDoubleDamageEffect() {
         super(Duration.EndOfTurn, Outcome.Damage);
-        staticText = "If a source you control would deal damage this turn, it deals double that damage to that creature or player instead.";
+        staticText = "If a source you control would deal damage this turn, it deals double that damage to that permanent or player instead.";
     }
 
     public InsultDoubleDamageEffect(final InsultDoubleDamageEffect effect) {
@@ -88,7 +89,7 @@ class InsultDoubleDamageEffect extends ReplacementEffectImpl {
 
     @Override
     public boolean replaceEvent(GameEvent event, Ability source, Game game) {
-        event.setAmount(event.getAmount() * 2);
+        event.setAmount(CardUtil.addWithOverflowCheck(event.getAmount(), event.getAmount()));
         return false;
     }
 }

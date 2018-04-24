@@ -27,6 +27,7 @@
  */
 package mage.cards.n;
 
+import java.util.UUID;
 import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.Mode;
@@ -39,7 +40,7 @@ import mage.abilities.text.TextPartSubType;
 import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
 import mage.choices.Choice;
-import mage.choices.ChoiceImpl;
+import mage.choices.ChoiceCreatureType;
 import mage.constants.*;
 import mage.filter.common.FilterControlledCreaturePermanent;
 import mage.filter.predicate.Predicates;
@@ -51,10 +52,6 @@ import mage.players.Player;
 import mage.target.common.TargetControlledCreaturePermanent;
 import mage.target.common.TargetCreaturePermanent;
 import mage.target.targetpointer.FixedTarget;
-
-import java.util.LinkedHashSet;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -124,7 +121,7 @@ class NewBloodEffect extends OneShotEffect {
 class ChangeCreatureTypeTargetEffect extends ContinuousEffectImpl {
 
     private SubType fromSubType;
-    private SubType toSubType;
+    private final SubType toSubType;
 
     public ChangeCreatureTypeTargetEffect(SubType fromSubType, SubType toSubType, Duration duration) {
         super(duration, Layer.TextChangingEffects_3, SubLayer.NA, Outcome.Benefit);
@@ -145,15 +142,10 @@ class ChangeCreatureTypeTargetEffect extends ContinuousEffectImpl {
             return;
         }
         if (fromSubType == null) {
-            Choice typeChoice = new ChoiceImpl(true);
+            Choice typeChoice = new ChoiceCreatureType(game.getObject(source.getSourceId()));
             typeChoice.setMessage("Choose creature type to change to Vampire");
-            typeChoice.setChoices(SubType.getCreatureTypes(false).stream().map(SubType::toString).collect(Collectors.toCollection(LinkedHashSet::new)));
-            while (!controller.choose(outcome, typeChoice, game)) {
-                if (!controller.canRespond()) {
-                    return;
-                }
-            }
-            if (typeChoice.getChoice() == null) {
+            if (!controller.choose(outcome, typeChoice, game)) {
+                discard();
                 return;
             }
             fromSubType = SubType.byDescription(typeChoice.getChoice());

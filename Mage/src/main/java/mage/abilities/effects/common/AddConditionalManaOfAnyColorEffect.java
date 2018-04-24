@@ -66,7 +66,7 @@ public class AddConditionalManaOfAnyColorEffect extends ManaEffect {
                 + (oneChoice ? "of any"
                         + (amount instanceof StaticValue && (((StaticValue) amount).toString()).equals("1") ? "" : " one")
                         + " color" : "in any combination of colors")
-                + " to your mana pool. " + manaBuilder.getRule();
+                + ". " + manaBuilder.getRule();
     }
 
     public AddConditionalManaOfAnyColorEffect(final AddConditionalManaOfAnyColorEffect effect) {
@@ -93,11 +93,9 @@ public class AddConditionalManaOfAnyColorEffect extends ManaEffect {
         ChoiceColor choice = new ChoiceColor(true);
 
         for (int i = 0; i < value; i++) {
-            while (!choice.isChosen()) {
-                controller.choose(outcome, choice, game);
-                if (!controller.isInGame()) {
-                    return false;
-                }
+            controller.choose(outcome, choice, game);
+            if (choice.getChoice() == null) {
+                return false;
             }
             Mana mana = choice.getMana(1);
             if (mana != null) {

@@ -27,6 +27,7 @@
  */
 package mage.cards.c;
 
+import java.util.UUID;
 import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.common.SimpleStaticAbility;
@@ -45,8 +46,6 @@ import mage.filter.FilterPermanent;
 import mage.filter.predicate.mageobject.ChosenSubtypePredicate;
 import mage.game.Game;
 import mage.players.Player;
-
-import java.util.UUID;
 
 /**
  *
@@ -94,7 +93,7 @@ class CallerOfTheHuntAdditionalCostEffect extends OneShotEffect {
 
     public CallerOfTheHuntAdditionalCostEffect() {
         super(Outcome.Benefit);
-        this.staticText = "As an additional cost to cast {this}, choose a creature type. \r"
+        this.staticText = "as an additional cost to cast this spell, choose a creature type. \r"
                 + "{this}'s power and toughness are each equal to the number of creatures of the chosen type on the battlefield";
     }
 
@@ -128,13 +127,8 @@ class ChooseCreatureTypeEffect extends OneShotEffect { // code by LevelX2, but t
     public boolean apply(Game game, Ability source) {
         Player controller = game.getPlayer(source.getControllerId());
         MageObject mageObject = game.getObject(source.getSourceId());
-        if (controller != null && mageObject != null) {
-            Choice typeChoice = new ChoiceCreatureType();
-            while (!controller.choose(outcome, typeChoice, game)) {
-                if (!controller.canRespond()) {
-                    return false;
-                }
-            }
+        Choice typeChoice = new ChoiceCreatureType(mageObject);
+        if (controller != null && mageObject != null && controller.choose(outcome, typeChoice, game)) {
             if (!game.isSimulation()) {
                 game.informPlayers(mageObject.getName() + ": " + controller.getLogName() + " has chosen " + typeChoice.getChoice());
             }

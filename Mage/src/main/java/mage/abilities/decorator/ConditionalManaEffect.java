@@ -79,26 +79,25 @@ public class ConditionalManaEffect extends ManaEffect {
             otherwiseEffect.setTargetPointer(this.targetPointer);
         }
         Mana mana = getMana(game, source);
-
-        if (mana != null && mana.getAny() > 0) {
+        if (mana == null) {
+            return false;
+        }
+        if (mana.getAny() > 0) {
             int amount = mana.getAny();
 
             ChoiceColor choice = new ChoiceColor(true);
             Mana createdMana = null;
             if (controller.choose(outcome, choice, game)) {
-                if (choice.getColor() == null) {
-                    return false; // it happens, don't know how
-                }
-
                 createdMana = choice.getMana(amount);
             }
+            if (createdMana == null) {
+                return false;
+            }
             mana = createdMana;
-        }
-
-        if (mana != null) {
+            // because the mana type is now choosen, fire the event with the mana information
             checkToFirePossibleEvents(mana, game, source);
-            controller.getManaPool().addMana(mana, game, source);
         }
+        controller.getManaPool().addMana(mana, game, source);
         return true;
     }
 

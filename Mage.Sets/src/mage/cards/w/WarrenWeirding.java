@@ -49,6 +49,7 @@ import mage.filter.predicate.permanent.ControllerIdPredicate;
 import mage.game.Game;
 import mage.game.permanent.Permanent;
 import mage.game.permanent.token.GoblinRogueToken;
+import mage.game.permanent.token.TokenImpl;
 import mage.game.permanent.token.Token;
 import mage.players.Player;
 import mage.target.TargetPlayer;
@@ -105,7 +106,7 @@ class WarrenWeirdingEffect extends OneShotEffect {
         FilterControlledPermanent filter = new FilterControlledPermanent("creature");
         filter.add(new CardTypePredicate(CardType.CREATURE));
         filter.add(new ControllerIdPredicate(player.getId()));
-        TargetControlledPermanent target = new TargetControlledPermanent(1, 1, filter, false);
+        TargetControlledPermanent target = new TargetControlledPermanent(1, 1, filter, true);
 
         //A spell or ability could have removed the only legal target this player
         //had, if thats the case this ability should fizzle.

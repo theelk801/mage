@@ -50,14 +50,14 @@ public class TargetActivatedAbility extends TargetObject {
     protected final FilterAbility filter;
 
     public TargetActivatedAbility() {
-        this(new FilterAbility());
+        this(new FilterAbility("activated ability"));
     }
 
     public TargetActivatedAbility(FilterAbility filter) {
         this.minNumberOfTargets = 1;
         this.maxNumberOfTargets = 1;
         this.zone = Zone.STACK;
-        this.targetName = "activated ability";
+        this.targetName = filter.getMessage();
         this.filter = filter;
     }
 

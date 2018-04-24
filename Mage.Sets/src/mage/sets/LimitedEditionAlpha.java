@@ -37,18 +37,21 @@ public class LimitedEditionAlpha extends ExpansionSet {
         cards.add(new SetCardInfo("Balance", 187, Rarity.RARE, mage.cards.b.Balance.class));
         cards.add(new SetCardInfo("Basalt Monolith", 231, Rarity.UNCOMMON, mage.cards.b.BasaltMonolith.class));
         cards.add(new SetCardInfo("Bayou", 278, Rarity.RARE, mage.cards.b.Bayou.class));
+        cards.add(new SetCardInfo("Benalish Hero", 188, Rarity.COMMON, mage.cards.b.BenalishHero.class));
         cards.add(new SetCardInfo("Berserk", 94, Rarity.UNCOMMON, mage.cards.b.Berserk.class));
         cards.add(new SetCardInfo("Birds of Paradise", 95, Rarity.RARE, mage.cards.b.BirdsOfParadise.class));
         cards.add(new SetCardInfo("Black Knight", 3, Rarity.UNCOMMON, mage.cards.b.BlackKnight.class));
         cards.add(new SetCardInfo("Black Lotus", 232, Rarity.RARE, mage.cards.b.BlackLotus.class));
         cards.add(new SetCardInfo("Black Vise", 233, Rarity.UNCOMMON, mage.cards.b.BlackVise.class));
         cards.add(new SetCardInfo("Black Ward", 189, Rarity.UNCOMMON, mage.cards.b.BlackWard.class));
+        cards.add(new SetCardInfo("Blaze of Glory", 190, Rarity.RARE, mage.cards.b.BlazeOfGlory.class));
         cards.add(new SetCardInfo("Blessing", 191, Rarity.RARE, mage.cards.b.Blessing.class));
         cards.add(new SetCardInfo("Blue Elemental Blast", 50, Rarity.COMMON, mage.cards.b.BlueElementalBlast.class));
         cards.add(new SetCardInfo("Blue Ward", 192, Rarity.UNCOMMON, mage.cards.b.BlueWard.class));
         cards.add(new SetCardInfo("Bog Wraith", 4, Rarity.UNCOMMON, mage.cards.b.BogWraith.class));
         cards.add(new SetCardInfo("Braingeyser", 51, Rarity.RARE, mage.cards.b.Braingeyser.class));
         cards.add(new SetCardInfo("Burrowing", 139, Rarity.UNCOMMON, mage.cards.b.Burrowing.class));
+        cards.add(new SetCardInfo("Camouflage", 96, Rarity.UNCOMMON, mage.cards.c.Camouflage.class));
         cards.add(new SetCardInfo("Castle", 193, Rarity.UNCOMMON, mage.cards.c.Castle.class));
         cards.add(new SetCardInfo("Celestial Prism", 234, Rarity.UNCOMMON, mage.cards.c.CelestialPrism.class));
         cards.add(new SetCardInfo("Channel", 97, Rarity.UNCOMMON, mage.cards.c.Channel.class));
@@ -93,6 +96,7 @@ public class LimitedEditionAlpha extends ExpansionSet {
         cards.add(new SetCardInfo("Earthquake", 147, Rarity.RARE, mage.cards.e.Earthquake.class));
         cards.add(new SetCardInfo("Elvish Archers", 100, Rarity.RARE, mage.cards.e.ElvishArchers.class));
         cards.add(new SetCardInfo("Evil Presence", 16, Rarity.UNCOMMON, mage.cards.e.EvilPresence.class));
+        cards.add(new SetCardInfo("False Orders", 148, Rarity.COMMON, mage.cards.f.FalseOrders.class));
         cards.add(new SetCardInfo("Farmstead", 203, Rarity.RARE, mage.cards.f.Farmstead.class));
         cards.add(new SetCardInfo("Fastbond", 101, Rarity.RARE, mage.cards.f.Fastbond.class));
         cards.add(new SetCardInfo("Fear", 17, Rarity.COMMON, mage.cards.f.Fear.class));
@@ -124,6 +128,7 @@ public class LimitedEditionAlpha extends ExpansionSet {
         cards.add(new SetCardInfo("Grizzly Bears", 108, Rarity.COMMON, mage.cards.g.GrizzlyBears.class));
         cards.add(new SetCardInfo("Guardian Angel", 205, Rarity.COMMON, mage.cards.g.GuardianAngel.class));
         cards.add(new SetCardInfo("Healing Salve", 206, Rarity.COMMON, mage.cards.h.HealingSalve.class));
+        cards.add(new SetCardInfo("Helm of Chatzuk", 246, Rarity.RARE, mage.cards.h.HelmOfChatzuk.class));
         cards.add(new SetCardInfo("Hill Giant", 158, Rarity.COMMON, mage.cards.h.HillGiant.class));
         cards.add(new SetCardInfo("Holy Armor", 207, Rarity.COMMON, mage.cards.h.HolyArmor.class));
         cards.add(new SetCardInfo("Holy Strength", 208, Rarity.COMMON, mage.cards.h.HolyStrength.class));
@@ -174,6 +179,7 @@ public class LimitedEditionAlpha extends ExpansionSet {
         cards.add(new SetCardInfo("Mana Vault", 259, Rarity.RARE, mage.cards.m.ManaVault.class));
         cards.add(new SetCardInfo("Meekstone", 260, Rarity.RARE, mage.cards.m.Meekstone.class));
         cards.add(new SetCardInfo("Merfolk of the Pearl Trident", 67, Rarity.COMMON, mage.cards.m.MerfolkOfThePearlTrident.class));
+        cards.add(new SetCardInfo("Mesa Pegasus", 212, Rarity.COMMON, mage.cards.m.MesaPegasus.class));
         cards.add(new SetCardInfo("Mind Twist", 24, Rarity.RARE, mage.cards.m.MindTwist.class));
         cards.add(new SetCardInfo("Mons's Goblin Raiders", 165, Rarity.COMMON, mage.cards.m.MonssGoblinRaiders.class));
         cards.add(new SetCardInfo("Mountain", 283, Rarity.LAND, mage.cards.basiclands.Mountain.class, NON_FULL_USE_VARIOUS));
@@ -204,12 +210,14 @@ public class LimitedEditionAlpha extends ExpansionSet {
         cards.add(new SetCardInfo("Plains", 285, Rarity.LAND, mage.cards.basiclands.Plains.class, NON_FULL_USE_VARIOUS));
         cards.add(new SetCardInfo("Plains", 286, Rarity.LAND, mage.cards.basiclands.Plains.class, NON_FULL_USE_VARIOUS));
         cards.add(new SetCardInfo("Plateau", 287, Rarity.RARE, mage.cards.p.Plateau.class));
+        cards.add(new SetCardInfo("Power Leak", 72, Rarity.COMMON, mage.cards.p.PowerLeak.class));
         cards.add(new SetCardInfo("Power Sink", 73, Rarity.COMMON, mage.cards.p.PowerSink.class));
         cards.add(new SetCardInfo("Power Surge", 168, Rarity.RARE, mage.cards.p.PowerSurge.class));
         cards.add(new SetCardInfo("Prodigal Sorcerer", 74, Rarity.COMMON, mage.cards.p.ProdigalSorcerer.class));
         cards.add(new SetCardInfo("Psionic Blast", 75, Rarity.UNCOMMON, mage.cards.p.PsionicBlast.class));
         cards.add(new SetCardInfo("Psychic Venom", 76, Rarity.COMMON, mage.cards.p.PsychicVenom.class));
         cards.add(new SetCardInfo("Purelace", 216, Rarity.RARE, mage.cards.p.Purelace.class));
+        cards.add(new SetCardInfo("Raging River", 169, Rarity.RARE, mage.cards.r.RagingRiver.class));
         cards.add(new SetCardInfo("Raise Dead", 31, Rarity.COMMON, mage.cards.r.RaiseDead.class));
         cards.add(new SetCardInfo("Red Elemental Blast", 170, Rarity.COMMON, mage.cards.r.RedElementalBlast.class));
         cards.add(new SetCardInfo("Red Ward", 217, Rarity.UNCOMMON, mage.cards.r.RedWard.class));
@@ -259,6 +267,7 @@ public class LimitedEditionAlpha extends ExpansionSet {
         cards.add(new SetCardInfo("Thicket Basilisk", 127, Rarity.UNCOMMON, mage.cards.t.ThicketBasilisk.class));
         cards.add(new SetCardInfo("Thoughtlace", 83, Rarity.RARE, mage.cards.t.Thoughtlace.class));
         cards.add(new SetCardInfo("Throne of Bone", 273, Rarity.UNCOMMON, mage.cards.t.ThroneOfBone.class));
+        cards.add(new SetCardInfo("Timber Wolves", 128, Rarity.RARE, mage.cards.t.TimberWolves.class));
         cards.add(new SetCardInfo("Timetwister", 85, Rarity.RARE, mage.cards.t.Timetwister.class));
         cards.add(new SetCardInfo("Time Vault", 274, Rarity.RARE, mage.cards.t.TimeVault.class));
         cards.add(new SetCardInfo("Time Walk", 84, Rarity.RARE, mage.cards.t.TimeWalk.class));

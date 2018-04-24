@@ -2,6 +2,7 @@ package mage.verify;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import mage.util.StreamUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +17,38 @@ import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 public final class MtgJson {
+
+    public static Map<String, String> mtgJsonToXMageCodes = new HashMap<>();
+    public static Map<String, String> xMageToMtgJsonCodes = new HashMap<>();
+
+    static {
+        mtgJsonToXMageCodes.put("pWCQ", "WMCQ");
+        mtgJsonToXMageCodes.put("pSUS", "SUS");
+        mtgJsonToXMageCodes.put("pPRE", "PTC");
+        mtgJsonToXMageCodes.put("pMPR", "MPRP");
+        mtgJsonToXMageCodes.put("pMEI", "MBP");
+        mtgJsonToXMageCodes.put("pGTW", "GRC"); // pGTW - Gateway = GRC - WPN Gateway ???
+        mtgJsonToXMageCodes.put("pGRU", "GUR");
+        mtgJsonToXMageCodes.put("pGPX", "GPX");
+        mtgJsonToXMageCodes.put("pFNM", "FNMP");
+        mtgJsonToXMageCodes.put("pELP", "EURO");
+        mtgJsonToXMageCodes.put("pARL", "ARENA");
+        mtgJsonToXMageCodes.put("pALP", "APAC");
+        mtgJsonToXMageCodes.put("PO2", "P02");
+        mtgJsonToXMageCodes.put("DD3_JVC", "DD3JVC");
+        mtgJsonToXMageCodes.put("DD3_GVL", "DDD");
+        mtgJsonToXMageCodes.put("DD3_EVG", "DD3EVG");
+        mtgJsonToXMageCodes.put("DD3_DVD", "DDC");
+        mtgJsonToXMageCodes.put("NMS", "NEM");
+        mtgJsonToXMageCodes.put("MPS_AKH", "MPS-AKH");
+
+
+        // revert search
+        for(Map.Entry<String, String> entry: mtgJsonToXMageCodes.entrySet()){
+            xMageToMtgJsonCodes.put(entry.getValue(), entry.getKey());
+        }
+    }
+
     private MtgJson() {}
 
     private static final class CardHolder {
@@ -62,9 +95,16 @@ public final class MtgJson {
             }
             stream = new FileInputStream(file);
         }
-        ZipInputStream zipInputStream = new ZipInputStream(stream);
-        zipInputStream.getNextEntry();
-        return new ObjectMapper().readValue(zipInputStream, ref);
+        ZipInputStream zipInputStream = null;
+        try {
+            zipInputStream = new ZipInputStream(stream);
+            zipInputStream.getNextEntry();
+            return new ObjectMapper().readValue(zipInputStream, ref);
+        } finally {
+            StreamUtils.closeQuietly(zipInputStream);
+            StreamUtils.closeQuietly(stream);
+        }
+
     }
 
     public static Map<String, JsonSet> sets() {

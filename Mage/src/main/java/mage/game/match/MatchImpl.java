@@ -224,7 +224,7 @@ public abstract class MatchImpl implements Match {
         addGame(); // raises only the number
         shufflePlayers();
         for (MatchPlayer matchPlayer : this.players) {
-            if (!matchPlayer.hasQuit()) {
+            if (!matchPlayer.hasQuit() && matchPlayer.getDeck() != null) {
                 matchPlayer.getPlayer().init(game);
                 game.loadCards(matchPlayer.getDeck().getCards(), matchPlayer.getPlayer().getId());
                 game.loadCards(matchPlayer.getDeck().getSideboard(), matchPlayer.getPlayer().getId());
@@ -236,6 +236,10 @@ public abstract class MatchImpl implements Match {
                     if (matchPlayer.getPriorityTimeLeft() > 0) {
                         matchPlayer.getPlayer().setPriorityTimeLeft(matchPlayer.getPriorityTimeLeft());
                     }
+                }
+            } else {
+                if (matchPlayer.getDeck() == null) {
+                    logger.error("Match: " + this.getId() + " " + matchPlayer.getName() + " has no deck.");
                 }
             }
         }
@@ -433,10 +437,15 @@ public abstract class MatchImpl implements Match {
                 sb.append(" QUITTED");
             }
             sb.append("<br/>");
-            sb.append("DeckHash: ").append(mp.getDeck().getDeckHashCode()).append("<br/>");
+            if (mp.getDeck() != null) {
+                sb.append("DeckHash: ").append(mp.getDeck().getDeckHashCode()).append("<br/>");
+            }
         }
         if (getDraws() > 0) {
             sb.append("   Draws: ").append(getDraws()).append("<br/>");
+        }
+        if (options.getRange() != null) {
+            sb.append("   Range: ").append(options.getRange().toString()).append("<br/>");
         }
         sb.append("<br/>").append("Match is ").append(this.getOptions().isRated() ? "" : "not ").append("rated<br/>");
         sb.append("You have to win ").append(this.getWinsNeeded()).append(this.getWinsNeeded() == 1 ? " game" : " games").append(" to win the complete match<br/>");

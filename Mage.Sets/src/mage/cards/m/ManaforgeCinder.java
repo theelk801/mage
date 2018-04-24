@@ -41,8 +41,8 @@ import mage.cards.CardSetInfo;
 import mage.choices.Choice;
 import mage.choices.ChoiceImpl;
 import mage.constants.CardType;
-import mage.constants.SubType;
 import mage.constants.Outcome;
+import mage.constants.SubType;
 import mage.constants.Zone;
 import mage.game.Game;
 import mage.players.Player;
@@ -54,15 +54,15 @@ import mage.players.Player;
 public class ManaforgeCinder extends CardImpl {
 
     public ManaforgeCinder(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.CREATURE},"{B/R}");
+        super(ownerId, setInfo, new CardType[]{CardType.CREATURE}, "{B/R}");
         this.subtype.add(SubType.ELEMENTAL);
         this.subtype.add(SubType.SHAMAN);
         this.power = new MageInt(1);
         this.toughness = new MageInt(1);
 
-        // {1}: Add {B} or {R} to your mana pool. Activate this ability no more than three times each turn.
+        // {1}: Add {B} or {R}. Activate this ability no more than three times each turn.
         this.addAbility(new LimitedTimesPerTurnActivatedAbility(Zone.BATTLEFIELD, new ManaforgeCinderManaEffect(), new ManaCostsImpl("{1}"), 3));
-        
+
     }
 
     public ManaforgeCinder(final ManaforgeCinder card) {
@@ -75,13 +75,11 @@ public class ManaforgeCinder extends CardImpl {
     }
 }
 
-
-
 class ManaforgeCinderManaEffect extends OneShotEffect {
 
     public ManaforgeCinderManaEffect() {
         super(Outcome.PutManaInPool);
-        this.staticText = "Add {B} or {R} to your mana pool";
+        this.staticText = "Add {B} or {R}";
     }
 
     public ManaforgeCinderManaEffect(final ManaforgeCinderManaEffect effect) {
@@ -102,12 +100,10 @@ class ManaforgeCinderManaEffect extends OneShotEffect {
             choices.add("Black");
             choices.add("Red");
             manaChoice.setChoices(choices);
-            manaChoice.setMessage("Select black or red mana to add to your mana pool");
+            manaChoice.setMessage("Select black or red mana to add");
             Mana mana = new Mana();
-            while (!controller.choose(Outcome.Benefit, manaChoice, game)) {
-                if (!controller.canRespond()) {
-                    return false;
-                }
+            if (!controller.choose(Outcome.Benefit, manaChoice, game)) {
+                return false;
             }
             if (manaChoice.getChoice() == null) {
                 return false;

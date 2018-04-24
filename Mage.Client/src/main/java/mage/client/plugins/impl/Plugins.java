@@ -3,12 +3,10 @@ package mage.client.plugins.impl;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.swing.JComponent;
-
 import mage.cards.MageCard;
 import mage.cards.MagePermanent;
 import mage.cards.action.ActionCallback;
@@ -30,11 +28,12 @@ import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import org.apache.log4j.Logger;
 import org.mage.plugins.card.CardPluginImpl;
+import static org.mage.plugins.card.utils.CardImageUtils.getImagesDir;
 import org.mage.plugins.theme.ThemePluginImpl;
 
 public enum Plugins implements MagePlugins {
     instance;
-    public static final String PLUGINS_DIRECTORY = "plugins/";
+    public static final String PLUGINS_DIRECTORY = "plugins";
 
     private static final Logger LOGGER = Logger.getLogger(Plugins.class);
     private static PluginManager pm;
@@ -45,12 +44,12 @@ public enum Plugins implements MagePlugins {
     private static final MageActionCallback mageActionCallback = new MageActionCallback();
     private final Map<String, String> sortingOptions = new HashMap<>();
 
-
     @Override
     public void loadPlugins() {
+
         LOGGER.info("Loading plugins...");
         pm = PluginManagerFactory.createPluginManager();
-        pm.addPluginsFrom(new File(PLUGINS_DIRECTORY).toURI());
+        pm.addPluginsFrom(new File(PLUGINS_DIRECTORY + File.separator).toURI());
         this.cardPlugin = new CardPluginImpl();
         this.counterPlugin = pm.getPlugin(CounterPlugin.class);
         this.themePlugin = new ThemePluginImpl();
@@ -122,7 +121,7 @@ public enum Plugins implements MagePlugins {
     }
 
     @Override
-    public int sortPermanents(Map<String, JComponent> ui, Collection<MagePermanent> permanents, boolean topRow) {
+    public int sortPermanents(Map<String, JComponent> ui, Map<UUID, MagePermanent> permanents, boolean topRow) {
         if (this.cardPlugin != null) {
             return this.cardPlugin.sortPermanents(ui, permanents, PreferencesDialog.getCachedValue("nonLandPermanentsInOnePile", "false").equals("true"), topRow);
         }
@@ -131,10 +130,8 @@ public enum Plugins implements MagePlugins {
 
     @Override
     public void downloadSymbols() {
-        String useDefault = PreferencesDialog.getCachedValue(PreferencesDialog.KEY_CARD_IMAGES_USE_DEFAULT, "true");
-        String path = useDefault.equals("true") ? null : PreferencesDialog.getCachedValue(PreferencesDialog.KEY_CARD_IMAGES_PATH, null);
         if (this.cardPlugin != null) {
-            this.cardPlugin.downloadSymbols(path);
+            this.cardPlugin.downloadSymbols(getImagesDir());
         }
     }
 

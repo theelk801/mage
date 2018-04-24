@@ -85,6 +85,7 @@ public class Dissension extends ExpansionSet {
         cards.add(new SetCardInfo("Crypt Champion", 40, Rarity.UNCOMMON, mage.cards.c.CryptChampion.class));
         cards.add(new SetCardInfo("Cytoplast Manipulator", 23, Rarity.RARE, mage.cards.c.CytoplastManipulator.class));
         cards.add(new SetCardInfo("Cytoplast Root-Kin", 81, Rarity.RARE, mage.cards.c.CytoplastRootKin.class));
+        cards.add(new SetCardInfo("Cytoshape", 108, Rarity.RARE, mage.cards.c.Cytoshape.class));
         cards.add(new SetCardInfo("Cytospawn Shambler", 82, Rarity.COMMON, mage.cards.c.CytospawnShambler.class));
         cards.add(new SetCardInfo("Delirium Skeins", 41, Rarity.COMMON, mage.cards.d.DeliriumSkeins.class));
         cards.add(new SetCardInfo("Demonfire", 60, Rarity.RARE, mage.cards.d.Demonfire.class));
@@ -118,6 +119,7 @@ public class Dissension extends ExpansionSet {
         cards.add(new SetCardInfo("Indrik Stomphowler", 86, Rarity.UNCOMMON, mage.cards.i.IndrikStomphowler.class));
         cards.add(new SetCardInfo("Infernal Tutor", 46, Rarity.RARE, mage.cards.i.InfernalTutor.class));
         cards.add(new SetCardInfo("Isperia the Inscrutable", 114, Rarity.RARE, mage.cards.i.IsperiaTheInscrutable.class));
+        cards.add(new SetCardInfo("Jagged Poppet", 115, Rarity.UNCOMMON, mage.cards.j.JaggedPoppet.class));
         cards.add(new SetCardInfo("Kill-Suit Cultist", 65, Rarity.COMMON, mage.cards.k.KillSuitCultist.class));
         cards.add(new SetCardInfo("Kindle the Carnage", 66, Rarity.UNCOMMON, mage.cards.k.KindleTheCarnage.class));
         cards.add(new SetCardInfo("Leafdrake Roost", 116, Rarity.UNCOMMON, mage.cards.l.LeafdrakeRoost.class));

@@ -38,8 +38,8 @@ import mage.cards.CardSetInfo;
 import mage.cards.Cards;
 import mage.cards.CardsImpl;
 import mage.constants.CardType;
-import mage.constants.SubType;
 import mage.constants.Outcome;
+import mage.constants.SubType;
 import mage.game.Game;
 import mage.players.Player;
 import mage.target.TargetPlayer;
@@ -51,18 +51,18 @@ import mage.target.TargetPlayer;
 public class SingeMindOgre extends CardImpl {
 
     public SingeMindOgre(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.CREATURE},"{2}{B}{R}");
+        super(ownerId, setInfo, new CardType[]{CardType.CREATURE}, "{2}{B}{R}");
         this.subtype.add(SubType.OGRE);
         this.subtype.add(SubType.MUTANT);
 
         this.power = new MageInt(3);
         this.toughness = new MageInt(2);
 
-        // When Singe-Mind Ogre enters the battlefield, target player reveals a card at random from his or her hand, then loses life equal to that card's converted mana cost.
+        // When Singe-Mind Ogre enters the battlefield, target player reveals a card at random from their hand, then loses life equal to that card's converted mana cost.
         Ability ability = new EntersBattlefieldTriggeredAbility(new SingeMindOgreEffect(), false);
         ability.addTarget(new TargetPlayer());
         this.addAbility(ability);
-        
+
     }
 
     public SingeMindOgre(final SingeMindOgre card) {
@@ -79,7 +79,7 @@ class SingeMindOgreEffect extends OneShotEffect {
 
     public SingeMindOgreEffect() {
         super(Outcome.LoseLife);
-        this.staticText = "target player reveals a card at random from his or her hand, then loses life equal to that card's converted mana cost";
+        this.staticText = "target player reveals a card at random from their hand, then loses life equal to that card's converted mana cost";
     }
 
     public SingeMindOgreEffect(final SingeMindOgreEffect effect) {
@@ -97,10 +97,12 @@ class SingeMindOgreEffect extends OneShotEffect {
         if (targetPlayer != null && !targetPlayer.getHand().isEmpty()) {
             Cards revealed = new CardsImpl();
             Card card = targetPlayer.getHand().getRandom(game);
-            revealed.add(card);
-            targetPlayer.revealCards("Singe-Mind Ogre", revealed, game);
-            targetPlayer.loseLife(card.getConvertedManaCost(), game, false);
-            return true;
+            if (card != null) {
+                revealed.add(card);
+                targetPlayer.revealCards("Singe-Mind Ogre", revealed, game);
+                targetPlayer.loseLife(card.getConvertedManaCost(), game, false);
+                return true;
+            }
         }
         return false;
     }

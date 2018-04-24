@@ -40,7 +40,7 @@ import mage.game.Game;
  *
  * @author spjspj
  */
-public class TetraviteToken extends Token {
+public class TetraviteToken extends TokenImpl {
 
     public TetraviteToken() {
         super("Tetravite", "1/1 colorless Tetravite artifact creature token");
@@ -52,6 +52,14 @@ public class TetraviteToken extends Token {
 
         this.addAbility(FlyingAbility.getInstance());
         this.addAbility(new CantBeEnchantedAbility());
+    }
+
+    public TetraviteToken(final TetraviteToken token) {
+        super(token);
+    }
+
+    public TetraviteToken copy() {
+        return new TetraviteToken(this);
     }
 }
 
@@ -71,11 +79,8 @@ class CantBeEnchantedAbility extends StaticAbility {
     }
 
     public boolean canTarget(MageObject source, Game game) {
-        if (source.isEnchantment()
-                && source.hasSubtype(SubType.AURA, game)) {
-            return false;
-        }
-        return true;
+        return !(source.isEnchantment()
+                && source.hasSubtype(SubType.AURA, game));
     }
 
 }

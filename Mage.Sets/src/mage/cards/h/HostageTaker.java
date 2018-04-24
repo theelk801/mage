@@ -41,10 +41,10 @@ import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
 import mage.constants.AsThoughEffectType;
 import mage.constants.CardType;
-import mage.constants.SubType;
 import mage.constants.Duration;
 import mage.constants.ManaType;
 import mage.constants.Outcome;
+import mage.constants.SubType;
 import mage.constants.Zone;
 import mage.filter.FilterPermanent;
 import mage.filter.predicate.Predicates;
@@ -118,7 +118,7 @@ class HostageTakerExileEffect extends OneShotEffect {
 
     @Override
     public boolean apply(Game game, Ability source) {
-        Permanent card = game.getPermanent(targetPointer.getFirst(game, source));
+        Permanent card = game.getPermanent(getTargetPointer().getFirst(game, source));
         Permanent permanent = game.getPermanent(source.getSourceId());
         if (permanent != null && card != null) {
             Player controller = game.getPlayer(card.getControllerId());

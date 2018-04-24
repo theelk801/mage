@@ -69,7 +69,7 @@ public class GameEvent implements Serializable {
         BEGIN_COMBAT_STEP_PRE, BEGIN_COMBAT_STEP, BEGIN_COMBAT_STEP_POST,
         DECLARE_ATTACKERS_STEP_PRE, DECLARE_ATTACKERS_STEP, DECLARE_ATTACKERS_STEP_POST,
         DECLARE_BLOCKERS_STEP_PRE, DECLARE_BLOCKERS_STEP, DECLARE_BLOCKERS_STEP_POST,
-        COMBAT_DAMAGE_STEP_PRE, COMBAT_DAMAGE_STEP, COMBAT_DAMAGE_STEP_POST,
+        COMBAT_DAMAGE_STEP, COMBAT_DAMAGE_STEP_PRE, COMBAT_DAMAGE_STEP_PRIORITY, COMBAT_DAMAGE_STEP_POST,
         END_COMBAT_STEP_PRE, END_COMBAT_STEP, END_COMBAT_STEP_POST,
         POSTCOMBAT_MAIN_PHASE, POSTCOMBAT_MAIN_PHASE_PRE, POSTCOMBAT_MAIN_PHASE_POST,
         POSTCOMBAT_MAIN_STEP_PRE, POSTCOMBAT_MAIN_STEP, POSTCOMBAT_MAIN_STEP_POST,
@@ -92,6 +92,7 @@ public class GameEvent implements Serializable {
         DRAW_CARDS, // applies to an instruction to draw more than one card before any replacement effects apply to individual cards drawn
         DRAW_CARD, DREW_CARD,
         EXPLORED,
+        ECHO_PAID,
         MIRACLE_CARD_REVEALED,
         MADNESS_CARD_EXILED,
         INVESTIGATED,
@@ -229,10 +230,14 @@ public class GameEvent implements Serializable {
         ENCHANT_PLAYER, ENCHANTED_PLAYER,
         CAN_TAKE_MULLIGAN,
         FLIP_COIN, COIN_FLIPPED, SCRY, FATESEAL,
+        ROLL_DICE, DICE_ROLLED,
+        ROLL_PLANAR_DIE, PLANAR_DIE_ROLLED,
+        PLANESWALK, PLANESWALKED, 
         PAID_CUMULATIVE_UPKEEP,
         DIDNT_PAY_CUMULATIVE_UPKEEP,
         //permanent events
-        ENTERS_THE_BATTLEFIELD_SELF, // 616.1a If any of the replacement and/or prevention effects are self-replacement effects (see rule 614.15), one of them must be chosen. If not, proceed to rule 616.1b.
+        ENTERS_THE_BATTLEFIELD_SELF, /* 616.1a If any of the replacement and/or prevention effects are self-replacement effects (see rule 614.15),
+                                        one of them must be chosen. If not, proceed to rule 616.1b. */
         ENTERS_THE_BATTLEFIELD_CONTROL, // 616.1b
         ENTERS_THE_BATTLEFIELD_COPY, // 616.1c
         ENTERS_THE_BATTLEFIELD, // 616.1d

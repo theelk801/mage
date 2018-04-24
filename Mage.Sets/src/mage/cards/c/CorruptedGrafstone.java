@@ -60,7 +60,7 @@ public class CorruptedGrafstone extends CardImpl {
         // Corrupted Grafstone enters the battlefield tapped.
         this.addAbility(new EntersBattlefieldTappedAbility());
 
-        // {T}: Choose a color of a card in your graveyard. Add one mana of that color to your mana pool.
+        // {T}: Choose a color of a card in your graveyard. Add one mana of that color.
         this.addAbility(new CorruptedGrafstoneManaAbility());
     }
 
@@ -102,7 +102,7 @@ class CorruptedGrafstoneManaEffect extends ManaEffect {
     public CorruptedGrafstoneManaEffect() {
         super();
         computedMana = new Mana();
-        this.staticText = "Choose a color of a card in your graveyard. Add one mana of that color to your mana pool";
+        this.staticText = "Choose a color of a card in your graveyard. Add one mana of that color";
     }
 
     public CorruptedGrafstoneManaEffect(final CorruptedGrafstoneManaEffect effect) {
@@ -138,37 +138,34 @@ class CorruptedGrafstoneManaEffect extends ManaEffect {
         }
         if (!choice.getChoices().isEmpty()) {
             Player player = game.getPlayer(source.getControllerId());
-
             if (player != null) {
                 if (choice.getChoices().size() == 1) {
                     choice.setChoice(choice.getChoices().iterator().next());
                 } else {
-                    player.choose(outcome, choice, game);
-                }
-                if (choice.getChoice() != null) {
-                    Mana computedMana = new Mana();
-                    switch (choice.getChoice()) {
-                        case "Black":
-                            computedMana.setBlack(1);
-                            break;
-                        case "Blue":
-                            computedMana.setBlue(1);
-                            break;
-                        case "Red":
-                            computedMana.setRed(1);
-                            break;
-                        case "Green":
-                            computedMana.setGreen(1);
-                            break;
-                        case "White":
-                            computedMana.setWhite(1);
-                            break;
+                    if (!player.choose(outcome, choice, game)) {
+                        return false;
                     }
-                    checkToFirePossibleEvents(computedMana, game, source);
-                    player.getManaPool().addMana(computedMana, game, source);
-                } else {
-                    return false;
                 }
+                Mana computedManaHere = new Mana();
+                switch (choice.getChoice()) {
+                    case "Black":
+                        computedManaHere.setBlack(1);
+                        break;
+                    case "Blue":
+                        computedManaHere.setBlue(1);
+                        break;
+                    case "Red":
+                        computedManaHere.setRed(1);
+                        break;
+                    case "Green":
+                        computedManaHere.setGreen(1);
+                        break;
+                    case "White":
+                        computedManaHere.setWhite(1);
+                        break;
+                }
+                checkToFirePossibleEvents(computedManaHere, game, source);
+                player.getManaPool().addMana(computedManaHere, game, source);
             }
         }
         return true;

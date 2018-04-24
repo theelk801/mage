@@ -28,6 +28,7 @@
 package mage.server;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -37,6 +38,8 @@ import java.util.regex.Pattern;
 import mage.cards.repository.CardInfo;
 import mage.cards.repository.CardRepository;
 import mage.server.exceptions.UserNotFoundException;
+import mage.server.game.GameController;
+import mage.server.game.GameManager;
 import mage.server.util.SystemUtil;
 import mage.view.ChatMessage.MessageColor;
 import mage.view.ChatMessage.MessageType;
@@ -220,8 +223,50 @@ public enum ChatManager {
             chatSessions.get(chatId).broadcastInfoToUser(user, message);
             return true;
         }
+        if (command.startsWith("GAME")) {
+            message += "<br/>" + GameManager.instance.getChatId(chatId);
+            ChatSession session = chatSessions.get(chatId);
+            if (session != null && session.getInfo() != null) {
+                String gameId = session.getInfo();
+                if (gameId.startsWith("Game ")) {
+                    UUID id = java.util.UUID.fromString(gameId.substring(5, gameId.length()));
+                    for (Entry<UUID, GameController> entry : GameManager.instance.getGameController().entrySet()) {
+                        if (entry.getKey().equals(id)) {
+                            GameController controller = entry.getValue();
+                            if (controller != null) {
+                                message += controller.getGameStateDebugMessage();
+                                chatSessions.get(chatId).broadcastInfoToUser(user, message);
+                            }
+                        }
+                    }
+
+                }
+            }
+            return true;
+        }
+        if (command.startsWith("FIX")) {
+            message += "<br/>" + GameManager.instance.getChatId(chatId);
+            ChatSession session = chatSessions.get(chatId);
+            if (session != null && session.getInfo() != null) {
+                String gameId = session.getInfo();
+                if (gameId.startsWith("Game ")) {
+                    UUID id = java.util.UUID.fromString(gameId.substring(5, gameId.length()));
+                    for (Entry<UUID, GameController> entry : GameManager.instance.getGameController().entrySet()) {
+                        if (entry.getKey().equals(id)) {
+                            GameController controller = entry.getValue();
+                            if (controller != null) {
+                                message += controller.attemptToFixGame();
+                                chatSessions.get(chatId).broadcastInfoToUser(user, message);
+                            }
+                        }
+                    }
+
+                }
+            }
+            return true;
+        }        
         if (command.startsWith("CARD ")) {
-            Matcher matchPattern = getCardTextPattern.matcher(message.toLowerCase());
+            Matcher matchPattern = getCardTextPattern.matcher(message.toLowerCase(Locale.ENGLISH));
             if (matchPattern.find()) {
                 String cardName = matchPattern.group(1);
                 CardInfo cardInfo = CardRepository.instance.findPreferedCoreExpansionCard(cardName, true);
@@ -289,9 +334,18 @@ public enum ChatManager {
     public void sendReconnectMessage(UUID userId) {
         UserManager.instance.getUser(userId).ifPresent(user
                 -> getChatSessions()
-                        .stream()
-                        .filter(chat -> chat.hasUser(userId))
-                        .forEach(chatSession -> chatSession.broadcast(null, user.getName() + " has reconnected", MessageColor.BLUE, true, MessageType.STATUS, null)));
+                .stream()
+                .filter(chat -> chat.hasUser(userId))
+                .forEach(chatSession -> chatSession.broadcast(null, user.getName() + " has reconnected", MessageColor.BLUE, true, MessageType.STATUS, null)));
+
+    }
+
+    public void sendLostConnectionMessage(UUID userId, DisconnectReason reason) {
+        UserManager.instance.getUser(userId).ifPresent(user
+                -> getChatSessions()
+                .stream()
+                .filter(chat -> chat.hasUser(userId))
+                .forEach(chatSession -> chatSession.broadcast(null, user.getName() + reason.getMessage(), MessageColor.BLUE, true, MessageType.STATUS, null)));
 
     }
 

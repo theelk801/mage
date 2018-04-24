@@ -31,7 +31,6 @@ import java.util.UUID;
 import mage.abilities.Ability;
 import mage.abilities.Mode;
 import mage.abilities.common.SimpleActivatedAbility;
-import mage.abilities.costs.common.TapSourceCost;
 import mage.abilities.costs.mana.ManaCostsImpl;
 import mage.abilities.effects.ContinuousEffect;
 import mage.abilities.effects.ContinuousEffectImpl;
@@ -44,7 +43,7 @@ import mage.game.Game;
 import mage.game.permanent.Permanent;
 import mage.players.Player;
 import mage.target.Target;
-import mage.target.common.TargetCreatureOrPlayer;
+import mage.target.common.TargetAnyTarget;
 import mage.target.common.TargetOpponent;
 import mage.target.targetpointer.FixedTarget;
 
@@ -57,9 +56,9 @@ public class GoblinFestival extends CardImpl {
     public GoblinFestival(UUID ownerId, CardSetInfo setInfo) {
         super(ownerId,setInfo,new CardType[]{CardType.ENCHANTMENT},"{1}{R}");
 
-        // {2}: Goblin Festival deals 1 damage to target creature or player. Flip a coin. If you lose the flip, choose one of your opponents. That player gains control of Goblin Festival.
+        // {2}: Goblin Festival deals 1 damage to any target. Flip a coin. If you lose the flip, choose one of your opponents. That player gains control of Goblin Festival.
         Ability ability = new SimpleActivatedAbility(Zone.BATTLEFIELD, new DamageTargetEffect(1), new ManaCostsImpl("{2}"));
-        ability.addTarget(new TargetCreatureOrPlayer());
+        ability.addTarget(new TargetAnyTarget());
         ability.addEffect(new GoblinFestivalChangeControlEffect());
         this.addAbility(ability);
     }
@@ -93,15 +92,24 @@ class GoblinFestivalChangeControlEffect extends OneShotEffect {
     @Override
     public boolean apply(Game game, Ability source) {
         Player controller = game.getPlayer(source.getControllerId());
+        Permanent sourcePermanent = game.getPermanent(source.getSourceId());
         if (controller != null) {
             if (!controller.flipCoin(game)) {
-                Target target = new TargetOpponent();
-                target.setNotTarget(true);
-                if (controller.chooseTarget(outcome, target, source, game)) {
-                    ContinuousEffect effect = new GoblinFestivalGainControlEffect(Duration.Custom, target.getFirstTarget());
-                    effect.setTargetPointer(new FixedTarget(source.getSourceId()));
-                    game.addEffect(effect, source);
-                    return true;
+                if (sourcePermanent != null) {
+                    Target target = new TargetOpponent(true);
+                    if (target.canChoose(source.getSourceId(), controller.getId(), game)) {
+                        while (!target.isChosen() && target.canChoose(controller.getId(), game) && controller.canRespond()) {
+                            controller.chooseTarget(outcome, target, source, game);
+                        }
+                    }
+                    Player chosenOpponent = game.getPlayer(target.getFirstTarget());
+                    if (chosenOpponent != null) {
+                        ContinuousEffect effect = new GoblinFestivalGainControlEffect(Duration.Custom, chosenOpponent.getId());
+                        effect.setTargetPointer(new FixedTarget(sourcePermanent.getId()));
+                        game.addEffect(effect, source);
+                        game.informPlayers(chosenOpponent.getLogName() + " has gained control of " + sourcePermanent.getLogName());
+                        return true;
+                    }
                 }
             }
         }

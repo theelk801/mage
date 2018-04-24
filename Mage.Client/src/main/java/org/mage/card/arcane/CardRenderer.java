@@ -17,10 +17,10 @@ import mage.view.PermanentView;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.image.BufferedImage;
 
 /**
  * @author stravant@gmail.com
@@ -65,6 +65,9 @@ public abstract class CardRenderer {
 
     // The card image
     protected BufferedImage artImage;
+
+    // The face card image
+    protected BufferedImage faceArtImage;
 
     ///////////////////////////////////////////////////////////////////////////
     // Common layout metrics between all cards
@@ -198,7 +201,8 @@ public abstract class CardRenderer {
     // The Draw Method
     // The draw method takes the information caculated by the constructor
     // and uses it to draw to a concrete size of card and graphics.
-    public void draw(Graphics2D g, CardPanelAttributes attribs) {
+    public void draw(Graphics2D g, CardPanelAttributes attribs, BufferedImage image) {
+
         // Pre template method layout, to calculate shared layout info
         layout(attribs.cardWidth, attribs.cardHeight);
         isSelected = attribs.isSelected;
@@ -208,7 +212,7 @@ public abstract class CardRenderer {
         drawBorder(g);
         drawBackground(g);
         drawArt(g);
-        drawFrame(g);
+        drawFrame(g, image);
         if (!cardView.isAbility()) {
             drawOverlays(g);
             drawCounters(g);
@@ -223,7 +227,7 @@ public abstract class CardRenderer {
 
     protected abstract void drawArt(Graphics2D g);
 
-    protected abstract void drawFrame(Graphics2D g);
+    protected abstract void drawFrame(Graphics2D g, BufferedImage image);
 
     // Template methods that are possible to override, but unlikely to be
     // overridden.
@@ -289,14 +293,52 @@ public abstract class CardRenderer {
         try {
             BufferedImage subImg
                     = artImage.getSubimage(
-                    (int) (artRect.getX() * fullCardImgWidth), (int) (artRect.getY() * fullCardImgHeight),
-                    (int) artWidth, (int) artHeight);
+                            (int) (artRect.getX() * fullCardImgWidth), (int) (artRect.getY() * fullCardImgHeight),
+                            (int) artWidth, (int) artHeight);
             g.drawImage(subImg,
                     x, y,
                     (int) targetWidth, (int) targetHeight,
                     null);
         } catch (RasterFormatException e) {
             // At very small card sizes we may encounter a problem with rounding error making the rect not fit
+        }
+    }
+
+    protected void drawFaceArtIntoRect(Graphics2D g, int x, int y, int w, int h, Rectangle2D artRect, boolean shouldPreserveAspect) {
+        // Perform a process to make sure that the art is scaled uniformly to fill the frame, cutting
+        // off the minimum amount necessary to make it completely fill the frame without "squashing" it.
+        double fullCardImgWidth = faceArtImage.getWidth();
+        double fullCardImgHeight = faceArtImage.getHeight();
+        double artWidth = fullCardImgWidth;
+        double artHeight = fullCardImgHeight;
+        double targetWidth = w;
+        double targetHeight = h;
+        double targetAspect = targetWidth / targetHeight;
+        if (!shouldPreserveAspect) {
+            // No adjustment to art
+        } else if (targetAspect * artHeight < artWidth) {
+            // Trim off some width
+            artWidth = targetAspect * artHeight;
+        } else {
+            // Trim off some height
+            artHeight = artWidth / targetAspect;
+        }
+        try {
+            /*BufferedImage subImg
+                    = faceArtImage.getSubimage(
+                    (int) (artRect.getX() * fullCardImgWidth), (int) (artRect.getY() * fullCardImgHeight),
+                    (int) artWidth, (int) artHeight);*/
+            RenderingHints rh = new RenderingHints(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            g.setRenderingHints(rh);
+            g.drawImage(faceArtImage,
+                    x, y,
+                    (int) targetWidth, (int) targetHeight,
+                    null);
+        } catch (RasterFormatException e) {
+            // At very small card sizes we may encounter a problem with rounding error making the rect not fit
+            System.out.println(e);
         }
     }
 
@@ -354,7 +396,7 @@ public abstract class CardRenderer {
             /*
             // Just draw the as a code
             String code = cardView.getExpansionSetCode();
-            code = (code != null) ? code.toUpperCase() : "";
+            code = (code != null) ? code.toUpperCase(Locale.ENGLISH) : "";
             FontMetrics metrics = g.getFontMetrics();
             setSymbolWidth = metrics.stringWidth(code);
             if (cardView.getRarity() == Rarity.COMMON) {
@@ -421,25 +463,53 @@ public abstract class CardRenderer {
             }
         } else {
             StringBuilder sbType = new StringBuilder();
-            for (SuperType superType : cardView.getSuperTypes()) {
-                sbType.append(superType).append(' ');
-            }
-            for (CardType cardType : cardView.getCardTypes()) {
-                sbType.append(cardType.toString()).append(' ');
-            }
-            if (!cardView.getSubTypes().isEmpty()) {
-                sbType.append("- ");
-                for (SubType subType : cardView.getSubTypes()) {
-                    sbType.append(subType).append(' ');
+            String spType = getCardSuperTypeLine();
+            String subType = getCardSubTypeLine();
+            if (spType.equalsIgnoreCase("")) {
+                sbType.append(subType);
+            } else {
+                sbType.append(spType);
+                if (!subType.equalsIgnoreCase("")) {
+                    sbType.append("- ");
+                    sbType.append(subType);
                 }
             }
+
             return sbType.toString();
         }
+    }
+
+    protected String getCardSuperTypeLine() {
+        StringBuilder spType = new StringBuilder();
+        for (SuperType superType : cardView.getSuperTypes()) {
+            spType.append(superType).append(' ');
+        }
+        for (CardType cardType : cardView.getCardTypes()) {
+            spType.append(cardType.toString()).append(' ');
+        }
+        return spType.toString();
+    }
+
+    protected String getCardSubTypeLine() {
+        StringBuilder subType = new StringBuilder();
+
+        if (!cardView.getSubTypes().isEmpty()) {
+            for (SubType sType : cardView.getSubTypes()) {
+                subType.append(sType).append(' ');
+            }
+        }
+        return subType.toString();
     }
 
     // Set the card art image (CardPanel will give it to us when it
     // is loaded and ready)
     public void setArtImage(Image image) {
         artImage = CardRendererUtils.toBufferedImage(image);
+    }
+
+    // Set the card art image (CardPanel will give it to us when it
+    // is loaded and ready)
+    public void setFaceArtImage(Image image) {
+        faceArtImage = CardRendererUtils.toBufferedImage(image);
     }
 }

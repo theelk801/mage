@@ -44,7 +44,6 @@ import mage.view.CardsView;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXPanel;
 import org.mage.card.arcane.ManaSymbols;
-import org.mage.card.arcane.UI;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -79,6 +78,7 @@ public class TableModel extends AbstractTableModel implements ICardGrid {
     private UpdateCountsCallback updateCountsCallback;
 
     private final String column[] = {"Qty", "Name", "Cost", "Color", "Type", "Stats", "Rarity", "Set", "#"};
+    public final int COLUMN_INDEX_COST = 2;
 
     private SortSetting sortSetting;
     private int recentSortedColumn;
@@ -239,6 +239,10 @@ public class TableModel extends AbstractTableModel implements ICardGrid {
             case 1:
                 return c.getName();
             case 2:
+                // new svg images version
+                return ManaSymbols.getStringManaCost(c.getManaCost());
+                /*
+                // old html images version
                 String manaCost = "";
                 for (String m : c.getManaCost()) {
                     manaCost += m;
@@ -246,6 +250,8 @@ public class TableModel extends AbstractTableModel implements ICardGrid {
                 String castingCost = UI.getDisplayManaCost(manaCost);
                 castingCost = ManaSymbols.replaceSymbolsWithHTML(castingCost, ManaSymbols.Type.TABLE);
                 return "<html>" + castingCost + "</html>";
+                return castingCost;
+                */
             case 3:
                 return c.getColorText();
             case 4:

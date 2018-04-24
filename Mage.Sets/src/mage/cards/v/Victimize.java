@@ -37,7 +37,7 @@ import mage.cards.CardsImpl;
 import mage.constants.CardType;
 import mage.constants.Outcome;
 import mage.constants.Zone;
-import mage.filter.common.FilterControlledCreaturePermanent;
+import static mage.filter.StaticFilters.FILTER_CONTROLLED_CREATURE_SHORT_TEXT;
 import mage.filter.common.FilterCreatureCard;
 import mage.game.Game;
 import mage.players.Player;
@@ -51,7 +51,7 @@ import mage.target.common.TargetControlledCreaturePermanent;
 public class Victimize extends CardImpl {
 
     public Victimize(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.SORCERY},"{2}{B}");
+        super(ownerId, setInfo, new CardType[]{CardType.SORCERY}, "{2}{B}");
 
         // Choose two target creature cards in your graveyard. Sacrifice a creature. If you do, return the chosen cards to the battlefield tapped.
         this.getSpellAbility().addEffect(new VictimizeEffect());
@@ -88,8 +88,9 @@ class VictimizeEffect extends OneShotEffect {
     public boolean apply(Game game, Ability source) {
         Player controller = game.getPlayer(source.getControllerId());
         if (controller != null) {
-            SacrificeTargetCost cost = new SacrificeTargetCost(new TargetControlledCreaturePermanent(new FilterControlledCreaturePermanent("a creature")));
+            SacrificeTargetCost cost = new SacrificeTargetCost(new TargetControlledCreaturePermanent(FILTER_CONTROLLED_CREATURE_SHORT_TEXT));
             if (cost.pay(source, game, source.getSourceId(), source.getControllerId(), false, null)) {
+                game.applyEffects(); // To end effects of the sacrificed creature
                 controller.moveCards(new CardsImpl(getTargetPointer().getTargets(game, source)).getCards(game),
                         Zone.BATTLEFIELD, source, game, true, false, false, null);
             }

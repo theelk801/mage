@@ -17,14 +17,20 @@ import mage.target.targetpointer.FixedTarget;
 public class BecomesChosenCreatureTypeTargetEffect extends OneShotEffect {
 
     private final boolean nonWall;
+    private final Duration duration;
 
     public BecomesChosenCreatureTypeTargetEffect() {
-        this(false);
+        this(false, Duration.EndOfTurn);
     }
 
     public BecomesChosenCreatureTypeTargetEffect(boolean nonWall) {
+        this(nonWall, Duration.EndOfTurn);
+    }
+
+    public BecomesChosenCreatureTypeTargetEffect(boolean nonWall, Duration duration) {
         super(Outcome.BoostCreature);
         this.nonWall = nonWall;
+        this.duration = duration;
         if(nonWall) {
             staticText = "choose a creature type other than Wall. Target creature becomes that type until end of turn";
         }
@@ -37,6 +43,7 @@ public class BecomesChosenCreatureTypeTargetEffect extends OneShotEffect {
     public BecomesChosenCreatureTypeTargetEffect(final BecomesChosenCreatureTypeTargetEffect effect) {
         super(effect);
         this.nonWall = effect.nonWall;
+        this.duration = effect.duration;
     }
 
     @Override
@@ -63,7 +70,7 @@ public class BecomesChosenCreatureTypeTargetEffect extends OneShotEffect {
             chosenType = typeChoice.getChoice();
             if (chosenType != null && !chosenType.isEmpty()) {
                 // ADD TYPE TO TARGET
-                ContinuousEffect effect = new BecomesCreatureTypeTargetEffect(Duration.EndOfTurn, SubType.byDescription(chosenType));
+                ContinuousEffect effect = new BecomesCreatureTypeTargetEffect(duration, SubType.byDescription(chosenType));
                 effect.setTargetPointer(new FixedTarget(getTargetPointer().getFirst(game, source)));
                 game.addEffect(effect, source);
                 return true;

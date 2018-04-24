@@ -49,6 +49,7 @@ import mage.counters.Counters;
 import mage.game.combat.Combat;
 import mage.game.command.Commander;
 import mage.game.command.Emblem;
+import mage.game.command.Plane;
 import mage.game.events.GameEvent;
 import mage.game.events.Listener;
 import mage.game.events.PlayerQueryEvent;
@@ -131,6 +132,8 @@ public interface Game extends MageItem, Serializable {
 
     Player getPlayer(UUID playerId);
 
+    Player getPlayerOrPlaneswalkerController(UUID playerId);
+
     Players getPlayers();
 
     PlayerList getPlayerList();
@@ -173,7 +176,7 @@ public interface Game extends MageItem, Serializable {
 
     UUID getPriorityPlayerId();
 
-    boolean gameOver(UUID playerId);
+    boolean checkIfGameIsOver();
 
     boolean hasEnded();
 
@@ -347,6 +350,8 @@ public interface Game extends MageItem, Serializable {
 
     void concede(UUID playerId);
 
+    void setConcedingPlayer(UUID playerId);
+
     void setManaPaymentMode(UUID playerId, boolean autoPayment);
 
     void setManaPaymentModeRestricted(UUID playerId, boolean autoPaymentRestricted);
@@ -362,6 +367,8 @@ public interface Game extends MageItem, Serializable {
     void addEmblem(Emblem emblem, MageObject sourceObject, Ability source);
 
     void addEmblem(Emblem emblem, MageObject sourceObject, UUID toPlayerId);
+
+    boolean addPlane(Plane plane, MageObject sourceObject, UUID toPlayerId);
 
     void addCommander(Commander commander);
 
@@ -464,4 +471,8 @@ public interface Game extends MageItem, Serializable {
     UUID getMonarchId();
 
     void setMonarchId(Ability source, UUID monarchId);
+
+    int damagePlayerOrPlaneswalker(UUID playerOrWalker, int damage, UUID sourceId, Game game, boolean combatDamage, boolean preventable);
+
+    int damagePlayerOrPlaneswalker(UUID playerOrWalker, int damage, UUID sourceId, Game game, boolean combatDamage, boolean preventable, List<UUID> appliedEffects);
 }

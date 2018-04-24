@@ -28,6 +28,7 @@
 package mage.cards.a;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import mage.MageInt;
@@ -56,7 +57,7 @@ import mage.players.Player;
 public class AngelicSkirmisher extends CardImpl {
 
     public AngelicSkirmisher(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.CREATURE},"{4}{W}{W}");
+        super(ownerId, setInfo, new CardType[]{CardType.CREATURE}, "{4}{W}{W}");
         this.subtype.add(SubType.ANGEL);
 
         this.power = new MageInt(4);
@@ -103,13 +104,8 @@ class AngelicSkirmisherEffect extends OneShotEffect {
             abilityChoices.add("Vigilance");
             abilityChoices.add("Lifelink");
             abilityChoice.setChoices(abilityChoices);
-            while (!controller.choose(outcome, abilityChoice, game)) {
-                if (!controller.canRespond()) {
-                    return false;
-                }
-            }
-            Ability ability = null;
-            if (abilityChoice.getChoice() != null) {
+            if (controller.choose(outcome, abilityChoice, game)) {
+                Ability ability = null;
                 switch (abilityChoice.getChoice()) {
                     case "First strike":
                         ability = FirstStrikeAbility.getInstance();
@@ -126,7 +122,7 @@ class AngelicSkirmisherEffect extends OneShotEffect {
                 if (ability != null) {
                     GainAbilityControlledEffect effect = new GainAbilityControlledEffect(ability, Duration.EndOfTurn, new FilterControlledCreaturePermanent());
                     game.addEffect(effect, source);
-                    game.informPlayers(sourcePermanent.getName() + ": " + controller.getLogName() + " has chosen " + abilityChoice.getChoice().toLowerCase());
+                    game.informPlayers(sourcePermanent.getName() + ": " + controller.getLogName() + " has chosen " + abilityChoice.getChoice().toLowerCase(Locale.ENGLISH));
                     return true;
                 }
             }

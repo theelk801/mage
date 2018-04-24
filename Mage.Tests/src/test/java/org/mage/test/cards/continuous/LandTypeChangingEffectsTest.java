@@ -27,6 +27,7 @@
  */
 package org.mage.test.cards.continuous;
 
+import mage.abilities.keyword.IndestructibleAbility;
 import mage.abilities.mana.AnyColorManaAbility;
 import mage.constants.CardType;
 import mage.constants.PhaseStep;
@@ -63,8 +64,8 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
 
         addCard(Zone.BATTLEFIELD, playerB, "Canopy Vista", 1);
         addCard(Zone.BATTLEFIELD, playerB, "Plains", 2);
-        // Lands you control have "{T}: Add one mana of any color to your mana pool."
-        // {T}: Add one mana of any color to your mana pool.
+        // Lands you control have "{T}: Add one mana of any color."
+        // {T}: Add one mana of any color.
         addCard(Zone.HAND, playerB, "Chromatic Lantern");
 
         castSpell(2, PhaseStep.PRECOMBAT_MAIN, playerB, "Chromatic Lantern");
@@ -86,8 +87,8 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
 
         addCard(Zone.BATTLEFIELD, playerB, "Canopy Vista", 1);
         addCard(Zone.BATTLEFIELD, playerB, "Plains", 2);
-        // Lands you control have "{T}: Add one mana of any color to your mana pool."
-        // {T}: Add one mana of any color to your mana pool.
+        // Lands you control have "{T}: Add one mana of any color."
+        // {T}: Add one mana of any color.
         addCard(Zone.HAND, playerB, "Chromatic Lantern");
 
         castSpell(2, PhaseStep.PRECOMBAT_MAIN, playerB, "Chromatic Lantern");
@@ -116,7 +117,7 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
         addCard(Zone.HAND, playerA, "Aquitect's Will");// Tribal Sorcery{U}
         addCard(Zone.BATTLEFIELD, playerA, "Island", 1);
         // Forbidding Watchtower enters the battlefield tapped.
-        // {T}: Add {W} to your mana pool.
+        // {T}: Add {W}.
         // {1}{W}: Forbidding Watchtower becomes a 1/5 white Soldier creature until end of turn. It's still a land.
         addCard(Zone.BATTLEFIELD, playerB, "Forbidding Watchtower", 1);
         addCard(Zone.BATTLEFIELD, playerB, "Plains", 2);
@@ -142,7 +143,7 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
     /*
     TODO: NOTE: this test is currently failing due to bug in code. See issue #3072
      */
-    @Ignore
+    //@Ignore
     @Test
     public void testBloodMoonBeforeUrborg() {
         // Blood Moon   2R
@@ -175,7 +176,7 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
     /*
     TODO: NOTE: this test is currently failing due to bug in code. See issue #3072
      */
-    @Ignore
+    //@Ignore
     @Test
     public void testBloodMoonAfterUrborg() {
         // Blood Moon   2R
@@ -222,7 +223,7 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
 
         addCard(Zone.BATTLEFIELD, playerA, "Mountain", 4);
 
-        // At the beginning of each player's upkeep, that player puts a flood counter on target non-Island land he or she controls of his or her choice.
+        // At the beginning of each player's upkeep, that player puts a flood counter on target non-Island land he or she controls of their choice.
         //  That land is an Island for as long as it has a flood counter on it.
         // At the beginning of each end step, if all lands on the battlefield are Islands, remove all flood counters from them.
         addCard(Zone.HAND, playerB, "Quicksilver Fountain", 1); // Artifact {3}
@@ -267,4 +268,30 @@ public class LandTypeChangingEffectsTest extends CardTestPlayerBase {
         Assert.assertTrue("4 lands have to be creatures but there are " + creatures, creatures == 4);
     }
 
+    @Test
+    public void testBloodSunWithUrborgtoyAndStormtideLeviathanMan() {
+
+        addCard(Zone.BATTLEFIELD, playerA, urborgtoy);  // all lands are swamps in addition to their other types
+        addCard(Zone.BATTLEFIELD, playerA, "Mountain", 4);
+        addCard(Zone.BATTLEFIELD, playerA, "Blood Sun");  // all lands lose all abilities except for mana-producing
+        addCard(Zone.BATTLEFIELD, playerA, "Stormtide Leviathan"); // all lands are islands in addition to their other types
+        addCard(Zone.BATTLEFIELD, playerA, "Darksteel Citadel");  // land has indestructible ability
+        
+        setStopAt(3, PhaseStep.POSTCOMBAT_MAIN);
+        execute();
+        
+        Permanent darksteel = getPermanent("Darksteel Citadel", playerA.getId());
+        Assert.assertNotNull(darksteel);
+        Assert.assertFalse(darksteel.getAbilities().contains(IndestructibleAbility.getInstance()));  // The ability is removed
+        
+        /*
+        If a continuous effect has started applying in an earlier layer, it will continue to apply in 
+        later layers even if the ability that created that effect has been removed.
+        Urborg ability is applied in the 4th layer.  The Blood Sun works in the 6th.  So the effect still applies to the lands.
+        */
+        assertType(urborgtoy, CardType.LAND, SubType.SWAMP);
+        assertType("Mountain", CardType.LAND, SubType.SWAMP);
+        assertType(urborgtoy, CardType.LAND, SubType.ISLAND);
+        assertType("Mountain", CardType.LAND, SubType.ISLAND);
+    }
 }

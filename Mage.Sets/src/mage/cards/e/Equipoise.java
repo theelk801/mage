@@ -27,11 +27,13 @@
  */
 package mage.cards.e;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import mage.abilities.Ability;
 import mage.abilities.common.BeginningOfUpkeepTriggeredAbility;
 import mage.abilities.effects.OneShotEffect;
+import mage.abilities.effects.common.PhaseOutAllEffect;
 import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
 import mage.constants.CardType;
@@ -42,7 +44,6 @@ import mage.filter.common.FilterControlledPermanent;
 import mage.filter.predicate.mageobject.CardTypePredicate;
 import mage.filter.predicate.permanent.ControllerIdPredicate;
 import mage.game.Game;
-import mage.game.permanent.Permanent;
 import mage.players.Player;
 import mage.target.Target;
 import mage.target.TargetPermanent;
@@ -55,8 +56,7 @@ import mage.target.TargetPlayer;
 public class Equipoise extends CardImpl {
 
     public Equipoise(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.ENCHANTMENT},"{2}{W}");
-
+        super(ownerId, setInfo, new CardType[]{CardType.ENCHANTMENT}, "{2}{W}");
 
         // At the beginning of your upkeep, for each land target player controls in excess of the number you control, choose a land he or she controls, then the chosen permanents phase out. Repeat this process for artifacts and creatures.
         Ability ability = new BeginningOfUpkeepTriggeredAbility(new EquipoiseEffect(), TargetController.YOU, false);
@@ -112,17 +112,12 @@ class EquipoiseEffect extends OneShotEffect {
         int numberTargetPlayer = game.getBattlefield().count(filter, source.getSourceId(), targetPlayer.getId(), game);
         int excess = numberTargetPlayer - numberController;
         if (excess > 0) {
-            FilterPermanent filterChoose = new FilterPermanent(cardType.toString().toLowerCase() + (excess > 1 ? "s":"") +" of target player");
+            FilterPermanent filterChoose = new FilterPermanent(cardType.toString().toLowerCase(Locale.ENGLISH) + (excess > 1 ? "s" : "") + " of target player");
             filterChoose.add(new ControllerIdPredicate(targetPlayer.getId()));
             filterChoose.add(new CardTypePredicate(cardType));
             Target target = new TargetPermanent(excess, excess, filterChoose, true);
             controller.chooseTarget(outcome, target, source, game);
-            for (UUID permanentId:target.getTargets()) {
-                Permanent permanent = game.getPermanent(permanentId);
-                if (permanent != null) {
-                    permanent.phaseOut(game);
-                }
-            }
+            new PhaseOutAllEffect(target.getTargets()).apply(game, source);
         }
     }
 }

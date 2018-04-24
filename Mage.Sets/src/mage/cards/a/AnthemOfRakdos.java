@@ -44,6 +44,7 @@ import mage.constants.Outcome;
 import mage.constants.Zone;
 import mage.game.Game;
 import mage.game.events.GameEvent;
+import mage.util.CardUtil;
 
 /**
  * @author JotaPeRL
@@ -80,7 +81,7 @@ class AnthemOfRakdosHellbentEffect extends ReplacementEffectImpl {
 
     public AnthemOfRakdosHellbentEffect() {
         super(Duration.WhileOnBattlefield, Outcome.Damage);
-        staticText = "<i>Hellbent</i> - As long as you have no cards in hand, if a source you control would deal damage to a creature or player, it deals double that damage to that creature or player instead.";
+        staticText = "<i>Hellbent</i> - As long as you have no cards in hand, if a source you control would deal damage to a permanent or player, it deals double that damage to that permanent or player instead.";
     }
 
     public AnthemOfRakdosHellbentEffect(final AnthemOfRakdosHellbentEffect effect) {
@@ -95,7 +96,8 @@ class AnthemOfRakdosHellbentEffect extends ReplacementEffectImpl {
     @Override
     public boolean checksEventType(GameEvent event, Game game) {
         return event.getType() == GameEvent.EventType.DAMAGE_CREATURE
-                || event.getType() == GameEvent.EventType.DAMAGE_PLAYER;
+                || event.getType() == GameEvent.EventType.DAMAGE_PLAYER
+                || event.getType() == GameEvent.EventType.DAMAGE_PLANESWALKER;
     }
 
     @Override
@@ -110,7 +112,7 @@ class AnthemOfRakdosHellbentEffect extends ReplacementEffectImpl {
 
     @Override
     public boolean replaceEvent(GameEvent event, Ability source, Game game) {
-        event.setAmount(event.getAmount() * 2);
+        event.setAmount(CardUtil.addWithOverflowCheck(event.getAmount(), event.getAmount()));
         return false;
     }
 }

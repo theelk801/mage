@@ -31,23 +31,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import mage.Mana;
-import mage.constants.SubType;
 import mage.abilities.Ability;
 import mage.abilities.common.BeginningOfPreCombatMainTriggeredAbility;
 import mage.abilities.effects.OneShotEffect;
 import mage.abilities.effects.common.AttachEffect;
-import mage.constants.Outcome;
-import mage.target.TargetPermanent;
 import mage.abilities.keyword.EnchantAbility;
 import mage.cards.CardImpl;
 import mage.cards.CardSetInfo;
 import mage.choices.Choice;
 import mage.choices.ChoiceImpl;
 import mage.constants.CardType;
+import mage.constants.Outcome;
+import mage.constants.SubType;
 import mage.constants.TargetController;
 import mage.game.Game;
 import mage.game.permanent.Permanent;
 import mage.players.Player;
+import mage.target.TargetPermanent;
 
 /**
  *
@@ -67,7 +67,7 @@ public class ElementalResonance extends CardImpl {
         Ability ability = new EnchantAbility(auraTarget.getTargetName());
         this.addAbility(ability);
 
-        // At the beginning of your precombat main phase, add mana equal to enchanted permanent's mana cost to your mana pool.
+        // At the beginning of your precombat main phase, add mana equal to enchanted permanent's mana cost.
         this.addAbility(new BeginningOfPreCombatMainTriggeredAbility(new ElementalResonanceEffect(), TargetController.YOU, false));
     }
 
@@ -85,7 +85,7 @@ class ElementalResonanceEffect extends OneShotEffect {
 
     ElementalResonanceEffect() {
         super(Outcome.PutManaInPool);
-        this.staticText = "add mana equal to enchanted permanent's mana cost to your mana pool.";
+        this.staticText = "add mana equal to enchanted permanent's mana cost.";
     }
 
     ElementalResonanceEffect(final ElementalResonanceEffect effect) {
@@ -125,13 +125,10 @@ class ElementalResonanceEffect extends OneShotEffect {
             Choice choice = new ChoiceImpl();
             choice.setMessage("Choose a mana combination");
             choice.getChoices().addAll(manaOptions);
-            while (!choice.isChosen()) {
-                controller.choose(Outcome.PutManaInPool, choice, game);
-                if (!controller.canRespond()) {
-                    return false;
-                }
-                manaToAdd = choice.getChoice();
+            if (!controller.choose(Outcome.PutManaInPool, choice, game)) {
+                return false;
             }
+            manaToAdd = choice.getChoice();
         } else if (manaOptions.size() == 1) {
             manaToAdd = manaOptions.get(0);
         }

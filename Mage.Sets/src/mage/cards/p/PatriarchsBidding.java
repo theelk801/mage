@@ -27,6 +27,7 @@
  */
 package mage.cards.p;
 
+import java.util.*;
 import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.effects.OneShotEffect;
@@ -45,17 +46,15 @@ import mage.filter.predicate.mageobject.SubtypePredicate;
 import mage.game.Game;
 import mage.players.Player;
 
-import java.util.*;
-
 /**
  * @author duncant
  */
 public class PatriarchsBidding extends CardImpl {
 
     public PatriarchsBidding(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.SORCERY},"{3}{B}{B}");
+        super(ownerId, setInfo, new CardType[]{CardType.SORCERY}, "{3}{B}{B}");
 
-        // Each player chooses a creature type. Each player returns all creature cards of a type chosen this way from his or her graveyard to the battlefield.
+        // Each player chooses a creature type. Each player returns all creature cards of a type chosen this way from their graveyard to the battlefield.
         this.getSpellAbility().addEffect(new PatriarchsBiddingEffect());
     }
 
@@ -73,7 +72,7 @@ class PatriarchsBiddingEffect extends OneShotEffect {
 
     public PatriarchsBiddingEffect() {
         super(Outcome.PutCreatureInPlay);
-        this.staticText = "each player chooses a creature type. Each player returns all creature cards of a type chosen this way from his or her graveyard to the battlefield";
+        this.staticText = "each player chooses a creature type. Each player returns all creature cards of a type chosen this way from their graveyard to the battlefield";
     }
 
     public PatriarchsBiddingEffect(final PatriarchsBiddingEffect effect) {
@@ -93,17 +92,13 @@ class PatriarchsBiddingEffect extends OneShotEffect {
             Set<String> chosenTypes = new HashSet<>();
             for (UUID playerId : game.getState().getPlayersInRange(controller.getId(), game)) {
                 Player player = game.getPlayer(playerId);
-                Choice typeChoice = new ChoiceCreatureType();
-                while (!player.choose(Outcome.PutCreatureInPlay, typeChoice, game)) {
-                    if (!player.canRespond()) {
-                        break;
-                    }
+                Choice typeChoice = new ChoiceCreatureType(sourceObject);
+                if (!player.choose(Outcome.PutCreatureInPlay, typeChoice, game)) {
+                    continue;
                 }
                 String chosenType = typeChoice.getChoice();
-                if (chosenType != null) {
-                    game.informPlayers(sourceObject.getLogName() + ": " + player.getLogName() + " has chosen " + chosenType);
-                    chosenTypes.add(chosenType);
-                }
+                game.informPlayers(sourceObject.getLogName() + ": " + player.getLogName() + " has chosen " + chosenType);
+                chosenTypes.add(chosenType);
             }
 
             List<SubtypePredicate> predicates = new ArrayList<>();

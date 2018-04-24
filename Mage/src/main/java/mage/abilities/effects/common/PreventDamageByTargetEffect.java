@@ -31,7 +31,6 @@ import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.Mode;
 import mage.abilities.effects.PreventionEffectImpl;
-import mage.constants.CardType;
 import mage.constants.Duration;
 import mage.game.Game;
 import mage.game.events.GameEvent;
@@ -96,7 +95,7 @@ public class PreventDamageByTargetEffect extends PreventionEffectImpl {
             StringBuilder sb = new StringBuilder();
             sb.append("Prevent all");
             if (onlyCombat) {
-                sb.append(" combat ");
+                sb.append(" combat");
             }
             sb.append(" damage target ");
             sb.append(mode.getTargets().get(0).getTargetName()).append(" would deal ").append(duration.toString());

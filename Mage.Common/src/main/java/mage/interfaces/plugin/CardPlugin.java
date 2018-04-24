@@ -2,7 +2,6 @@ package mage.interfaces.plugin;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import javax.swing.*;
@@ -27,15 +26,14 @@ public interface CardPlugin extends Plugin {
 
     MagePermanent getMageCard(CardView permanent, Dimension dimension, UUID gameId, ActionCallback callback, boolean canBeFoil, boolean loadImage);
 
-    int sortPermanents(Map<String, JComponent> ui, Collection<MagePermanent> cards, boolean nonPermanentsOwnRow, boolean topPanel);
+    int sortPermanents(Map<String, JComponent> ui, Map<UUID, MagePermanent> cards, boolean nonPermanentsOwnRow, boolean topPanel);
 
     /**
      * Download various symbols (mana, tap, set).
      *
-     * @param imagesPath Path to check in and store symbols to. Can be null, in
-     * such case default path should be used.
+     * @param imagesDir Path to check in and store symbols to. Can't be null.
      */
-    void downloadSymbols(String imagesPath);
+    void downloadSymbols(String imagesDir);
 
     void onAddCard(MagePermanent card, int count);
 

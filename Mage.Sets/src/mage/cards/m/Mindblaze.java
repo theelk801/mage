@@ -27,6 +27,10 @@
  */
 package mage.cards.m;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.effects.OneShotEffect;
 import mage.cards.CardImpl;
@@ -44,10 +48,6 @@ import mage.game.Game;
 import mage.players.Player;
 import mage.target.TargetPlayer;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 /**
  *
  * @author Loki
@@ -57,10 +57,10 @@ public class Mindblaze extends CardImpl {
     public Mindblaze(UUID ownerId, CardSetInfo setInfo) {
         super(ownerId, setInfo, new CardType[]{CardType.SORCERY}, "{5}{R}");
 
-        // Name a nonland card and choose a number greater than 0. Target player reveals his or her library.
+        // Name a nonland card and choose a number greater than 0. Target player reveals their library.
         // If that library contains exactly the chosen number of the named card,
         // Mindblaze deals 8 damage to that player.
-        // Then that player shuffles his or her library.
+        // Then that player shuffles their library.
         this.getSpellAbility().addEffect(new MindblazeEffect());
         this.getSpellAbility().addTarget(new TargetPlayer());
     }
@@ -80,7 +80,7 @@ class MindblazeEffect extends OneShotEffect {
 
     MindblazeEffect() {
         super(Outcome.Damage);
-        staticText = "Name a nonland card and choose a number greater than 0. Target player reveals his or her library. If that library contains exactly the chosen number of the named card, {this} deals 8 damage to that player. Then that player shuffles his or her library";
+        staticText = "Name a nonland card and choose a number greater than 0. Target player reveals their library. If that library contains exactly the chosen number of the named card, {this} deals 8 damage to that player. Then that player shuffles their library";
     }
 
     MindblazeEffect(final MindblazeEffect effect) {
@@ -91,7 +91,8 @@ class MindblazeEffect extends OneShotEffect {
     public boolean apply(Game game, Ability source) {
         Player player = game.getPlayer(targetPointer.getFirst(game, source));
         Player playerControls = game.getPlayer(source.getControllerId());
-        if (player != null && playerControls != null) {
+        MageObject sourceObject = source.getSourceObject(game);
+        if (player != null && playerControls != null && sourceObject != null) {
             Choice cardChoice = new ChoiceImpl();
             cardChoice.setChoices(CardRepository.instance.getNonLandNames());
             cardChoice.clearChoice();
@@ -103,20 +104,14 @@ class MindblazeEffect extends OneShotEffect {
             }
             numberChoice.setChoices(numbers);
 
-            while (!playerControls.choose(Outcome.Neutral, cardChoice, game)) {
-                if (!playerControls.canRespond()) {
-                    return false;
-                }
+            if (!playerControls.choose(Outcome.Neutral, cardChoice, game)) {
+                return false;
+            }
+            if (!playerControls.choose(Outcome.Neutral, numberChoice, game)) {
+                return false;
             }
 
-            while (!playerControls.choose(Outcome.Neutral, numberChoice, game)) {
-                if (!playerControls.canRespond()) {
-                    return false;
-                }
-            }
-
-            game.informPlayers("Mindblaze, named card: [" + cardChoice.getChoice() + ']');
-            game.informPlayers("Mindblaze, chosen number: [" + numberChoice.getChoice() + ']');
+            game.informPlayers(sourceObject.getIdName() + " - Named card: [" + cardChoice.getChoice() + "] - Chosen number: [" + numberChoice.getChoice() + ']');
 
             Cards cards = new CardsImpl();
             cards.addAll(player.getLibrary().getCards(game));
@@ -128,6 +123,7 @@ class MindblazeEffect extends OneShotEffect {
                 player.damage(8, source.getSourceId(), game.copy(), false, true);
             }
             player.shuffleLibrary(source, game);
+            return true;
         }
         return false;
     }

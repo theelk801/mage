@@ -27,6 +27,9 @@
  */
 package mage.cards.c;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import mage.ConditionalMana;
 import mage.MageObject;
 import mage.Mana;
@@ -50,10 +53,6 @@ import mage.game.stack.Spell;
 import mage.players.Player;
 import mage.watchers.Watcher;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 /**
  *
  * @author noxx
@@ -61,15 +60,15 @@ import java.util.UUID;
 public class CavernOfSouls extends CardImpl {
 
     public CavernOfSouls(UUID ownerId, CardSetInfo setInfo) {
-        super(ownerId,setInfo,new CardType[]{CardType.LAND},"");
+        super(ownerId, setInfo, new CardType[]{CardType.LAND}, "");
 
         // As Cavern of Souls enters the battlefield, choose a creature type.
         this.addAbility(new AsEntersBattlefieldAbility(new ChooseCreatureTypeEffect(Outcome.BoostCreature)));
 
-        // {T}: Add {C} to your mana pool.
+        // {T}: Add {C}.
         this.addAbility(new ColorlessManaAbility());
 
-        // {T}: Add one mana of any color to your mana pool. Spend this mana only to cast a creature spell of the chosen type, and that spell can't be countered.
+        // {T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type, and that spell can't be countered.
         Ability ability = new ConditionalAnyColorManaAbility(new TapSourceCost(), 1, new CavernOfSoulsManaBuilder(), true);
         this.addAbility(ability, new CavernOfSoulsWatcher(ability.getOriginalId()));
         this.addAbility(new SimpleStaticAbility(Zone.ALL, new CavernOfSoulsCantCounterEffect()));
@@ -91,9 +90,9 @@ class CavernOfSoulsManaBuilder extends ConditionalManaBuilder {
 
     @Override
     public ConditionalManaBuilder setMana(Mana mana, Ability source, Game game) {
-        SubType value = (SubType) game.getState().getValue(source.getSourceId() + "_type");
-        if (value != null ) {
-            creatureType = value;
+        SubType subType = ChooseCreatureTypeEffect.getChoosenCreatureType(source.getSourceId(), game);
+        if (subType != null) {
+            creatureType = subType;
         }
         Player controller = game.getPlayer(source.getControllerId());
         MageObject sourceObject = game.getObject(source.getSourceId());

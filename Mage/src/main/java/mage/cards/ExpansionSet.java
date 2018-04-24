@@ -32,6 +32,7 @@ import mage.cards.repository.CardInfo;
 import mage.cards.repository.CardRepository;
 import mage.constants.Rarity;
 import mage.constants.SetType;
+import mage.util.CardUtil;
 import mage.util.RandomUtil;
 
 import java.io.Serializable;
@@ -82,6 +83,10 @@ public abstract class ExpansionSet implements Serializable {
             return this.cardNumber;
         }
 
+        public int getCardNumberAsInt() {
+            return CardUtil.parseCardNumberAsInt(this.cardNumber);
+        }
+
         public Rarity getRarity() {
             return this.rarity;
         }
@@ -116,6 +121,7 @@ public abstract class ExpansionSet implements Serializable {
     protected int numBoosterRare;
     protected int numBoosterDoubleFaced; // -1 = include normally 0 = exclude  1-n = include explicit
     protected int ratioBoosterMythic;
+    protected boolean needsLegends = false;
 
     protected int maxCardNumberInBooster; // used to omit cards with collector numbers beyond the regular cards in a set for boosters
 
@@ -205,6 +211,20 @@ public abstract class ExpansionSet implements Serializable {
     }
 
     public List<Card> createBooster() {
+        if (needsLegends) {
+            for (int i = 0; i < 100000; i++) {//don't want to somehow loop forever
+                List<Card> booster = tryBooster();
+                for (Card card : booster) {
+                    if (card.isLegendary() && card.isCreature()) {// Dominaria packs must contain at least one legendary creature.
+                        return booster;
+                    }
+                }
+            }
+        }
+        return tryBooster();
+    }
+
+    public List<Card> tryBooster() {
         List<Card> booster = new ArrayList<>();
         if (!hasBoosters) {
             return booster;
@@ -390,7 +410,7 @@ public abstract class ExpansionSet implements Serializable {
             savedCardsInfos = CardRepository.instance.findCards(criteria);
             // Workaround after card number is numeric
             if (maxCardNumberInBooster != Integer.MAX_VALUE) {
-                savedCardsInfos.removeIf(next -> Integer.valueOf(next.getCardNumber()) > maxCardNumberInBooster && rarity != Rarity.LAND);
+                savedCardsInfos.removeIf(next -> next.getCardNumberAsInt() > maxCardNumberInBooster && rarity != Rarity.LAND);
             }
 
             savedCards.put(rarity, savedCardsInfos);
@@ -429,6 +449,10 @@ public abstract class ExpansionSet implements Serializable {
 
     public void removeSavedCards() {
         savedCards.clear();
+    }
+
+    public int getMaxCardNumberInBooster() {
+        return maxCardNumberInBooster;
     }
 
 }

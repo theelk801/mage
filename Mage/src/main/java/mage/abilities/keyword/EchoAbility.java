@@ -27,6 +27,7 @@
  */
 package mage.abilities.keyword;
 
+import java.util.Locale;
 import java.util.UUID;
 import mage.abilities.Ability;
 import mage.abilities.Mode;
@@ -187,6 +188,7 @@ class EchoEffect extends OneShotEffect {
             if (controller.chooseUse(Outcome.Benefit, "Pay " + cost.getText() + '?', source, game)) {
                 cost.clearPaid();
                 if (cost.pay(source, game, source.getSourceId(), source.getControllerId(), false, null)) {
+                    game.fireEvent(GameEvent.getEvent(GameEvent.EventType.ECHO_PAID, source.getSourceId(), source.getSourceId(), source.getControllerId()));
                     return true;
                 }
             }
@@ -208,8 +210,8 @@ class EchoEffect extends OneShotEffect {
     public String getText(Mode mode) {
         StringBuilder sb = new StringBuilder("sacrifice {this} unless you ");
         String costText = cost.getText();
-        if (costText.toLowerCase().startsWith("discard")) {
-            sb.append(costText.substring(0, 1).toLowerCase());
+        if (costText.toLowerCase(Locale.ENGLISH).startsWith("discard")) {
+            sb.append(costText.substring(0, 1).toLowerCase(Locale.ENGLISH));
             sb.append(costText.substring(1));
         } else {
             sb.append("pay ").append(costText);

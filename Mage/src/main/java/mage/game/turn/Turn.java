@@ -127,12 +127,12 @@ public class Turn implements Serializable {
     public boolean play(Game game, Player activePlayer) {
         activePlayer.becomesActivePlayer();
         this.setDeclareAttackersStepStarted(false);
-        if (game.isPaused() || game.gameOver(null)) {
+        if (game.isPaused() || game.checkIfGameIsOver()) {
             return false;
         }
 
         if (game.getState().getTurnMods().skipTurn(activePlayer.getId())) {
-            game.informPlayers(activePlayer.getLogName() + " skips his or her turn.");
+            game.informPlayers(activePlayer.getLogName() + " skips their turn.");
             return true;
         }
         logStartOfTurn(game, activePlayer);
@@ -143,7 +143,7 @@ public class Turn implements Serializable {
         resetCounts();
         game.getPlayer(activePlayer.getId()).beginTurn(game);
         for (Phase phase : phases) {
-            if (game.isPaused() || game.gameOver(null)) {
+            if (game.isPaused() || game.checkIfGameIsOver()) {
                 return false;
             }
             if (!isEndTurnRequested() || phase.getType() == TurnPhase.END) {
@@ -189,7 +189,7 @@ public class Turn implements Serializable {
         }
         while (it.hasNext()) {
             phase = it.next();
-            if (game.isPaused() || game.gameOver(null)) {
+            if (game.isPaused() || game.checkIfGameIsOver()) {
                 return;
             }
             currentPhase = phase;
@@ -223,40 +223,41 @@ public class Turn implements Serializable {
     }
 
     private boolean playExtraPhases(Game game, TurnPhase afterPhase) {
-        TurnMod extraPhaseTurnMod = game.getState().getTurnMods().extraPhase(activePlayerId, afterPhase);
-        if (extraPhaseTurnMod == null) {
-            return false;
+        while (true) {
+            TurnMod extraPhaseTurnMod = game.getState().getTurnMods().extraPhase(activePlayerId, afterPhase);
+            if (extraPhaseTurnMod == null) {
+                return false;
+            }
+            TurnPhase extraPhase = extraPhaseTurnMod.getExtraPhase();
+            if (extraPhase == null) {
+                return false;
+            }
+            Phase phase;
+            switch (extraPhase) {
+                case BEGINNING:
+                    phase = new BeginningPhase();
+                    break;
+                case PRECOMBAT_MAIN:
+                    phase = new PreCombatMainPhase();
+                    break;
+                case COMBAT:
+                    phase = new CombatPhase();
+                    break;
+                case POSTCOMBAT_MAIN:
+                    phase = new PostCombatMainPhase();
+                    break;
+                default:
+                    phase = new EndPhase();
+            }
+            currentPhase = phase;
+            game.fireEvent(new GameEvent(GameEvent.EventType.PHASE_CHANGED, activePlayerId, extraPhaseTurnMod.getId(), activePlayerId));
+            Player activePlayer = game.getPlayer(activePlayerId);
+            if (activePlayer != null && !game.isSimulation()) {
+                game.informPlayers(activePlayer.getLogName() + " starts an additional " + phase.getType().toString() + " phase");
+            }
+            phase.play(game, activePlayerId);
+            afterPhase = extraPhase;
         }
-        TurnPhase extraPhase = extraPhaseTurnMod.getExtraPhase();
-        if (extraPhase == null) {
-            return false;
-        }
-        Phase phase;
-        switch (extraPhase) {
-            case BEGINNING:
-                phase = new BeginningPhase();
-                break;
-            case PRECOMBAT_MAIN:
-                phase = new PreCombatMainPhase();
-                break;
-            case COMBAT:
-                phase = new CombatPhase();
-                break;
-            case POSTCOMBAT_MAIN:
-                phase = new PostCombatMainPhase();
-                break;
-            default:
-                phase = new EndPhase();
-        }
-        currentPhase = phase;
-        game.fireEvent(new GameEvent(GameEvent.EventType.PHASE_CHANGED, activePlayerId, extraPhaseTurnMod.getId(), activePlayerId));
-        Player activePlayer = game.getPlayer(activePlayerId);
-        if (activePlayer != null && !game.isSimulation()) {
-            game.informPlayers(activePlayer.getLogName() + " starts an additional " + phase.getType().toString() + " phase");
-        }
-        phase.play(game, activePlayerId);
-
-        return true;
     }
 
     /*protected void playExtraTurns(Game game) {
